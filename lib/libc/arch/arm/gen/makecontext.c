@@ -1,11 +1,11 @@
-/*	$NetBSD: __sigaction14_sigtramp.c,v 1.2 2003/01/18 11:09:37 thorpej Exp $	*/
+/*	$NetBSD: makecontext.c,v 1.2 2003/01/18 11:06:24 thorpej Exp $	*/
 
 /*-
- * Copyright (c) 2002 The NetBSD Foundation, Inc.
+ * Copyright (c) 2001 The NetBSD Foundation, Inc.
  * All rights reserved.
  *
  * This code is derived from software contributed to The NetBSD Foundation
- * by Jason R. Thorpe.
+ * by Klaus Klein.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -17,8 +17,8 @@
  *    documentation and/or other materials provided with the distribution.
  * 3. All advertising materials mentioning features or use of this software
  *    must display the following acknowledgement:
- *	This product includes software developed by the NetBSD
- *	Foundation, Inc. and its contributors.
+ *        This product includes software developed by the NetBSD
+ *        Foundation, Inc. and its contributors.
  * 4. Neither the name of The NetBSD Foundation nor the names of its
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
@@ -36,25 +36,45 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#define	__LIBC12_SOURCE__
+#include <sys/cdefs.h>
+#if defined(LIBC_SCCS) && !defined(lint)
+__RCSID("$NetBSD: makecontext.c,v 1.2 2003/01/18 11:06:24 thorpej Exp $");
+#endif
 
-#include <sys/types.h>
-#include <signal.h>
-
+#include <stddef.h>
+#include <inttypes.h>
+#include <ucontext.h>
 #include "extern.h"
 
-__weak_alias(__sigaction14, __libc_sigaction14)
+#include <stdarg.h>
 
-int
-__libc_sigaction14(int sig, const struct sigaction *act, struct sigaction *oact)
+void
+makecontext(ucontext_t *ucp, void (*func)(void), int argc, ...)
 {
-	extern int __sigtramp_sigcontext_1[];
+	__greg_t *gr = ucp->uc_mcontext.__gregs;
+	int i;
+	unsigned int *sp;
+	va_list ap;
 
-	/*
-	 * Right here we should select the SA_SIGINFO trampoline
-	 * if SA_SIGINFO is set in the sigaction.
-	 */
+	/* Compute and align stack pointer. */
+	sp = (unsigned int *)
+	    (((uintptr_t)ucp->uc_stack.ss_sp + ucp->uc_stack.ss_size) & ~7);
+	/* Allocate necessary stack space for arguments exceeding r0-3. */
+	if (argc > 4)
+		sp -= argc - 4;
+	gr[_REG_SP] = (__greg_t)sp;
+	/* Wipe out frame pointer. */
+	gr[_REG_FP] = 0;
+	/* Arrange for return via the trampoline code. */
+	gr[_REG_LR] = (__greg_t)_resumecontext;
+	gr[_REG_PC] = (__greg_t)func;
 
-	return (__sigaction_sigtramp(sig, act, oact,
-				     __sigtramp_sigcontext_1, 1));
+	va_start(ap, argc);
+	/* Pass up to four arguments in r0-3. */
+	for (i = 0; i < argc && i < 4; i++)
+		gr[_REG_R0 + i] = va_arg(ap, int);
+	/* Pass any additional arguments on the stack. */
+	for (argc -= i; argc > 0; argc--)
+		*sp++ = va_arg(ap, int);
+	va_end(ap);
 }

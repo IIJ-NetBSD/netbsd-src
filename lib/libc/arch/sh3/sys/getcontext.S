@@ -1,11 +1,11 @@
-/*	$NetBSD: __sigaction14_sigtramp.c,v 1.2 2003/01/18 11:09:37 thorpej Exp $	*/
+/*	$NetBSD: getcontext.S,v 1.2 2003/01/18 11:14:01 thorpej Exp $	*/
 
 /*-
- * Copyright (c) 2002 The NetBSD Foundation, Inc.
+ * Copyright (c) 2001 The NetBSD Foundation, Inc.
  * All rights reserved.
  *
  * This code is derived from software contributed to The NetBSD Foundation
- * by Jason R. Thorpe.
+ * by Klaus Klein.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -17,8 +17,8 @@
  *    documentation and/or other materials provided with the distribution.
  * 3. All advertising materials mentioning features or use of this software
  *    must display the following acknowledgement:
- *	This product includes software developed by the NetBSD
- *	Foundation, Inc. and its contributors.
+ *        This product includes software developed by the NetBSD
+ *        Foundation, Inc. and its contributors.
  * 4. Neither the name of The NetBSD Foundation nor the names of its
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
@@ -36,25 +36,20 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#define	__LIBC12_SOURCE__
+#include <machine/asm.h>
+#if defined(SYSLIBC_SCCS) && !defined(lint)
+	RCSID("$NetBSD: getcontext.S,v 1.2 2003/01/18 11:14:01 thorpej Exp $")
+#endif /* SYSLIBC_SCCS and not lint */
 
-#include <sys/types.h>
-#include <signal.h>
+#include "SYS.h" 
 
-#include "extern.h"
+#ifdef WEAK_ALIAS
+WEAK_ALIAS(getcontext,_getcontext)
+#endif
 
-__weak_alias(__sigaction14, __libc_sigaction14)
-
-int
-__libc_sigaction14(int sig, const struct sigaction *act, struct sigaction *oact)
-{
-	extern int __sigtramp_sigcontext_1[];
-
-	/*
-	 * Right here we should select the SA_SIGINFO trampoline
-	 * if SA_SIGINFO is set in the sigaction.
-	 */
-
-	return (__sigaction_sigtramp(sig, act, oact,
-				     __sigtramp_sigcontext_1, 1));
-}
+_SYSCALL(_getcontext,getcontext) 
+	sts	pr, r2
+	mov.l	r2, @(36 + 1 * 4, r4)	/* saved pc <- pr */
+	add	#36 + 20 * 4, r4
+	rts
+	 mov.l	r0, @r4			/* arrange for return value 0 */

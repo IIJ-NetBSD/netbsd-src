@@ -1,11 +1,11 @@
-/*	$NetBSD: __sigaction14_sigtramp.c,v 1.2 2003/01/18 11:09:37 thorpej Exp $	*/
+/*	$NetBSD: swapcontext.S,v 1.2 2003/01/18 11:10:44 thorpej Exp $	*/
 
 /*-
- * Copyright (c) 2002 The NetBSD Foundation, Inc.
+ * Copyright (c) 2001 The NetBSD Foundation, Inc.
  * All rights reserved.
  *
  * This code is derived from software contributed to The NetBSD Foundation
- * by Jason R. Thorpe.
+ * by Klaus Klein.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -17,8 +17,8 @@
  *    documentation and/or other materials provided with the distribution.
  * 3. All advertising materials mentioning features or use of this software
  *    must display the following acknowledgement:
- *	This product includes software developed by the NetBSD
- *	Foundation, Inc. and its contributors.
+ *        This product includes software developed by the NetBSD
+ *        Foundation, Inc. and its contributors.
  * 4. Neither the name of The NetBSD Foundation nor the names of its
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
@@ -36,25 +36,41 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#define	__LIBC12_SOURCE__
+#include "SYS.h"
+#include <machine/mcontext.h>
 
-#include <sys/types.h>
-#include <signal.h>
+#if defined(SYSLIBC_SCCS) && !defined(lint)
+	ASMSTR("$NetBSD: swapcontext.S,v 1.2 2003/01/18 11:10:44 thorpej Exp $")
+#endif /* SYSLIBC_SCCS && !lint */
 
-#include "extern.h"
+#ifdef __ABICALLS__
+	.abicalls
+#endif
+	.set	reorder
+	
+NESTED(swapcontext, CALLFRAME_SIZ, ra)
+	.mask	0x80000030, (CALLFRAME_RA - CALLFRAME_SIZ)
+	subu	sp, sp, CALLFRAME_SIZ
+	sw	ra, CALLFRAME_RA(sp)	# save ra
+	sw	a0, 0(sp)		# stash away oucp
+	sw	a1, 4(sp)		# stash away ucp
+	SYSTRAP(getcontext)
+	lw	ra, CALLFRAME_RA(sp)
+	bne	a3, zero, 1f
 
-__weak_alias(__sigaction14, __libc_sigaction14)
+	lw	v1, 0(sp)		# load oucp again for adjustment
+	lw	a0, 4(sp)		# load ucp
+	addiu	v0, sp, CALLFRAME_SIZ
+	REG_PROLOGUE
+	REG_S	zero, (_OFFSETOF_UC_GREGS + _REG_V0 * SZREG)(v1)
+	REG_S	ra, (_OFFSETOF_UC_GREGS + _REG_EPC * SZREG)(v1)
+	REG_S	v0, (_OFFSETOF_UC_GREGS + _REG_SP * SZREG)(v1)
+	REG_EPILOGUE
 
-int
-__libc_sigaction14(int sig, const struct sigaction *act, struct sigaction *oact)
-{
-	extern int __sigtramp_sigcontext_1[];
-
-	/*
-	 * Right here we should select the SA_SIGINFO trampoline
-	 * if SA_SIGINFO is set in the sigaction.
-	 */
-
-	return (__sigaction_sigtramp(sig, act, oact,
-				     __sigtramp_sigcontext_1, 1));
-}
+	SYSTRAP(setcontext)
+	/* NOTREACHED */
+1:
+	addiu	sp, sp, CALLFRAME_SIZ
+	la	t9, _C_LABEL(__cerror)
+	jr	t9
+END(swapcontext)

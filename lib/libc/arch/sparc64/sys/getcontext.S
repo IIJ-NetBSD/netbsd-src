@@ -1,11 +1,11 @@
-/*	$NetBSD: __sigaction14_sigtramp.c,v 1.2 2003/01/18 11:09:37 thorpej Exp $	*/
+/*	$NetBSD: getcontext.S,v 1.2 2003/01/18 11:17:46 thorpej Exp $	*/
 
 /*-
- * Copyright (c) 2002 The NetBSD Foundation, Inc.
+ * Copyright (c) 2001 The NetBSD Foundation, Inc.
  * All rights reserved.
  *
  * This code is derived from software contributed to The NetBSD Foundation
- * by Jason R. Thorpe.
+ * by Klaus Klein.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -17,8 +17,8 @@
  *    documentation and/or other materials provided with the distribution.
  * 3. All advertising materials mentioning features or use of this software
  *    must display the following acknowledgement:
- *	This product includes software developed by the NetBSD
- *	Foundation, Inc. and its contributors.
+ *        This product includes software developed by the NetBSD
+ *        Foundation, Inc. and its contributors.
  * 4. Neither the name of The NetBSD Foundation nor the names of its
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
@@ -36,25 +36,26 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#define	__LIBC12_SOURCE__
+#include "SYS.h"
 
-#include <sys/types.h>
-#include <signal.h>
+#if defined(SYSLIBC_SCCS) && !defined(lint)
+	RCSID("$NetBSD: getcontext.S,v 1.2 2003/01/18 11:17:46 thorpej Exp $")
+#endif /* SYSLIBC_SCCS && !lint */
 
-#include "extern.h"
+#ifdef WEAK_ALIAS
+WEAK_ALIAS(getcontext, _getcontext)
+#endif
 
-__weak_alias(__sigaction14, __libc_sigaction14)
-
-int
-__libc_sigaction14(int sig, const struct sigaction *act, struct sigaction *oact)
-{
-	extern int __sigtramp_sigcontext_1[];
-
-	/*
-	 * Right here we should select the SA_SIGINFO trampoline
-	 * if SA_SIGINFO is set in the sigaction.
-	 */
-
-	return (__sigaction_sigtramp(sig, act, oact,
-				     __sigtramp_sigcontext_1, 1));
-}
+ENTRY(_getcontext)
+	mov	%o0, %o2			/* must save pointer */
+	mov	SYS_getcontext, %g1
+	t	ST_SYSCALL
+	bcc,a	1f
+	 stx	%g0, [%o2 + 64 + 11 * 8]	/* gr[_REG_O0] = 0 */
+	ERROR()
+1:
+	add	%o7, 8, %o1
+	stx	%o1, [%o2 + 64 + 1 * 8]		/* gr[_REG_PC] = retaddr */
+	add	%o7, 12, %o1
+	retl
+	 stx	%o1, [%o2 + 64 + 2 * 8]		/* gr[_REG_nPC] = retaddr + 4 */

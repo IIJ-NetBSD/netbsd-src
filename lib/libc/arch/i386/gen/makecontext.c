@@ -1,11 +1,11 @@
-/*	$NetBSD: __sigaction14_sigtramp.c,v 1.2 2003/01/18 11:09:37 thorpej Exp $	*/
+/*	$NetBSD: makecontext.c,v 1.2 2003/01/18 11:08:11 thorpej Exp $	*/
 
 /*-
- * Copyright (c) 2002 The NetBSD Foundation, Inc.
+ * Copyright (c) 1999 The NetBSD Foundation, Inc.
  * All rights reserved.
  *
  * This code is derived from software contributed to The NetBSD Foundation
- * by Jason R. Thorpe.
+ * by Klaus Klein.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -17,8 +17,8 @@
  *    documentation and/or other materials provided with the distribution.
  * 3. All advertising materials mentioning features or use of this software
  *    must display the following acknowledgement:
- *	This product includes software developed by the NetBSD
- *	Foundation, Inc. and its contributors.
+ *        This product includes software developed by the NetBSD
+ *        Foundation, Inc. and its contributors.
  * 4. Neither the name of The NetBSD Foundation nor the names of its
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
@@ -36,25 +36,63 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#define	__LIBC12_SOURCE__
+#include <sys/cdefs.h>
+#if defined(LIBC_SCCS) && !defined(lint)
+__RCSID("$NetBSD: makecontext.c,v 1.2 2003/01/18 11:08:11 thorpej Exp $");
+#endif
 
-#include <sys/types.h>
-#include <signal.h>
-
+#include <inttypes.h>
+#include <stddef.h>
+#include <ucontext.h>
 #include "extern.h"
 
-__weak_alias(__sigaction14, __libc_sigaction14)
+#if __STDC__
+#include <stdarg.h>
+#else
+#include <varargs.h>
+#endif
 
-int
-__libc_sigaction14(int sig, const struct sigaction *act, struct sigaction *oact)
+
+void
+#if __STDC__
+makecontext(ucontext_t *ucp, void (*func)(void), int argc, ...)
+#else
+makecontext(ucp, func, argc, va_alist)
+	ucontext_t *ucp;
+	void (*func)();
+	int argc;
+	va_dcl
+#endif
 {
-	extern int __sigtramp_sigcontext_1[];
+	__greg_t *gr = ucp->uc_mcontext.__gregs;
+	unsigned int *sp;
+	va_list ap;
 
-	/*
-	 * Right here we should select the SA_SIGINFO trampoline
-	 * if SA_SIGINFO is set in the sigaction.
-	 */
+	/* LINTED __greg_t is safe */
+	gr[_REG_EIP] = (__greg_t)func;
 
-	return (__sigaction_sigtramp(sig, act, oact,
-				     __sigtramp_sigcontext_1, 1));
+	/* LINTED uintptr_t is safe */
+	sp  = (int *)((uintptr_t)ucp->uc_stack.ss_sp + ucp->uc_stack.ss_size);
+	/* LINTED uintptr_t is safe */
+	sp  = (int *)((uintptr_t)sp & ~0x3);	/* Align on word boundary. */
+	sp -= argc + 1;			/* Make room for ret and args. */
+	/* LINTED __greg_t is safe */
+	gr[_REG_UESP] = (__greg_t)sp;
+	gr[_REG_EBP] = (__greg_t)0;	/* Wipe out frame pointer. */
+
+	/* Put return address on top of stack. */
+	/* LINTED uintptr_t is safe */
+	*sp++ = (uintptr_t)_resumecontext;
+
+	/* Construct argument list. */
+#if __STDC__
+	va_start(ap, argc);
+#else
+	va_start(ap);
+#endif
+	while (argc-- > 0) {
+		/* LINTED uintptr_t is safe */
+		*sp++ = va_arg(ap, uintptr_t);
+	}
+	va_end(ap);
 }

@@ -1,11 +1,10 @@
-/*	$NetBSD: __sigaction14_sigtramp.c,v 1.2 2003/01/18 11:09:37 thorpej Exp $	*/
+/*	$NetBSD: _lwp.c,v 1.2 2003/01/18 11:12:53 thorpej Exp $	*/
 
-/*-
- * Copyright (c) 2002 The NetBSD Foundation, Inc.
+/*
+ * Copyright (c) 2001 Wasabi Systems, Inc.
  * All rights reserved.
  *
- * This code is derived from software contributed to The NetBSD Foundation
- * by Jason R. Thorpe.
+ * Written by Allen Briggs for Wasabi Systems, Inc.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -17,16 +16,16 @@
  *    documentation and/or other materials provided with the distribution.
  * 3. All advertising materials mentioning features or use of this software
  *    must display the following acknowledgement:
- *	This product includes software developed by the NetBSD
- *	Foundation, Inc. and its contributors.
- * 4. Neither the name of The NetBSD Foundation nor the names of its
- *    contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
+ *      This product includes software developed for the NetBSD Project by
+ *      Wasabi Systems, Inc.
+ * 4. The name of Wasabi Systems, Inc. may not be used to endorse
+ *    or promote products derived from this software without specific prior
+ *    written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS
- * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * THIS SOFTWARE IS PROVIDED BY WASABI SYSTEMS, INC. ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
  * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL WASABI SYSTEMS, INC
  * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
  * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
  * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
@@ -36,25 +35,27 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#define	__LIBC12_SOURCE__
-
 #include <sys/types.h>
-#include <signal.h>
+#include <ucontext.h>
+#include <lwp.h>
+#include <stdlib.h>
 
-#include "extern.h"
-
-__weak_alias(__sigaction14, __libc_sigaction14)
-
-int
-__libc_sigaction14(int sig, const struct sigaction *act, struct sigaction *oact)
+void
+_lwp_makecontext(ucontext_t *u, void (*start)(void *), void *arg,
+	void *private, caddr_t stack_base, size_t stack_size)
 {
-	extern int __sigtramp_sigcontext_1[];
+	void	**sp;
 
-	/*
-	 * Right here we should select the SA_SIGINFO trampoline
-	 * if SA_SIGINFO is set in the sigaction.
-	 */
+	getcontext(u);
+	u->uc_link = NULL;
 
-	return (__sigaction_sigtramp(sig, act, oact,
-				     __sigtramp_sigcontext_1, 1));
+	u->uc_stack.ss_sp = stack_base;
+	u->uc_stack.ss_size = stack_size;
+
+	sp = (void **) (stack_base + stack_size);
+
+	u->uc_mcontext.__gregs[3] = (int) arg;		/* arg1 */
+	u->uc_mcontext.__gregs[1] = ((int) sp) - 12;	/* stack */
+	u->uc_mcontext.__gregs[33] = (int) _lwp_exit;	/* LR */
+	u->uc_mcontext.__gregs[34] = (int) start;	/* PC */
 }

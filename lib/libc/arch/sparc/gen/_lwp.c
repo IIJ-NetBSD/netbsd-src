@@ -1,11 +1,8 @@
-/*	$NetBSD: __sigaction14_sigtramp.c,v 1.2 2003/01/18 11:09:37 thorpej Exp $	*/
+/*	$NetBSD: _lwp.c,v 1.2 2003/01/18 11:15:08 thorpej Exp $	*/
 
 /*-
  * Copyright (c) 2002 The NetBSD Foundation, Inc.
  * All rights reserved.
- *
- * This code is derived from software contributed to The NetBSD Foundation
- * by Jason R. Thorpe.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -17,8 +14,8 @@
  *    documentation and/or other materials provided with the distribution.
  * 3. All advertising materials mentioning features or use of this software
  *    must display the following acknowledgement:
- *	This product includes software developed by the NetBSD
- *	Foundation, Inc. and its contributors.
+ *        This product includes software developed by the NetBSD
+ *        Foundation, Inc. and its contributors.
  * 4. Neither the name of The NetBSD Foundation nor the names of its
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
@@ -36,25 +33,42 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#define	__LIBC12_SOURCE__
-
 #include <sys/types.h>
-#include <signal.h>
+#include <ucontext.h>
+#include <lwp.h>
+#include <stdlib.h>
 
-#include "extern.h"
-
-__weak_alias(__sigaction14, __libc_sigaction14)
-
-int
-__libc_sigaction14(int sig, const struct sigaction *act, struct sigaction *oact)
+void
+_lwp_makecontext(ucontext_t *u, void (*start)(void *), void *arg,
+		 void *private, caddr_t stack_base, size_t stack_size)
 {
-	extern int __sigtramp_sigcontext_1[];
+	__greg_t *gr;
+	unsigned long *sp;
 
-	/*
-	 * Right here we should select the SA_SIGINFO trampoline
-	 * if SA_SIGINFO is set in the sigaction.
-	 */
+	getcontext(u);
+	gr = u->uc_mcontext.__gregs;
 
-	return (__sigaction_sigtramp(sig, act, oact,
-				     __sigtramp_sigcontext_1, 1));
+	u->uc_link = NULL;
+
+	u->uc_stack.ss_sp = stack_base;
+	u->uc_stack.ss_size = stack_size;
+
+
+	sp = (ulong *)(stack_base + stack_size);
+	sp = (ulong *)((ulong)sp & ~0x07);
+
+	/* Make room for the fake caller stack frame (CCFSZ, only in words) */
+	sp -= 8 + 8 + 1 + 6 + 1;
+
+	/* Entering (*start)(arg), return is to _lwp_exit */
+	gr[_REG_PC] = (ulong) start;
+	gr[_REG_nPC] = (ulong) start + 4;
+	gr[_REG_O0] = (ulong)arg;
+	gr[_REG_O6] = (ulong)sp;
+	gr[_REG_O7] = (ulong)_lwp_exit - 8;
+
+	/* XXX: uwe: why do we need this? */
+	/* create loopback in the window save area on the stack? */
+	sp[8+6] = (ulong)sp;		/* %i6 */
+	sp[8+7] = (ulong)_lwp_exit - 8;	/* %i7 */
 }
