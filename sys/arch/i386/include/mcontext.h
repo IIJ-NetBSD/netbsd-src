@@ -1,11 +1,11 @@
-/*	$NetBSD: ibcs2_machdep.h,v 1.12 2003/01/17 23:10:29 thorpej Exp $	*/
+/*	$NetBSD: mcontext.h,v 1.2 2003/01/17 23:10:28 thorpej Exp $	*/
 
 /*-
- * Copyright (c) 1997, 2000 The NetBSD Foundation, Inc.
+ * Copyright (c) 1999 The NetBSD Foundation, Inc.
  * All rights reserved.
  *
  * This code is derived from software contributed to The NetBSD Foundation
- * by Charles M. Hannum.
+ * by Klaus Klein.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -36,22 +36,75 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef _I386_IBCS2_MACHDEP_H_
-#define _I386_IBCS2_MACHDEP_H_
+#ifndef _I386_MCONTEXT_H_
+#define _I386_MCONTEXT_H_
 
-#define COFF_MAGIC_I386	0x14c
-#define	COFF_BADMAG(ex)	(ex->f_magic != COFF_MAGIC_I386)
-#define	COFF_LDPGSZ	4096
+/*
+ * Layout of mcontext_t according to the System V Application Binary Interface,
+ * Intel386(tm) Architecture Processor Supplement, Fourth Edition.
+ */  
+
+/*
+ * General register state
+ */
+#define _NGREG		19
+typedef	int		__greg_t;
+typedef	__greg_t	__gregset_t[_NGREG];
+
+#define _REG_GS		0
+#define _REG_FS		1
+#define _REG_ES		2
+#define _REG_DS		3
+#define _REG_EDI	4
+#define _REG_ESI	5
+#define _REG_EBP	6
+#define _REG_ESP	7
+#define _REG_EBX	8
+#define _REG_EDX	9
+#define _REG_ECX	10
+#define _REG_EAX	11
+#define _REG_TRAPNO	12
+#define _REG_ERR	13
+#define _REG_EIP	14
+#define _REG_CS		15
+#define _REG_EFL	16
+#define _REG_UESP	17
+#define _REG_SS		18
+
+/*
+ * Floating point register state
+ */
+typedef struct {
+	union {
+		struct {
+			int	__fp_state[27];	/* Environment and registers */
+			int	__fp_status;	/* Software status word */
+		} __fpchip_state;
+		struct {
+			char	__fp_emul[246];
+			char	__fp_epad[2];
+		} __fp_emul_space;
+		struct {
+			char	__fp_xmm[512];
+		} __fp_xmm_state;
+		int	__fp_fpregs[128];
+	} __fp_reg_set;
+	long	__fp_wregs[33];			/* Weitek? */
+} __fpregset_t;
+
+typedef struct {
+	__gregset_t	__gregs;
+	__fpregset_t	__fpregs;
+} mcontext_t;
+
+#define _UC_FXSAVE	0x20	/* FP state is in FXSAVE format in XMM space */
+
+#define _UC_MACHINE_PAD	5	/* Padding appended to ucontext_t */
+
+#define _UC_UCONTEXT_ALIGN	(~0xf)
 
 #ifdef _KERNEL
-struct exec_package;
-struct exec_vmcmd;
+#define _UC_MACHINE_SP(uc)	((uc)->uc_mcontext.__gregs[_REG_UESP])
+#endif
 
-void	ibcs2_setregs __P((struct lwp *, struct exec_package *, u_long));
-void	ibcs2_sendsig __P((int, sigset_t *, u_long));
-int	ibcs2_sys_sysmachine __P((struct lwp *, void *, register_t *retval));
-
-void	ibcs2_syscall_intern __P((struct proc *));
-#endif /* _KERNEL */
-
-#endif /* !_I386_IBCS2_MACHDEP_H_ */
+#endif	/* !_I386_MCONTEXT_H_ */
