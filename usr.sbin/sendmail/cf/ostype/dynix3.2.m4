@@ -34,6 +34,6 @@ divert(-1)
 #
 
 divert(0)
-VERSIONID(`@(#)dynix3.2.m4	8.1 (Berkeley) 11/27/93')
+VERSIONID(`@(#)dynix3.2.m4	8.3 (Berkeley) 9/25/96')
 define(`ALIAS_FILE', /usr/lib/aliases)dnl
-define(`QUEUE_DIR', /usr/spool/mqueue)dnl
+ifdef(`QUEUE_DIR',, `define(`QUEUE_DIR', /usr/spool/mqueue)')dnl
