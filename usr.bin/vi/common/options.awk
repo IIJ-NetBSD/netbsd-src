@@ -1,4 +1,5 @@
-#	@(#)options.awk	8.1 (Berkeley) 4/17/94
+#	$NetBSD: options.awk,v 1.2 1999/02/15 04:54:36 hubertf Exp $
+#	@(#)options.awk	10.1 (Berkeley) 6/8/95
  
 /^\/\* O_[0-9A-Z_]*/ {
 	printf("#define %s %d\n", $2, cnt++);
