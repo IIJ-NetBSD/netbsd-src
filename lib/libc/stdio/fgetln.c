@@ -1,3 +1,5 @@
+/*	$NetBSD: fgetln.c,v 1.2 1995/02/02 02:09:10 jtc Exp $	*/
+
 /*-
  * Copyright (c) 1990, 1993
  *	The Regents of the University of California.  All rights reserved.
@@ -36,7 +38,7 @@
 
 #if defined(LIBC_SCCS) && !defined(lint)
 /* from: static char sccsid[] = "@(#)fgetline.c	8.1 (Berkeley) 6/4/93"; */
-static char *rcsid = "$Id: fgetln.c,v 1.1 1994/01/04 05:13:18 cgd Exp $";
+static char *rcsid = "$Id: fgetln.c,v 1.2 1995/02/02 02:09:10 jtc Exp $";
 #endif /* LIBC_SCCS and not lint */
 
 #include <stdio.h>
