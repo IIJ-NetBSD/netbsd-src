@@ -1,4 +1,4 @@
-/* XXXX some code at the bottom is from the hp300, should be moved to lib.s
+/*
  * Copyright (c) 1993 Adam Glass
  * All rights reserved.
  *
@@ -28,84 +28,47 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Header: /usr/tmp/cvs2git/cvsroot-netbsd/src/sys/arch/sun3/sun3/Attic/m68k.s,v 1.8 1993/10/12 05:26:36 glass Exp $
+ * $Header: /usr/tmp/cvs2git/cvsroot-netbsd/src/sys/arch/sun3/netboot/Attic/start.s,v 1.1 1993/10/12 05:24:01 glass Exp $
  */
 
-ENTRY(getvbr)
-	movc vbr, d0
-	rts
+#include "assym.s"
+#include "../include/asm.h"
 
-ENTRY(setvbr)
-	movl sp@(4), d0
-	movc d0, vbr
-	rts
-
-ENTRY(getsr)
-	moveq #0, d0
-	movw sr, d0
-	rts
-
-/* void control_copy_byte(caddr_t from, caddr_t to, int size)*/
-
-ENTRY(control_copy_byte)
-	movl sp@(4), a0			|a0 = from
-	movl sp@(8), a1			|a1 = to 
-	movl sp@(12), d1		|d1 = size	
-	movl d2, sp@-			| save reg so we can use it for temp
-	movc sfc, d0			| save sfc
-	movl #FC_CONTROL, d2
-	movc d2, sfc
-	subqw #1, d1
-
-loop:   movsb a0@+, d2
-	movb  d2, a1@+
-	dbra d1, loop
-
-	movc d0, sfc
-	movl sp@+, d2
-	rts
-
-/*	
- * unsigned char get_control_byte (char *)
- */	
-
-ENTRY(get_control_byte)
-	movl sp@(4), a0
-	movc sfc, d1
-	moveq #FC_CONTROL, d0
-	movec d0, sfc
-	moveq #0, d0
-	movsb a0@, d0
-	movc d1, sfc
-	rts
+.text
+.globl start
+start:
+	movl #FIXED_LOAD_ADDR,a0	| where we are (a0)
+	lea start:l, a1			| where we want to be (a1)	
+	cmpl a0, a1
+	jeq begin
+	movl #_edata, d0
+copy:
+	movl a0@+,a1@+
+	cmpl d0, a1
+	jne copy
+	jmp begin:l
+/* find out where we are, and copy ourselves to where we are supposed to be */
+.align 4
+begin:	
+	moveq #FC_CONTROL, d0		| make movs get us to the control
+	movc d0, dfc			| space where the sun3 designers
+	movc d0, sfc			| put all the "useful" stuff
+	moveq #CONTEXT_0, d0
+	movsb d0, CONTEXT_REG		| now in context 0
 	
+savesp: movl sp, start-4:l
+	lea start-4:l, sp
+	movl #(FIXED_LOAD_ADDR-4), sp
+	jsr _machdep_nfsboot
+	jsr FIXED_LOAD_ADDR
+
 /*
  * unsigned int get_control_word (char *)
  */	
 
 ENTRY(get_control_word)
 	movl sp@(4), a0
-	movc sfc, d1
-	moveq #FC_CONTROL, d0
-	movec d0, sfc
 	movsl a0@, d0
-	movc d1, sfc
-	rts
-
-/*	
- * void set_control_byte (char *, unsigned char)
- */
-
-ENTRY(set_control_byte)
-	movl sp@(4), a0
-	movl sp@(8), d0
-	movc dfc, d1
-	movl d2, sp@-
-	moveq #FC_CONTROL, d2
-	movc d2, dfc	
-	movsb d0, a0@
-	movc d1, dfc
-	movl sp@+, d2
 	rts
 
 /*
@@ -115,14 +78,17 @@ ENTRY(set_control_byte)
 ENTRY(set_control_word)
 	movl sp@(4), a0
 	movl sp@(8), d0
-	movc dfc, d1
-	movl d2, sp@-
-	moveq #FC_CONTROL, d2
-	movc d2, dfc	
 	movsl d0, a0@
-	movc d1, dfc
-	movc dfc, d1
-	movl sp@+, d2
+	rts
+
+/*	
+ * unsigned char get_control_byte (char *)
+ */	
+
+ENTRY(get_control_byte)
+	movl sp@(4), a0
+	moveq #0, d0
+	movsb a0@, d0
 	rts
 
 /*
@@ -137,41 +103,4 @@ ENTRY(set_control_word)
 _getsp:
 	movl	sp,d0			| get current SP
 	addql	#4,d0			| compensate for return address
-	rts
-
-	.globl	_getsfc, _getdfc
-.align 2
-_getsfc:
-	movc	sfc,d0
-	rts
-.align 2
-_getdfc:
-	movc	dfc,d0
-	rts
-
-
-/*
- * non-local gotos
- */
-ENTRY(setjmp)
-	movl	sp@(4),a0	| savearea pointer
-	moveml	#0xFCFC,a0@	| save d2-d7/a2-a7
-	movl	sp@,a0@(48)	| and return address
-	moveq	#0,d0		| return 0
-	rts
-
-ENTRY(qsetjmp)
-	movl	sp@(4),a0	| savearea pointer
-	lea	a0@(40),a0	| skip regs we do not save
-	movl	a6,a0@+		| save FP
-	movl	sp,a0@+		| save SP
-	movl	sp@,a0@		| and return address
-	moveq	#0,d0		| return 0
-	rts
-
-ENTRY(longjmp)
-	movl	sp@(4),a0
-	moveml	a0@+,#0xFCFC
-	movl	a0@,sp@
-	moveq	#1,d0
 	rts
