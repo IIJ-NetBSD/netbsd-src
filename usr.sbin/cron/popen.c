@@ -24,15 +24,15 @@
  */
 
 #ifndef lint
-static char rcsid[] = "$Id: popen.c,v 1.1 1994/01/05 20:40:15 jtc Exp $";
+static char rcsid[] = "$Id: popen.c,v 1.2 1995/04/14 19:49:35 mycroft Exp $";
 static char sccsid[] = "@(#)popen.c	5.7 (Berkeley) 2/14/89";
 #endif /* not lint */
 
 #include "cron.h"
-#include "externs.h"
 #include <sys/signal.h>
 
 
+#define MAX_ARGS 100
 #define WANT_GLOBBING 0
 
 /*
@@ -40,7 +40,7 @@ static char sccsid[] = "@(#)popen.c	5.7 (Berkeley) 2/14/89";
  * may create a pipe to a hidden program as a side effect of a list or dir
  * command.
  */
-static int *pids;
+static PID_T *pids;
 static int fds;
 
 FILE *
@@ -49,8 +49,9 @@ cron_popen(program, type)
 {
 	register char *cp;
 	FILE *iop;
-	int argc, pdes[2], pid;
-	char *argv[100];
+	int argc, pdes[2];
+	PID_T pid;
+	char *argv[MAX_ARGS + 1];
 #if WANT_GLOBBING
 	char **pop, *vv[2];
 	int gargc;
@@ -64,15 +65,15 @@ cron_popen(program, type)
 	if (!pids) {
 		if ((fds = getdtablesize()) <= 0)
 			return(NULL);
-		if ((pids = (int *)malloc((u_int)(fds * sizeof(int)))) == NULL)
+		if (!(pids = (PID_T *)malloc((u_int)(fds * sizeof(PID_T)))))
 			return(NULL);
-		bzero((char *)pids, fds * sizeof(int));
+		bzero((char *)pids, fds * sizeof(PID_T));
 	}
 	if (pipe(pdes) < 0)
 		return(NULL);
 
 	/* break up string into pieces */
-	for (argc = 0, cp = program;; cp = NULL)
+	for (argc = 0, cp = program; argc < MAX_ARGS; cp = NULL)
 		if (!(argv[argc++] = strtok(cp, " \t\n")))
 			break;
 
@@ -148,7 +149,7 @@ cron_pclose(iop)
 	register int fdes;
 	int omask;
 	WAIT_T stat_loc;
-	int pid;
+	PID_T pid;
 
 	/*
 	 * pclose returns -1 if stream is not associated with a
