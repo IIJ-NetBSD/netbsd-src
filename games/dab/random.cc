@@ -1,4 +1,4 @@
-/*	$NetBSD: test.C,v 1.2 2003/12/26 18:03:34 christos Exp $	*/
+/*	$Header: /usr/tmp/cvs2git/cvsroot-netbsd/src/games/dab/random.cc,v 1.1 2003/12/27 01:16:55 christos Exp $	*/
 
 /*-
  * Copyright (c) 2003 The NetBSD Foundation, Inc.
@@ -37,21 +37,50 @@
  */
 
 /*
- * test.C: Test program for randomizer
+ * random.C: Randomizer for the dots program
  */
 
 #include "defs.h"
-RCSID("$NetBSD: test.C,v 1.2 2003/12/26 18:03:34 christos Exp $")
+RCSID("$NetBSD: random.cc,v 1.1 2003/12/27 01:16:55 christos Exp $")
 
-#include <iostream>
+#include <time.h>
+#include <string.h>
 #include "random.h"
 
-int
-main(void)
+RANDOM::RANDOM(size_t ns) :
+    _bs(ns)
 {
-    RANDOM rd(10);
+    _bm = new char[(_bs >> 3) + 1];
+    clear();
+}
 
-    for (size_t x = rd(); x < 10; x = rd())
-	std::cout << "x=" << x << std::endl;
-    return 0;
+RANDOM::~RANDOM()
+{
+    delete[] _bm;
+}
+
+// Reinitialize
+void RANDOM::clear(void)
+{
+    _nv = 0;
+    ::srand48(::time(NULL));
+    (void) ::memset(_bm, 0, (_bs >> 3) + 1);
+}
+
+// Return the next random value
+size_t RANDOM::operator() (void)
+{
+    // No more values
+    if (_nv == _bs)
+	return _bs;
+
+    for (;;) {
+	size_t r = ::lrand48();
+	size_t z = r % _bs;
+        if (!isset(z)) {
+	    set(z);
+	    _nv++;
+	    return z;
+	}
+    }
 }
