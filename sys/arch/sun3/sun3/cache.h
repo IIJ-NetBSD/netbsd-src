@@ -1,4 +1,4 @@
-/*	$NetBSD: vme.c,v 1.9 1998/01/12 20:32:26 thorpej Exp $	*/
+/*	$NetBSD: cache.h,v 1.4 1998/02/05 04:57:27 gwr Exp $	*/
 
 /*-
  * Copyright (c) 1996 The NetBSD Foundation, Inc.
@@ -26,8 +26,8 @@
  * THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
  * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
- * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
  * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
  * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
@@ -36,63 +36,33 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <sys/param.h>
-#include <sys/systm.h>
-#include <sys/device.h>
+/*
+ * Internal definitions unique to sun3/68k cache support.
+ */
 
-#include <machine/autoconf.h>
-/* #include <machine/vme.h> */
+/* fields in the 68020 cache control register */
+#define	IC_ENABLE	0x0001	/* enable instruction cache */
+#define	IC_FREEZE	0x0002	/* freeze instruction cache */
+#define	IC_CE		0x0004	/* clear instruction cache entry */
+#define	IC_CLR		0x0008	/* clear entire instruction cache */
 
-static int  vmes_match __P((struct device *, struct cfdata *, void *));
-static int  vmel_match __P((struct device *, struct cfdata *, void *));
+#ifdef	_SUN3_
+#define IC_CLEAR (IC_CLR|IC_ENABLE)
+#endif	/* SUN3 */
 
-static void vme_attach __P((struct device *, struct device *, void *));
+#ifdef	_SUN3X_
+/* additional fields in the 68030 cache control register */
+#define	IC_BE		0x0010	/* instruction burst enable */
+#define	DC_ENABLE	0x0100	/* data cache enable */
+#define	DC_FREEZE	0x0200	/* data cache freeze */
+#define	DC_CE		0x0400	/* clear data cache entry */
+#define	DC_CLR		0x0800	/* clear entire data cache */
+#define	DC_BE		0x1000	/* data burst enable */
+#define	DC_WA		0x2000	/* write allocate */
 
-struct cfattach vmes_ca = {
-	sizeof(struct device), vmes_match, vme_attach
-};
-
-struct cfattach vmel_ca = {
-	sizeof(struct device), vmel_match, vme_attach
-};
-
-/* Does this machine have a VME bus? */
-extern int cpu_has_vme;
-
-static int
-vmes_match(parent, cf, aux)
-	struct device *parent;
-	struct cfdata *cf;
-	void *aux;
-{
-	struct confargs *ca = aux;
-
-	if (ca->ca_bustype != BUS_VME16)
-		return (0);
-	return (cpu_has_vme);
-}
-
-static int
-vmel_match(parent, cf, aux)
-	struct device *parent;
-	struct cfdata *cf;
-	void *aux;
-{
-	struct confargs *ca = aux;
-
-	if (ca->ca_bustype != BUS_VME32)
-		return (0);
-	return (cpu_has_vme);
-}
-
-static void
-vme_attach(parent, self, args)
-	struct device *parent;
-	struct device *self;
-	void *args;
-{
-	printf("\n");
-
-	/* We know ca_bustype == BUS_VMExx */
-	(void) config_search(bus_scan, self, args);
-}
+#define	CACHE_ON	(DC_WA|DC_BE|DC_CLR|DC_ENABLE|IC_BE|IC_CLR|IC_ENABLE)
+#define	CACHE_OFF	(DC_CLR|IC_CLR)
+#define	CACHE_CLR	(CACHE_ON)
+#define	IC_CLEAR	(DC_WA|DC_BE|DC_ENABLE|IC_BE|IC_CLR|IC_ENABLE)
+#define	DC_CLEAR	(DC_WA|DC_BE|DC_CLR|DC_ENABLE|IC_BE|IC_ENABLE)
+#endif	/* SUN3X */

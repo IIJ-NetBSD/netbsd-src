@@ -1,4 +1,4 @@
-/*	$NetBSD: cpufunc.h,v 1.7 1997/01/27 19:41:00 gwr Exp $	*/
+/*	$NetBSD: enable.h,v 1.2 1998/02/05 04:57:33 gwr Exp $	*/
 
 /*-
  * Copyright (c) 1996 The NetBSD Foundation, Inc.
@@ -37,8 +37,17 @@
  */
 
 /*
- * Functions to provide access to special 68k instructions.
+ * System Enable Register contents
  */
+#define	ENA_DIAG	0x01	/* Diagnostic switch (r/o)        */
+#define	ENA_FPA		0x02	/* Enable floating point acc.     */
+#define	ENA_COPY	0x04	/* Enable copy update mode        */
+#define	ENA_VIDEO	0x08	/* Enable video display           */
+#define	ENA_CACHE	0x10	/* Enable external cache          */
+#define	ENA_SDVMA	0x20	/* Enable system DVMA             */
+#define	ENA_FPP		0x40	/* Enable MC68881                 */
+#define	ENA_NOTBOOT	0x80	/* Non-boot state (1 == normal)   */
 
-unsigned int *getvbr __P((void));
-void setvbr __P((unsigned int *));
+/* Address of this register in control space. */
+#define ENA_REG_ADDR	0x40000000
+

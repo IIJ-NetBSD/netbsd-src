@@ -1,11 +1,11 @@
-/*	$NetBSD: obio.h,v 1.20 1997/04/28 21:59:25 gwr Exp $	*/
+/*	$NetBSD: enable.c,v 1.2 1998/02/05 04:57:32 gwr Exp $	*/
 
 /*-
- * Copyright (c) 1996 The NetBSD Foundation, Inc.
+ * Copyright (c) 1998 The NetBSD Foundation, Inc.
  * All rights reserved.
  *
  * This code is derived from software contributed to The NetBSD Foundation
- * by Adam Glass.
+ * by Gordon W. Ross.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -36,58 +36,50 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-/*
- * This file defines addresses in Type 1 space for various devices
- * which can be on the motherboard directly.
- *
- * Supposedly these values are constant across the entire sun3 architecture.
- *
- */
+#include <sys/param.h>
+#include <machine/fbio.h>
+#include <sun3/dev/fbvar.h>
 
-#define OBIO_ZS_KBD_MS    0x000000
-#define OBIO_ZS_TTY_AB    0x020000
-#define OBIO_EEPROM       0x040000
-#define OBIO_CLOCK        0x060000
-#define OBIO_MEMERR       0x080000
-#define OBIO_INTERREG     0x0A0000
-#define OBIO_INTEL_ETHER  0x0C0000
-#define OBIO_COLOR_MAP    0x0E0000
-#define OBIO_EPROM        0x100000
-#define OBIO_AMD_ETHER    0x120000
-#define OBIO_NCR_SCSI     0x140000
-#define OBIO_RESERVED1    0x160000
-#define OBIO_RESERVED2    0x180000
-#define OBIO_IOX_BUS      0x1A0000
-#define OBIO_DES          0x1C0000
-#define OBIO_ECCREG       0x1E0000
-
-#define OBIO_KEYBD_MS_SIZE	0x00008
-#define OBIO_ZS_SIZE		0x00008
-#define OBIO_EEPROM_SIZE	0x00800
-#define OBIO_CLOCK_SIZE		0x00020
-#define OBIO_MEMERR_SIZE	0x00008
-#define OBIO_INTERREG_SIZE	0x00001
-#define OBIO_INTEL_ETHER_SIZE	0x00001
-#define OBIO_COLOR_MAP_SIZE	0x00400
-#define OBIO_EPROM_SIZE		0x10000
-#define OBIO_AMD_ETHER_SIZE	0x00004
-#define OBIO_NCR_SCSI_SIZE	0x00020
-#define OBIO_DES_SIZE		0x00004
-#define OBIO_ECCREG_SIZE	0x00100
-
-#ifdef	_KERNEL
-
-caddr_t	obio_mapin __P((int, int));
-void	obio_init __P((void));
-caddr_t	obio_find_mapping __P((int pa, int size));
-caddr_t	obio_vm_alloc __P((int));
+#include <sun3/sun3/control.h>
+#include <sun3/sun3/enable.h>
+#include <sun3/sun3/machdep.h>
 
 /*
- * These are some OBIO devices that need early init calls.
+ * External interfaces to the system enable register.
  */
-void	zs_init     __P((void));
-void	eeprom_init __P((void));
-void	intreg_init __P((void));
-void	clock_init  __P((void));
 
-#endif	/* _KERNEL */
+void
+enable_fpu(on)
+	int on;
+{
+	int s, ena;
+
+	s = splhigh();
+	ena = get_control_byte(SYSTEM_ENAB);
+
+	if (on)
+		ena |= ENA_FPP;
+	else
+		ena &= ~ENA_FPP;
+
+	set_control_byte(SYSTEM_ENAB, ena);
+	splx(s);
+}
+
+void
+enable_video(on)
+	int on;
+{
+	int s, ena;
+
+	s = splhigh();
+	ena = get_control_byte(SYSTEM_ENAB);
+
+	if (on)
+		ena |= ENA_VIDEO;
+	else
+		ena &= ~ENA_VIDEO;
+
+	set_control_byte(SYSTEM_ENAB, ena);
+	splx(s);
+}

@@ -1,17 +1,13 @@
-/*	$NetBSD: kgdb_machdep.c,v 1.3 1998/02/05 04:57:37 gwr Exp $	*/
+/*	$NetBSD: fc.h,v 1.2 1998/02/05 04:57:33 gwr Exp $	*/
 
 /*
- * Copyright (c) 1990, 1993
- *	The Regents of the University of California.  All rights reserved.
+ * Copyright (c) 1988 University of Utah.
+ * Copyright (c) 1982, 1990 The Regents of the University of California.
+ * All rights reserved.
  *
- * This software was developed by the Computer Systems Engineering group
- * at Lawrence Berkeley Laboratory under DARPA contract BG 91-66 and
- * contributed to Berkeley.
- *
- * All advertising materials mentioning features or use of this software
- * must display the following acknowledgement:
- *	This product includes software developed by the University of
- *	California, Lawrence Berkeley Laboratories.
+ * This code is derived from software contributed to Berkeley by
+ * the Systems Programming Group of the University of Utah Computer
+ * Science Department.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -41,67 +37,30 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	@(#)kgdb_stub.c	8.4 (Berkeley) 1/12/94
+ *	from: Utah Hdr: cpu.h 1.16 91/03/25
+ *	from: @(#)cpu.h	7.7 (Berkeley) 6/27/91
+ *	cpu.h,v 1.2 1993/05/22 07:58:17 cgd Exp
  */
 
 /*
- * Machine-dependent part of the KGDB remote "stub"
- */
-
-#include <sys/param.h>
-#include <sys/systm.h>
-#include <sys/kgdb.h>
-
-extern void Debugger __P((void));
-
-/*
- * Determine if the memory at va..(va+len) is valid.
- */
-int
-kgdb_acc(va, ulen)
-	vm_offset_t va;
-	size_t ulen;
-{
-
-	/* Just let the trap handler deal with it. */
-	return (1);
-}
-
-/*
- * Trap into kgdb to wait for debugger to connect,
- * noting on the console why nothing else is going on.
- */
-void
-kgdb_connect(verbose)
-	int verbose;
-{
-
-	if (kgdb_dev < 0)
-		return;
-
-	if (verbose)
-		printf("kgdb waiting...");
-
-	Debugger();
-
-	if (verbose)
-		printf("connected.\n");
-
-	kgdb_debug_panic = 1;
-}
-
-/*
- * Decide what to do on panic.
+ * This file defines the values that can be loaded into the
+ * "sfc" and "dfc" registers (source/dest. function code).
  *
- * The sun3 implementation of Debugger() arranges to call
- * either kgdb_trap() or kdb_trap() as appropriate, so
- * we can just call Debugger() here.
+ * These definitions used to be in <machine/cpu.h> but were
+ * moved here so they can be included only where needed.
  */
-void
-kgdb_panic()
-{
-	if (kgdb_dev >= 0 && kgdb_debug_panic) {
-		printf("entering kgdb\n");
-		Debugger();
-	}
-}
+
+/* 680X0 function codes */
+#define	FC_USERD	1	/* user data space */
+#define	FC_USERP	2	/* user program space */
+#define	FC_CTRL3	3	/* sun3 control space */
+#define	FC_CTRL4	4	/* sun3x control space */
+#define	FC_SUPERD	5	/* supervisor data space */
+#define	FC_SUPERP	6	/* supervisor program space */
+#define	FC_CPU		7	/* CPU space */
+
+#ifdef	_SUN3X_
+#define FC_CONTROL FC_CTRL4
+#else
+#define FC_CONTROL FC_CTRL3
+#endif

@@ -1,11 +1,11 @@
-/*	$NetBSD: obmem.c,v 1.14 1998/01/12 20:32:24 thorpej Exp $	*/
+/*	$NetBSD: vme.h,v 1.2 1998/02/05 04:57:52 gwr Exp $	*/
 
 /*-
- * Copyright (c) 1996 The NetBSD Foundation, Inc.
+ * Copyright (c) 1997 The NetBSD Foundation, Inc.
  * All rights reserved.
  *
  * This code is derived from software contributed to The NetBSD Foundation
- * by Adam Glass and Gordon W. Ross.
+ * by Gordon W. Ross.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -37,45 +37,20 @@
  */
 
 /*
- * On-board MEMory (OBMEM)
- * Used by frame buffers...
+ * CPU Physical addresses for various VME spaces.
+ * The vme unit number selects one of these.
+ * D16 vs D32 does not affect the address on
+ * this implementation.
  */
 
-#include <sys/param.h>
-#include <sys/systm.h>
-#include <sys/device.h>
+#define	VME16_SIZE	(1<<16)
+#define	VME16_MASK	(VME16_SIZE-1)
+#define	VME16_BASE	0xFFFF0000
 
-#include <machine/autoconf.h>
-#include <machine/obmem.h>
+#define	VME24_SIZE	(1<<24)
+#define	VME24_MASK	(VME24_SIZE-1)
+#define	VME24_BASE	0xFF000000
 
-static int  obmem_match __P((struct device *, struct cfdata *, void *));
-static void obmem_attach __P((struct device *, struct device *, void *));
+#define VME32_MASK	(~0)
+#define	VME32_BASE	0
 
-struct cfattach obmem_ca = {
-	sizeof(struct device), obmem_match, obmem_attach
-};
-
-static int
-obmem_match(parent, cf, aux)
-	struct device *parent;
-	struct cfdata *cf;
-	void *aux;
-{
-	struct confargs *ca = aux;
-
-	if (ca->ca_bustype != BUS_OBMEM)
-		return (0);
-	return(1);
-}
-
-static void
-obmem_attach(parent, self, args)
-	struct device *parent;
-	struct device *self;
-	void *args;
-{
-	printf("\n");
-
-	/* We know ca_bustype == BUS_OBMEM */
-	(void) config_search(bus_scan, self, args);
-}
