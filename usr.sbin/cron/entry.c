@@ -1,4 +1,4 @@
-/* Copyright 1988,1990,1993 by Paul Vixie
+/* Copyright 1988,1990,1993,1994 by Paul Vixie
  * All rights reserved
  *
  * Distribute freely, except: don't remove my name from the source or
@@ -16,7 +16,7 @@
  */
 
 #if !defined(lint) && !defined(LINT)
-static char rcsid[] = "$Id: entry.c,v 1.1 1994/01/05 20:40:14 jtc Exp $";
+static char rcsid[] = "$Id: entry.c,v 1.2 1996/12/16 22:30:46 thorpej Exp $";
 #endif
 
 /* vix 26jan87 [RCS'd; rest of log is in RCS file]
@@ -27,8 +27,6 @@ static char rcsid[] = "$Id: entry.c,v 1.1 1994/01/05 20:40:14 jtc Exp $";
 
 
 #include "cron.h"
-#include "externs.h"
-#include <pwd.h>
 
 
 typedef	enum ecode {
@@ -60,15 +58,20 @@ free_entry(e)
 	entry	*e;
 {
 	free(e->cmd);
+	env_free(e->envp);
 	free(e);
 }
 
 
+/* return NULL if eof or syntax error occurs;
+ * otherwise return a pointer to a new entry.
+ */
 entry *
-load_entry(file, error_func, syscron)
-	FILE	*file;
-	void	(*error_func)();
-	int	syscron;
+load_entry(file, error_func, pw, envp)
+	FILE		*file;
+	void		(*error_func)();
+	struct passwd	*pw;
+	char		**envp;
 {
 	/* this function reads one crontab entry -- the next -- from a file.
 	 * it skips any leading blank lines, ignores comments, and returns
@@ -87,8 +90,7 @@ load_entry(file, error_func, syscron)
 	entry	*e;
 	int	ch;
 	char	cmd[MAX_COMMAND];
-
-	e = (entry *) calloc(sizeof(entry), sizeof(char));
+	char	envstr[MAX_ENVSTR];
 
 	Debug(DPARS, ("load_entry()...about to eat comments\n"))
 
@@ -102,6 +104,8 @@ load_entry(file, error_func, syscron)
 	 * it may be an @special or it may be the first character
 	 * of a list of minutes.
 	 */
+
+	e = (entry *) calloc(sizeof(entry), sizeof(char));
 
 	if (ch == '@') {
 		/* all of these should be flagged and load-limited; i.e.,
@@ -217,9 +221,7 @@ load_entry(file, error_func, syscron)
 	/* ch is the first character of a command, or a username */
 	unget_char(ch, file);
 
-	e->exec_uid = 0;		/* default to user */
-	if (syscron) {
-		struct passwd	*pw;
+	if (!pw) {
 		char		*username = cmd;	/* temp buffer */
 
 		Debug(DPARS, ("load_entry()...about to parse username\n"))
@@ -236,15 +238,41 @@ load_entry(file, error_func, syscron)
 			ecode = e_username;
 			goto eof;
 		}
-		Debug(DPARS, ("load_entry()...id %d\n",pw->pw_uid))
-		e->exec_uid = pw->pw_uid;
+		Debug(DPARS, ("load_entry()...uid %d, gid %d\n",e->uid,e->gid))
 	}
+
+	e->uid = pw->pw_uid;
+	e->gid = pw->pw_gid;
+
+	/* copy and fix up environment.  some variables are just defaults and
+	 * others are overrides.
+	 */
+	e->envp = env_copy(envp);
+	if (!env_get("SHELL", e->envp)) {
+		snprintf(envstr, sizeof(envstr), "SHELL=%s", _PATH_BSHELL);
+		e->envp = env_set(e->envp, envstr);
+	}
+	if (!env_get("HOME", e->envp)) {
+		snprintf(envstr, sizeof(envstr), "HOME=%s", pw->pw_dir);
+		e->envp = env_set(e->envp, envstr);
+	}
+	if (!env_get("PATH", e->envp)) {
+		snprintf(envstr, sizeof(envstr), "PATH=%s", _PATH_DEFPATH);
+		e->envp = env_set(e->envp, envstr);
+	}
+	snprintf(envstr, sizeof(envstr), "%s=%s", "LOGNAME", pw->pw_name);
+	e->envp = env_set(e->envp, envstr);
+#if defined(BSD)
+	snprintf(envstr, sizeof(envstr), "%s=%s", "USER", pw->pw_name);
+	e->envp = env_set(e->envp, envstr);
+#endif
 
 	Debug(DPARS, ("load_entry()...about to parse command\n"))
 
 	/* Everything up to the next \n or EOF is part of the command...
 	 * too bad we don't know in advance how long it will be, since we
-	 * need to malloc a string for it... so, we limit it to MAX_COMMAND
+	 * need to malloc a string for it... so, we limit it to MAX_COMMAND.
+	 * XXX - should use realloc().
 	 */ 
 	ch = get_string(cmd, MAX_COMMAND, file, "\n");
 
@@ -265,35 +293,13 @@ load_entry(file, error_func, syscron)
 	 */
 	return e;
 
-eof:	/* if we want to return EOF, we have to jump down here and
-	 * free the entry we've been building.
-	 *
-	 * now, in some cases, a parse routine will have returned EOF to
-	 * indicate an error, but the file is not actually done.  since, in
-	 * that case, we only want to skip the line with the error on it,
-	 * we'll do that here.
-	 *
-	 * many, including the author, see what's below as evil programming
-	 * practice: since I didn't want to change the structure of this
-	 * whole function to support this error recovery, I recurse.  Cursed!
-	 * (At least it's tail-recursion, as if it matters in C - vix/8feb88)
-	 * I'm seriously considering using (another) GOTO...   argh!
-	 * (this does not get less disgusting over time.  vix/15nov88)
-	 * (indeed not.  vix/20dec93)
-	 */
-
-	(void) free(e);
-
-	if (feof(file))
-		return NULL;
-
-	if (error_func)
+ eof:
+	free(e);
+	if (ecode != e_none && error_func)
 		(*error_func)(ecodes[(int)ecode]);
-	do  {ch = get_char(file);}
-	while (ch != EOF && ch != '\n');
-	if (ch == EOF)
-		return NULL;
-	return load_entry(file, error_func, 0);
+	while (ch != EOF && ch != '\n')
+		ch = get_char(file);
+	return NULL;
 }
 
 

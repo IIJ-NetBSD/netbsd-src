@@ -1,4 +1,4 @@
-/* Copyright 1988,1990,1993 by Paul Vixie
+/* Copyright 1988,1990,1993,1994 by Paul Vixie
  * All rights reserved
  *
  * Distribute freely, except: don't remove my name from the source or
@@ -16,12 +16,11 @@
  */
 
 #if !defined(lint) && !defined(LINT)
-static char rcsid[] = "$Id: env.c,v 1.1 1994/01/05 20:40:14 jtc Exp $";
+static char rcsid[] = "$Id: env.c,v 1.2 1996/12/16 22:30:46 thorpej Exp $";
 #endif
 
 
 #include "cron.h"
-#include "externs.h"
 
 
 char **
@@ -30,7 +29,36 @@ env_init()
 	register char	**p = (char **) malloc(sizeof(char **));
 
 	p[0] = NULL;
-	return p;
+	return (p);
+}
+
+
+void
+env_free(envp)
+	char	**envp;
+{
+	char	**p;
+
+	for (p = envp;  *p;  p++)
+		free(*p);
+	free(envp);
+}
+
+
+char **
+env_copy(envp)
+	register char	**envp;
+{
+	register int	count, i;
+	register char	**p;
+
+	for (count = 0;  envp[count] != NULL;  count++)
+		;
+	p = (char **) malloc((count+1) * sizeof(char *));  /* 1 for the NULL */
+	for (i = 0;  i < count;  i++)
+		p[i] = strdup(envp[i]);
+	p[count] = NULL;
+	return (p);
 }
 
 
@@ -51,8 +79,7 @@ env_set(envp, envstr)
 		if (!strcmp_until(envp[count], envstr, '='))
 			found = count;
 	}
-	count++;		/* for the null pointer
-				 */
+	count++;	/* for the NULL */
 
 	if (found != -1) {
 		/*
@@ -61,7 +88,7 @@ env_set(envp, envstr)
 		 */
 		free(envp[found]);
 		envp[found] = strdup(envstr);
-		return envp;
+		return (envp);
 	}
 
 	/*
@@ -73,7 +100,7 @@ env_set(envp, envstr)
 			      (unsigned) ((count+1) * sizeof(char **)));
 	p[count] = p[count-1];
 	p[count-1] = strdup(envstr);
-	return p;
+	return (p);
 }
 
 
@@ -95,7 +122,7 @@ load_env(envstr, f)
 	fileline = LineNumber;
 	skip_comments(f);
 	if (EOF == get_string(envstr, MAX_ENVSTR, f, "\n"))
-		return ERR;
+		return (ERR);
 
 	Debug(DPARS, ("load_env, read <%s>\n", envstr))
 
@@ -105,7 +132,7 @@ load_env(envstr, f)
 		Debug(DPARS, ("load_env, not 2 fields (%d)\n", fields))
 		fseek(f, filepos, 0);
 		Set_LineNum(fileline);
-		return FALSE;
+		return (FALSE);
 	}
 
 	/* 2 fields from scanf; looks like an env setting
@@ -121,25 +148,33 @@ load_env(envstr, f)
 			if (val[0] == '\'' || val[0] == '"') {
 				if (val[len-1] == val[0]) {
 					val[len-1] = '\0';
-					(void) strcpy(val, val+1);
+					(void) strncpy(val, val+1,
+					    sizeof(val - 1));
+					val[sizeof(val) - 1] = '\0';
 				}
 			}
 		}
 	}
 
-	(void) sprintf(envstr, "%s=%s", name, val);
+	(void) snprintf(envstr, MAX_ENVSTR, "%s=%s", name, val);
 	Debug(DPARS, ("load_env, <%s> <%s> -> <%s>\n", name, val, envstr))
-	return TRUE;
+	return (TRUE);
 }
 
 
 char *
 env_get(name, envp)
-	char	*name;
-	char	**envp;
+	register char	*name;
+	register char	**envp;
 {
-	for (;  *envp;  envp++)
-		if (!strcmp_until(*envp, name, '='))
-			return strchr(*envp, '=') + 1;
-	return NULL;
+	register int	len = strlen(name);
+	register char	*p, *q;
+
+	while (p = *envp++) {
+		if (!(q = strchr(p, '=')))
+			continue;
+		if ((q - p) == len && !strncmp(p, name, len))
+			return (q+1);
+	}
+	return (NULL);
 }
