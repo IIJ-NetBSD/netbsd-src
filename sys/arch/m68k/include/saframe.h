@@ -1,11 +1,8 @@
-/*	$NetBSD: linux_trap.c,v 1.2 2003/01/17 23:18:29 thorpej Exp $	*/
+/*	$NetBSD: saframe.h,v 1.2 2003/01/17 23:18:28 thorpej Exp $ */
 
 /*-
  * Copyright (c) 2001 The NetBSD Foundation, Inc.
  * All rights reserved.
- *
- * This code is derived from software contributed to The NetBSD Foundation
- * by Christos Zoulas.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -36,18 +33,21 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <sys/param.h>
-#include <sys/systm.h>
-#include <sys/proc.h>
-#include <sys/user.h>
-#include <sys/acct.h>
-#include <sys/kernel.h>
-#include <sys/signal.h>
-#include <sys/syscall.h>
+#ifndef _M68K_SAFRAME_H
+#define _M68K_SAFRAME_H
 
-#include <compat/linux/common/linux_exec.h>
+#include <sys/sa.h>
 
-void
-linux_trapsignal(struct lwp *l, int signo, u_long type) {
-	trapsignal(l, signo, type);
-}
+/*
+ * Scheduler activations upcall frame
+ */
+struct saframe {
+	int		sa_ra;
+	int		sa_type;
+	struct sa_t**	sa_sas;
+	int		sa_events;
+	int		sa_interrupted;
+	void*		sa_arg;
+};
+
+#endif

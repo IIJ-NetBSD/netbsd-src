@@ -1,11 +1,11 @@
-/*	$NetBSD: linux_trap.c,v 1.2 2003/01/17 23:18:29 thorpej Exp $	*/
+/*	$NetBSD: mcontext.h,v 1.2 2003/01/17 23:18:28 thorpej Exp $	*/
 
 /*-
  * Copyright (c) 2001 The NetBSD Foundation, Inc.
  * All rights reserved.
  *
  * This code is derived from software contributed to The NetBSD Foundation
- * by Christos Zoulas.
+ * by Klaus Klein.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -36,18 +36,70 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <sys/param.h>
-#include <sys/systm.h>
-#include <sys/proc.h>
-#include <sys/user.h>
-#include <sys/acct.h>
-#include <sys/kernel.h>
-#include <sys/signal.h>
-#include <sys/syscall.h>
+#ifndef _M68K_MCONTEXT_H_
+#define _M68K_MCONTEXT_H_
 
-#include <compat/linux/common/linux_exec.h>
+#ifdef _KERNEL
+#include <machine/frame.h>
+#endif
 
-void
-linux_trapsignal(struct lwp *l, int signo, u_long type) {
-	trapsignal(l, signo, type);
-}
+/*
+ * General register state
+ */
+#define	_NGREG		18
+typedef int		__greg_t;
+typedef	__greg_t	__gregset_t[_NGREG];
+
+#define	_REG_D0	0
+#define	_REG_D1	1
+#define	_REG_D2	2
+#define	_REG_D3	3
+#define	_REG_D4	4
+#define	_REG_D5	5
+#define	_REG_D6	6
+#define	_REG_D7	7
+#define	_REG_A0	8
+#define	_REG_A1	9
+#define	_REG_A2	10
+#define	_REG_A3	11
+#define	_REG_A4	12
+#define	_REG_A5	13
+#define	_REG_A6	14
+#define	_REG_A7	15
+#define	_REG_PC	16
+#define	_REG_PS	17
+
+typedef struct {
+	int	__fp_pcr;
+	int	__fp_psr;
+	int	__fp_piaddr;
+	int	__fp_fpregs[8*3];
+} __fpregset_t;
+
+typedef struct {
+	__gregset_t	__gregs;	/* General Register set */
+	__fpregset_t	__fpregs;	/* Floating Point Register set */
+	union {
+		long	__mc_state[202];	/* Only need 308 bytes... */
+#if defined(_KERNEL) || defined(__M68K_MCONTEXT_PRIVATE)
+		struct {
+			/* Rest of the frame. */
+			unsigned int	__mcf_format;
+			unsigned int	__mcf_vector;
+			union F_u	__mcf_exframe;
+			/* Rest of the FPU frame. */
+			union FPF_u1	__mcf_fpf_u1;
+			union FPF_u2	__mcf_fpf_u2;
+		} __mc_frame;
+#endif /* _KERNEL || __M68K_MCONTEXT_PRIVATE */
+	}		__mc_pad;
+} mcontext_t;
+
+/* Note: no additional padding is to be performed in ucontext_t. */
+
+/* Machine-specific uc_flags value */
+#define _UC_M68K_UC_USER 0x40000000
+
+#define _UC_MACHINE_SP(uc)	((uc)->uc_mcontext.__gregs[_REG_A7])
+
+#endif	/* !_M68K_MCONTEXT_H_ */
