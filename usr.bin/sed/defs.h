@@ -142,7 +142,3 @@ typedef struct {
 #define	WARNING		2	/* Just print the warning */
 #define	COMPILE		3	/* Print error, count and finish script */
 #define	COMPILE2	3	/* Print error, count and finish script */
-
-#ifdef GNU_REGEX
-# define FASTMAP_SIZE 256	/* size of fastmap for ASCII char set */
-#endif
