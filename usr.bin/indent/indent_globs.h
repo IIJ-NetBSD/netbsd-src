@@ -32,7 +32,8 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	@(#)indent_globs.h	5.11 (Berkeley) 2/26/91
+ *	from: @(#)indent_globs.h	5.11 (Berkeley) 2/26/91
+ *	$Id: indent_globs.h,v 1.2 1993/08/01 18:14:34 mycroft Exp $
  */
 
 #define BACKSLASH '\\'

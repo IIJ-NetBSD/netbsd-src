@@ -32,7 +32,8 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	@(#)indent_codes.h	5.7 (Berkeley) 6/1/90
+ *	from: @(#)indent_codes.h	5.7 (Berkeley) 6/1/90
+ *	$Id: indent_codes.h,v 1.2 1993/08/01 18:14:35 mycroft Exp $
  */
 
 #define newline		1
