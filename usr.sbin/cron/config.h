@@ -1,4 +1,4 @@
-/* Copyright 1988,1990,1993 by Paul Vixie
+/* Copyright 1988,1990,1993,1994 by Paul Vixie
  * All rights reserved
  *
  * Distribute freely, except: don't remove my name from the source or
@@ -17,7 +17,7 @@
 
 /* config.h - configurables for Vixie Cron
  *
- * $Id: config.h,v 1.1 1994/01/05 20:40:12 jtc Exp $
+ * $Id: config.h,v 1.2 1994/12/20 18:33:40 jtc Exp $
  */
 
 #if !defined(_PATH_SENDMAIL)
@@ -42,7 +42,7 @@
 			 */
 
 #define MAILCMD _PATH_SENDMAIL					/*-*/
-#define MAILARGS "%s -FCronDaemon -odi -oem -or0s %s"		/*-*/
+#define MAILARGS "%s -FCronDaemon -odi -oem -oi -or0s  %s"	/*-*/
 			/* -Fx	 = set full-name of sender
 			 * -odi	 = Option Deliverymode Interactive
 			 * -oem	 = Option Errors Mailedtosender
