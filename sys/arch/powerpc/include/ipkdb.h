@@ -1,3 +1,5 @@
+/*	$NetBSD: ipkdb.h,v 1.1 1996/10/16 19:33:04 ws Exp $	*/
+
 /*
  * Copyright (C) 1995, 1996 Wolfgang Solfrank.
  * Copyright (C) 1995, 1996 TooLs GmbH.
@@ -38,13 +40,11 @@
 #define	MSR	37
 #define	NREG	38
 
-extern int kgdbregs[NREG];
-
-extern char kgdbstep;
+extern int ipkdbregs[NREG];
 
 /* Doesn't handle overlapping regions */
 __inline extern void
-kgdbcopy(s,d,n)
+ipkdbcopy(s,d,n)
 	void *s, *d;
 	int n;
 {
@@ -55,7 +55,7 @@ kgdbcopy(s,d,n)
 }
 
 __inline extern void
-kgdbzero(d,n)
+ipkdbzero(d,n)
 	void *d;
 	int n;
 {
@@ -66,7 +66,7 @@ kgdbzero(d,n)
 }
 
 __inline extern int
-kgdbcmp(s,d,n)
+ipkdbcmp(s,d,n)
 	void *s, *d;
 {
 	char *sp = s, *dp = d;
