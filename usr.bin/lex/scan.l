@@ -27,7 +27,7 @@
  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-/* $Header: /usr/tmp/cvs2git/cvsroot-netbsd/src/usr.bin/lex/Attic/scan.l,v 1.8 1995/05/05 05:35:41 jtc Exp $ */
+/* $Header: /usr/tmp/cvs2git/cvsroot-netbsd/src/usr.bin/lex/Attic/scan.l,v 1.9 1996/12/10 07:18:52 mikel Exp $ */
 
 #include "flexdef.h"
 #include "parse.h"

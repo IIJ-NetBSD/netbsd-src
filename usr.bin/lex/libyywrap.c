@@ -1,12 +1,13 @@
 /* libyywrap - flex run-time support library "yywrap" function */
 
-/* $Header: /usr/tmp/cvs2git/cvsroot-netbsd/src/usr.bin/lex/Attic/libyywrap.c,v 1.3 1995/06/05 19:44:55 pk Exp $ */
+/* $Header: /usr/tmp/cvs2git/cvsroot-netbsd/src/usr.bin/lex/Attic/libyywrap.c,v 1.4 1996/12/10 07:18:48 mikel Exp $ */
 
 #include <sys/cdefs.h>
 
 int yywrap __P((void));
 
-int yywrap()
+int
+yywrap()
 	{
 	return 1;
 	}
