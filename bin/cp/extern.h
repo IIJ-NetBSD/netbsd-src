@@ -1,6 +1,6 @@
 /*-
- * Copyright (c) 1991 The Regents of the University of California.
- * All rights reserved.
+ * Copyright (c) 1991, 1993, 1994
+ *	The Regents of the University of California.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -30,23 +30,27 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	from: @(#)extern.h	5.3 (Berkeley) 10/27/91
- *	$Id: extern.h,v 1.1 1993/08/07 03:14:57 mycroft Exp $
+ *	from: @(#)extern.h	8.2 (Berkeley) 4/1/94
+ *	$Id: extern.h,v 1.2 1994/09/22 09:24:41 mycroft Exp $
  */
 
 typedef struct {
 	char *p_end;			/* pointer to NULL at end of path */
+	char *target_end;               /* pointer to end of target base */
 	char p_path[MAXPATHLEN + 1];	/* pointer to the start of a path */
 } PATH_T;
 
-extern char *progname;			/* program name */
+extern PATH_T to;
+extern uid_t myuid;
+extern int iflag, pflag, myumask;
 
 #include <sys/cdefs.h>
 
 __BEGIN_DECLS
-void	 err __P((const char *fmt, ...));
-int	 path_set __P((PATH_T *, char *));
-char	*path_append __P((PATH_T *, char *, int));
-char	*path_basename __P((PATH_T *));
-void	 path_restore __P((PATH_T *, char *));
+int	copy_fifo __P((struct stat *, int));
+int	copy_file __P((FTSENT *, int));
+int	copy_link __P((FTSENT *, int));
+int	copy_special __P((struct stat *, int));
+int	setfile __P((struct stat *, int));
+void	usage __P((void));
 __END_DECLS
