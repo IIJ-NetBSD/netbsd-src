@@ -1,3 +1,5 @@
+.\"	$NetBSD: 6.t,v 1.2 1998/01/09 06:55:25 perry Exp $
+.\"
 .\" Copyright (c) 1980, 1986, 1988, 1993 The Regents of the University of California.
 .\" All rights reserved.
 .\"
@@ -29,7 +31,7 @@
 .\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
 .\"
-.\"	@(#)6.t	8.1 (Berkeley) 7/27/93
+.\"	@(#)6.t	8.2 (Berkeley) 6/1/94
 .\"
 .ds LH "Installing/Operating \*(4B
 .ds CF \*(Dy
@@ -74,6 +76,7 @@ Unless the system was taken down cleanly, you should run
 ``fsck \-p'' or force a reboot with
 .Xr reboot (8)
 to have the disks checked.
+.ne 1i
 .PP
 To take the system down to a single user state you can use
 .DS
@@ -491,16 +494,27 @@ be done first:
 .DE
 Then, if, for example, C library files have been modified, the
 following commands should be executed:
-.DS
+.sp
+.in
 \fB#\fP \fIcd /usr/src/lib/libc\fP
+.br
 \fB#\fP \fImake depend\fP
+.br
 \fB#\fP \fImake\fP
+.br
 \fB#\fP \fImake install\fP
+.ne 1i
+.in +2
 \fB#\fP \fIcd /usr/src\fP
+.br
 \fB#\fP \fImake depend\fP
+.br
 \fB#\fP \fImake\fP
+.br
 \fB#\fP \fImake install\fP
-.DE
+.br
+.in 0
+.sp
 Alternatively, the \fImake build\fP command described above will
 accomplish the same tasks.
 This takes several hours on a reasonably configured machine.
