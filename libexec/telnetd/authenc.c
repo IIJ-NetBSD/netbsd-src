@@ -32,8 +32,8 @@
  */
 
 #ifndef lint
-/* from: static char sccsid[] = "@(#)authenc.c	8.1 (Berkeley) 6/4/93"; */
-static char *rcsid = "$Id: authenc.c,v 1.1 1994/02/25 03:20:42 cgd Exp $";
+/* from: static char sccsid[] = "@(#)authenc.c	8.2 (Berkeley) 5/30/95"; */
+static char rcsid[] = "$NetBSD: authenc.c,v 1.2 1996/02/24 01:22:13 jtk Exp $";
 #endif /* not lint */
 
 #if	defined(AUTHENTICATION)
@@ -46,7 +46,7 @@ net_write(str, len)
 	int len;
 {
 	if (nfrontp + len < netobuf + BUFSIZ) {
-		bcopy((void *)str, (void *)nfrontp, len);
+		memmove((void *)nfrontp, (void *)str, len);
 		nfrontp += len;
 		return(len);
 	}
