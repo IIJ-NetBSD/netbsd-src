@@ -2,7 +2,7 @@
 /* An example that finds all primes between 2 and limit. */
 
 define primes (limit) {
-    auto prime[], num, p, root, i
+    auto num, p, root, i
 
     prime[1] = 2;
     prime[2] = 3;
