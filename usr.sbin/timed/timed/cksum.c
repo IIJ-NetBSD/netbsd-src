@@ -31,15 +31,21 @@
  * SUCH DAMAGE.
  */
 
+#include <sys/cdefs.h>
 #ifndef lint
+#if 0
 static char sccsid[] = "@(#)cksum.c	5.2 (Berkeley) 5/11/93";
+#else
+__RCSID("$NetBSD: cksum.c,v 1.2 1997/10/17 14:19:20 lukem Exp $");
+#endif
 #endif /* not lint */
 
 #ifdef sgi
-#ident "$Revision: 1.1 $"
+#ident "$Revision: 1.2 $"
 #endif
 
 #include <sys/types.h>
+#include "globals.h"
 
 /*
  *			I N _ C K S U M
