@@ -1,8 +1,10 @@
-, %{
+%{
+/* 	$NetBSD: sbc.y,v 1.2 1994/12/02 00:43:40 phil Exp $  */
+
 /* sbc.y: A POSIX bc processor written for minix with no extensions.  */
  
 /*  This file is part of bc written for MINIX.
-    Copyright (C) 1991, 1992 Free Software Foundation, Inc.
+    Copyright (C) 1991, 1992, 1993, 1994 Free Software Foundation, Inc.
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
