@@ -1,6 +1,6 @@
-#	$NetBSD: Makefile,v 1.1 1995/02/14 22:56:35 gwr Exp $
+#	$NetBSD: Makefile,v 1.2 1995/06/02 00:22:47 gwr Exp $
 
 PROG=	installboot
-MAN8=
+MAN=	installboot.8
 
 .include <bsd.prog.mk>
