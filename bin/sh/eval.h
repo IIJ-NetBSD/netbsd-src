@@ -35,7 +35,7 @@
  *
  *	@(#)eval.h	5.2 (Berkeley) 4/12/91
  *
- *	$Id: eval.h,v 1.2 1993/03/22 08:04:00 cgd Exp $
+ *	$Header: /usr/tmp/cvs2git/cvsroot-netbsd/src/bin/sh/eval.h,v 1.3 1993/03/23 00:27:52 cgd Exp $
  */
 
 extern char *commandname;	/* currently executing command */
