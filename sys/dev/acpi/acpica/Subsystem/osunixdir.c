@@ -1,8 +1,7 @@
 
 /******************************************************************************
  *
- * Module Name: getopt
- *              $Revision: 6 $
+ * Module Name: osunixdir - Unix directory access interfaces
  *
  *****************************************************************************/
 
@@ -117,130 +116,188 @@
 
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <dirent.h>
+#include <fnmatch.h>
+#include <ctype.h>
+#include <sys/stat.h>
 
-#define ERR(szz,czz) if(AcpiGbl_Opterr){fprintf(stderr,"%s%s%c\n",argv[0],szz,czz);}
+#include "acpisrc.h"
 
+typedef struct ExternalFindInfo
+{
+    char                        *DirPathname;
+    DIR				*DirPtr;
+    char                        temp_buffer[128];
+    char                        *WildcardSpec;
+    char                        RequestedFileType;
 
-int   AcpiGbl_Opterr = 1;
-int   AcpiGbl_Optind = 1;
-int   AcpiGbl_Optopt;
-char  *AcpiGbl_Optarg;
+} EXTERNAL_FIND_INFO;
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiGetopt
+ * FUNCTION:    AcpiOsOpenDirectory
  *
- * PARAMETERS:  argc, argv          - from main
- *              opts                - options info list
+ * PARAMETERS:  DirPathname         - Full pathname to the directory
+ *              WildcardSpec        - string of the form "*.c", etc.
  *
- * RETURN:      Option character or EOF
+ * RETURN:      A directory "handle" to be used in subsequent search operations.
+ *              NULL returned on failure.
  *
- * DESCRIPTION: Get the next option
+ * DESCRIPTION: Open a directory in preparation for a wildcard search
  *
  ******************************************************************************/
 
-int
-AcpiGetopt(
-    int                     argc,
-    char                    **argv,
-    char                    *opts)
+void *
+AcpiOsOpenDirectory (
+    char                    *DirPathname,
+    char                    *WildcardSpec,
+    char                    RequestedFileType)
 {
-    static int              CurrentCharPtr = 1;
-    int                     CurrentChar;
-    char                    *OptsPtr;
+    EXTERNAL_FIND_INFO      *ExternalInfo;
+    DIR			    *dir;
 
 
-    if (CurrentCharPtr == 1)
+    /* Allocate the info struct that will be returned to the caller */
+
+    ExternalInfo = calloc (sizeof (EXTERNAL_FIND_INFO), 1);
+    if (!ExternalInfo)
     {
-        if (AcpiGbl_Optind >= argc ||
-            argv[AcpiGbl_Optind][0] != '-' ||
-            argv[AcpiGbl_Optind][1] == '\0')
+        return NULL;
+    }
+
+    /* Get the directory stream */
+
+    dir = opendir(DirPathname);
+    if (!dir)
+    {
+	free(ExternalInfo);
+        return NULL;
+    }
+
+    /* Save the info in the return structure */
+
+    ExternalInfo->WildcardSpec = WildcardSpec;
+    ExternalInfo->RequestedFileType = RequestedFileType;
+    ExternalInfo->DirPathname = DirPathname;
+    ExternalInfo->DirPtr = dir;
+    return (ExternalInfo);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiOsGetNextFilename
+ *
+ * PARAMETERS:  DirHandle           - Created via AcpiOsOpenDirectory
+ *
+ * RETURN:      Next filename matched.  NULL if no more matches.
+ *
+ * DESCRIPTION: Get the next file in the directory that matches the wildcard
+ *              specification.
+ *
+ ******************************************************************************/
+
+char *
+AcpiOsGetNextFilename (
+    void                    *DirHandle)
+{
+    EXTERNAL_FIND_INFO      *ExternalInfo = DirHandle;
+    struct dirent           *dir_entry;
+
+    while((dir_entry = readdir(ExternalInfo->DirPtr)))
+    {
+        if (!fnmatch(ExternalInfo->WildcardSpec, dir_entry->d_name, 0))
         {
-            return(EOF);
-        }
-        else if (strcmp (argv[AcpiGbl_Optind], "--") == 0)
-        {
-            AcpiGbl_Optind++;
-            return(EOF);
+            char *temp_str;
+            int str_len;
+            struct stat temp_stat;
+            int err;
+
+            if (dir_entry->d_name[0] == '.')
+                continue;
+
+            str_len = strlen(dir_entry->d_name) + strlen (ExternalInfo->DirPathname) + 2;
+
+            temp_str = calloc(str_len, 1);
+            if (!temp_str)
+            {
+                printf ("Could not allocate buffer for temporary string\n");
+                return NULL;
+            }
+
+            strcpy(temp_str, ExternalInfo->DirPathname);
+            strcat(temp_str, "/");
+            strcat(temp_str, dir_entry->d_name);
+
+            err = stat(temp_str, &temp_stat);
+            free (temp_str);
+            if (err == -1)
+            {
+                printf ("stat() error - should not happen\n");
+                return NULL;
+            }
+
+            if ((S_ISDIR(temp_stat.st_mode)
+                && (ExternalInfo->RequestedFileType == REQUEST_DIR_ONLY))
+               ||
+               ((!S_ISDIR(temp_stat.st_mode)
+                && ExternalInfo->RequestedFileType == REQUEST_FILE_ONLY)))
+            {
+                /* copy to a temp buffer because dir_entry struct is on the stack */
+                strcpy(ExternalInfo->temp_buffer, dir_entry->d_name);
+                return (ExternalInfo->temp_buffer);
+            }
         }
     }
 
-    /* Get the option */
+    return NULL;
+}
 
-    CurrentChar =
-    AcpiGbl_Optopt =
-    argv[AcpiGbl_Optind][CurrentCharPtr];
 
-    /* Make sure that the option is legal */
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiOsCloseDirectory
+ *
+ * PARAMETERS:  DirHandle           - Created via AcpiOsOpenDirectory
+ *
+ * RETURN:      None.   
+ *
+ * DESCRIPTION: Close the open directory and cleanup.
+ *
+ ******************************************************************************/
 
-    if (CurrentChar == ':' ||
-       (OptsPtr = strchr (opts, CurrentChar)) == NULL)
+void
+AcpiOsCloseDirectory (
+    void                    *DirHandle)
+{
+    EXTERNAL_FIND_INFO      *ExternalInfo = DirHandle;
+
+
+    /* Close the directory and free allocations */
+
+    closedir(ExternalInfo->DirPtr);
+    free (DirHandle);
+}
+
+/* Other functions acpisrc uses but that aren't standard on Unix */
+
+/* lowercase a string */
+char*
+strlwr  (  
+   char   *str)
+{
+    int length;
+    int i;
+
+    length = strlen(str);
+
+    for (i = 0; i < length; i++)
     {
-        ERR (": illegal option -- ", CurrentChar);
-
-        if (argv[AcpiGbl_Optind][++CurrentCharPtr] == '\0')
-        {
-            AcpiGbl_Optind++;
-            CurrentCharPtr = 1;
-        }
-
-        return ('?');
+        str[i] = tolower(str[i]);
     }
 
-    /* Option requires an argument? */
-
-    if (*++OptsPtr == ':')
-    {
-        if (argv[AcpiGbl_Optind][CurrentCharPtr+1] != '\0')
-        {
-            AcpiGbl_Optarg = &argv[AcpiGbl_Optind++][CurrentCharPtr+1];
-        }
-        else if (++AcpiGbl_Optind >= argc)
-        {
-            ERR (": option requires an argument -- ", CurrentChar);
-
-            CurrentCharPtr = 1;
-            return ('?');
-        }
-        else
-        {
-            AcpiGbl_Optarg = argv[AcpiGbl_Optind++];
-        }
-
-        CurrentCharPtr = 1;
-    }
-
-    /* Option has optional single-char arguments? */
-
-    else if (*OptsPtr == '^')
-    {
-        if (argv[AcpiGbl_Optind][CurrentCharPtr+1] != '\0')
-        {
-            AcpiGbl_Optarg = &argv[AcpiGbl_Optind][CurrentCharPtr+1];
-        }
-        else
-        {
-            AcpiGbl_Optarg = "^";
-        }
-
-        AcpiGbl_Optind++;
-        CurrentCharPtr = 1;
-    }
-
-    /* Option with no arguments */
-
-    else
-    {
-        if (argv[AcpiGbl_Optind][++CurrentCharPtr] == '\0')
-        {
-            CurrentCharPtr = 1;
-            AcpiGbl_Optind++;
-        }
-
-        AcpiGbl_Optarg = NULL;
-    }
-
-    return (CurrentChar);
+    return str;
 }

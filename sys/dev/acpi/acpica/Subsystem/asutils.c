@@ -1,8 +1,8 @@
 
 /******************************************************************************
  *
- * Module Name: getopt
- *              $Revision: 6 $
+ * Module Name: asutils - common utilities
+ *              $Revision: 9 $
  *
  *****************************************************************************/
 
@@ -115,132 +115,193 @@
  *
  *****************************************************************************/
 
-
-#include <stdio.h>
-#include <string.h>
-
-#define ERR(szz,czz) if(AcpiGbl_Opterr){fprintf(stderr,"%s%s%c\n",argv[0],szz,czz);}
+#include "acpisrc.h"
 
 
-int   AcpiGbl_Opterr = 1;
-int   AcpiGbl_Optind = 1;
-int   AcpiGbl_Optopt;
-char  *AcpiGbl_Optarg;
-
-
-/*******************************************************************************
+/******************************************************************************
  *
- * FUNCTION:    AcpiGetopt
+ * FUNCTION:    AsSkipUntilChar
  *
- * PARAMETERS:  argc, argv          - from main
- *              opts                - options info list
- *
- * RETURN:      Option character or EOF
- *
- * DESCRIPTION: Get the next option
+ * DESCRIPTION: Find the next instance of the input character
  *
  ******************************************************************************/
 
-int
-AcpiGetopt(
-    int                     argc,
-    char                    **argv,
-    char                    *opts)
+char *
+AsSkipUntilChar (
+    char                    *Buffer,
+    char                    Target)
 {
-    static int              CurrentCharPtr = 1;
-    int                     CurrentChar;
-    char                    *OptsPtr;
 
-
-    if (CurrentCharPtr == 1)
+    while (*Buffer != Target)
     {
-        if (AcpiGbl_Optind >= argc ||
-            argv[AcpiGbl_Optind][0] != '-' ||
-            argv[AcpiGbl_Optind][1] == '\0')
+        if (!*Buffer)
         {
-            return(EOF);
+            return NULL;
         }
-        else if (strcmp (argv[AcpiGbl_Optind], "--") == 0)
-        {
-            AcpiGbl_Optind++;
-            return(EOF);
-        }
+
+        Buffer++;
     }
 
-    /* Get the option */
-
-    CurrentChar =
-    AcpiGbl_Optopt =
-    argv[AcpiGbl_Optind][CurrentCharPtr];
-
-    /* Make sure that the option is legal */
-
-    if (CurrentChar == ':' ||
-       (OptsPtr = strchr (opts, CurrentChar)) == NULL)
-    {
-        ERR (": illegal option -- ", CurrentChar);
-
-        if (argv[AcpiGbl_Optind][++CurrentCharPtr] == '\0')
-        {
-            AcpiGbl_Optind++;
-            CurrentCharPtr = 1;
-        }
-
-        return ('?');
-    }
-
-    /* Option requires an argument? */
-
-    if (*++OptsPtr == ':')
-    {
-        if (argv[AcpiGbl_Optind][CurrentCharPtr+1] != '\0')
-        {
-            AcpiGbl_Optarg = &argv[AcpiGbl_Optind++][CurrentCharPtr+1];
-        }
-        else if (++AcpiGbl_Optind >= argc)
-        {
-            ERR (": option requires an argument -- ", CurrentChar);
-
-            CurrentCharPtr = 1;
-            return ('?');
-        }
-        else
-        {
-            AcpiGbl_Optarg = argv[AcpiGbl_Optind++];
-        }
-
-        CurrentCharPtr = 1;
-    }
-
-    /* Option has optional single-char arguments? */
-
-    else if (*OptsPtr == '^')
-    {
-        if (argv[AcpiGbl_Optind][CurrentCharPtr+1] != '\0')
-        {
-            AcpiGbl_Optarg = &argv[AcpiGbl_Optind][CurrentCharPtr+1];
-        }
-        else
-        {
-            AcpiGbl_Optarg = "^";
-        }
-
-        AcpiGbl_Optind++;
-        CurrentCharPtr = 1;
-    }
-
-    /* Option with no arguments */
-
-    else
-    {
-        if (argv[AcpiGbl_Optind][++CurrentCharPtr] == '\0')
-        {
-            CurrentCharPtr = 1;
-            AcpiGbl_Optind++;
-        }
-
-        AcpiGbl_Optarg = NULL;
-    }
-
-    return (CurrentChar);
+    return (Buffer);
 }
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AsSkipPastChar
+ *
+ * DESCRIPTION: Find the next instance of the input character, return a buffer
+ *              pointer to this character+1.
+ *
+ ******************************************************************************/
+
+char *
+AsSkipPastChar (
+    char                    *Buffer,
+    char                    Target)
+{
+
+    while (*Buffer != Target)
+    {
+        if (!*Buffer)
+        {
+            return NULL;
+        }
+
+        Buffer++;
+    }
+
+    Buffer++;
+
+    return (Buffer);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AsReplaceData
+ *
+ * DESCRIPTION: This function inserts and removes data from the file buffer.
+ *              if more data is inserted than is removed, the data in the buffer
+ *              is moved to make room.  If less data is inserted than is removed,
+ *              the remaining data is moved to close the hole.
+ *
+ ******************************************************************************/
+
+char *
+AsReplaceData (
+    char                    *Buffer,
+    UINT32                  LengthToRemove,
+    char                    *BufferToAdd,
+    UINT32                  LengthToAdd)
+{
+    UINT32                  BufferLength;
+
+
+    /*
+     * Buffer is a string, so the length must include the terminating zero
+     */
+    BufferLength = strlen (Buffer) + 1;
+
+    if (LengthToRemove != LengthToAdd)
+    {
+        /*
+         * Move some of the existing data
+         * 1) If adding more bytes than removing, make room for the new data
+         * 2) if removing more bytes than adding, delete the extra space
+         */
+        if (LengthToRemove > 0)
+        {
+            Gbl_MadeChanges = TRUE;
+            memmove ((Buffer + LengthToAdd), (Buffer + LengthToRemove), (BufferLength - LengthToRemove));
+        }
+    }
+
+    /*
+     * Now we can move in the new data
+     */
+    if (LengthToAdd > 0)
+    {
+        Gbl_MadeChanges = TRUE;
+        memmove (Buffer, BufferToAdd, LengthToAdd);
+    }
+
+    return (Buffer + LengthToAdd);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AsInsertData
+ *
+ * DESCRIPTION: This function inserts and removes data from the file buffer.
+ *              if more data is inserted than is removed, the data in the buffer
+ *              is moved to make room.  If less data is inserted than is removed,
+ *              the remaining data is moved to close the hole.
+ *
+ ******************************************************************************/
+
+char *
+AsInsertData (
+    char                    *Buffer,
+    char                    *BufferToAdd,
+    UINT32                  LengthToAdd)
+{
+    UINT32                  BufferLength;
+
+
+    if (LengthToAdd > 0)
+    {
+        /*
+         * Buffer is a string, so the length must include the terminating zero
+         */
+        BufferLength = strlen (Buffer) + 1;
+
+        /*
+         * Move some of the existing data
+         * 1) If adding more bytes than removing, make room for the new data
+         * 2) if removing more bytes than adding, delete the extra space
+         */
+        Gbl_MadeChanges = TRUE;
+        memmove ((Buffer + LengthToAdd), Buffer, BufferLength);
+
+        /*
+         * Now we can move in the new data
+         */
+        memmove (Buffer, BufferToAdd, LengthToAdd);
+    }
+
+    return (Buffer + LengthToAdd);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AsRemoveData
+ *
+ * DESCRIPTION: This function inserts and removes data from the file buffer.
+ *              if more data is inserted than is removed, the data in the buffer
+ *              is moved to make room.  If less data is inserted than is removed,
+ *              the remaining data is moved to close the hole.
+ *
+ ******************************************************************************/
+
+char *
+AsRemoveData (
+    char                    *StartPointer,
+    char                    *EndPointer)
+{
+    UINT32                  BufferLength;
+
+
+    /*
+     * Buffer is a string, so the length must include the terminating zero
+     */
+    BufferLength = strlen (EndPointer) + 1;
+
+    Gbl_MadeChanges = TRUE;
+    memmove (StartPointer, EndPointer, BufferLength);
+
+    return (StartPointer);
+}
+
