@@ -1,7 +1,7 @@
-/*	$NetBSD: in6_cksum.c,v 1.6 1999/12/13 15:17:22 itojun Exp $	*/
+/*	$NetBSD: in4_cksum.c,v 1.2 1999/12/13 15:17:19 itojun Exp $	*/
 
 /*
- * Copyright (C) 1995, 1996, 1997, and 1998 WIDE Project.
+ * Copyright (C) 1999 WIDE Project.
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -67,13 +67,19 @@
 #include <sys/param.h>
 #include <sys/mbuf.h>
 #include <sys/systm.h>
+#include <sys/socket.h>
+#include <net/route.h>
 #include <netinet/in.h>
-#include <netinet6/ip6.h>
-
-#include <net/net_osdep.h>
+#include <netinet/in_systm.h>
+#include <netinet/ip.h>
+#include <netinet/ip_var.h>
 
 /*
  * Checksum routine for Internet Protocol family headers (Portable Version).
+ * This is only for IPv4 pseudo header checksum.
+ * No need to clear non-pseudo-header fields in IPv4 header.
+ * len is for actual payload size, and does not include IPv4 header and
+ * skipped header chain (off + len should be equal to the whole packet).
  *
  * This routine is very heavily used in the network
  * code and should be modified for each CPU to be as fast as possible.
@@ -82,164 +88,52 @@
 #define ADDCARRY(x)  (x > 65535 ? x -= 65535 : x)
 #define REDUCE {l_util.l = sum; sum = l_util.s[0] + l_util.s[1]; ADDCARRY(sum);}
 
-static union {
-	u_int16_t phs[4];
-	struct {
-		u_int32_t	ph_len;
-		u_int8_t	ph_zero[3];
-		u_int8_t	ph_nxt;
-	} ph;
-} uph;
-
-/*
- * m MUST contain a continuous IP6 header.
- * off is a offset where TCP/UDP/ICMP6 header starts.
- * len is a total length of a transport segment.
- * (e.g. TCP header + TCP payload)
- */
-
 int
-in6_cksum(m, nxt, off, len)
+in4_cksum(m, nxt, off, len)
 	register struct mbuf *m;
 	u_int8_t nxt;
-	u_int32_t off, len;
+	register int off, len;
 {
 	register u_int16_t *w;
 	register int sum = 0;
 	register int mlen = 0;
 	int byte_swapped = 0;
-#if 0
-	int srcifid = 0, dstifid = 0;
-#endif
-	struct ip6_hdr *ip6;	
-	
+	struct ipovly ipov;
+
 	union {
-		u_int8_t	c[2];
-		u_int16_t	s;
+		u_int8_t  c[2];
+		u_int16_t s;
 	} s_util;
 	union {
 		u_int16_t s[2];
 		u_int32_t l;
 	} l_util;
 
-	/* sanity check */
-	if (m->m_pkthdr.len < off + len) {
-		panic("in6_cksum: mbuf len (%d) < off+len (%d+%d)\n",
-			m->m_pkthdr.len, off, len);
-	}
+	/* pseudo header */
+	if (off < sizeof(struct ipovly))
+		panic("offset too short");
+	bzero(&ipov, sizeof(ipov));
+	ipov.ih_len = htons(len);
+	ipov.ih_pr = nxt;
+	ipov.ih_src = mtod(m, struct ip *)->ip_src;
+	ipov.ih_dst = mtod(m, struct ip *)->ip_dst;
+	w = (u_int16_t *)&ipov;
+	/* assumes sizeof(ipov) == 20 */
+	sum += w[0]; sum += w[1]; sum += w[2]; sum += w[3]; sum += w[4];
+	sum += w[5]; sum += w[6]; sum += w[7]; sum += w[8]; sum += w[9];
 
-	/*
-	 * First create IP6 pseudo header and calculate a summary.
-	 */
-	ip6 = mtod(m, struct ip6_hdr *);
-#if 0
-	if (IN6_IS_SCOPE_LINKLOCAL(&ip6->ip6_src)) {
-		srcifid = ip6->ip6_src.s6_addr16[1];
-		ip6->ip6_src.s6_addr16[1] = 0;
-	}
-	if (IN6_IS_SCOPE_LINKLOCAL(&ip6->ip6_dst)) {
-		dstifid = ip6->ip6_dst.s6_addr16[1];
-		ip6->ip6_dst.s6_addr16[1] = 0;
-	}
-#endif
-	w = (u_int16_t *)&ip6->ip6_src;
-	uph.ph.ph_len = htonl(len);
-	uph.ph.ph_nxt = nxt;
-
-	/* IPv6 source address */
-	sum += w[0];
-	if (!IN6_IS_SCOPE_LINKLOCAL(&ip6->ip6_src))
-		sum += w[1];
-	sum += w[2]; sum += w[3]; sum += w[4]; sum += w[5]; 
-	sum += w[6]; sum += w[7];
-	/* IPv6 destination address */
-	sum += w[8];
-	if (!IN6_IS_SCOPE_LINKLOCAL(&ip6->ip6_dst))
-		sum += w[9];
-	sum += w[10]; sum += w[11]; sum += w[12]; sum += w[13];
-	sum += w[14]; sum += w[15];
-	/* Payload length and upper layer identifier */
-	sum += uph.phs[0];  sum += uph.phs[1];
-	sum += uph.phs[2];  sum += uph.phs[3];
-
-#if 0
-	if (srcifid)
-		ip6->ip6_src.s6_addr16[1] = srcifid;
-	if (dstifid)
-		ip6->ip6_dst.s6_addr16[1] = dstifid;
-#endif
-	/*
-	 * Secondly calculate a summary of the first mbuf excluding offset.
-	 */
-	while (m != NULL && off > 0) {
-		if (m->m_len <= off)
-			off -= m->m_len;
-		else
+	/* skip unnecessary part */
+	while (m && off > 0) {
+		if (m->m_len > off)
 			break;
+		off -= m->m_len;
 		m = m->m_next;
 	}
-	w = (u_int16_t *)(mtod(m, u_char *) + off);
-	mlen = m->m_len - off;
-	if (len < mlen)
-		mlen = len;
-	len -= mlen;
-	/*
-	 * Force to even boundary.
-	 */
-	if ((1 & (long) w) && (mlen > 0)) {
-		REDUCE;
-		sum <<= 8;
-		s_util.c[0] = *(u_char *)w;
-		w = (u_int16_t *)((char *)w + 1);
-		mlen--;
-		byte_swapped = 1;
-	}
-	/*
-	 * Unroll the loop to make overhead from
-	 * branches &c small.
-	 */
-	while ((mlen -= 32) >= 0) {
-		sum += w[0]; sum += w[1]; sum += w[2]; sum += w[3];
-		sum += w[4]; sum += w[5]; sum += w[6]; sum += w[7];
-		sum += w[8]; sum += w[9]; sum += w[10]; sum += w[11];
-		sum += w[12]; sum += w[13]; sum += w[14]; sum += w[15];
-		w += 16;
-	}
-	mlen += 32;
-	while ((mlen -= 8) >= 0) {
-		sum += w[0]; sum += w[1]; sum += w[2]; sum += w[3];
-		w += 4;
-	}
-	mlen += 8;
-	if (mlen == 0 && byte_swapped == 0)
-		goto next;
-	REDUCE;
-	while ((mlen -= 2) >= 0) {
-		sum += *w++;
-	}
-	if (byte_swapped) {
-		REDUCE;
-		sum <<= 8;
-		byte_swapped = 0;
-		if (mlen == -1) {
-			s_util.c[1] = *(char *)w;
-			sum += s_util.s;
-			mlen = 0;
-		} else
-			mlen = -1;
-	} else if (mlen == -1)
-		s_util.c[0] = *(char *)w;
- next:
-	m = m->m_next;
 
-	/*
-	 * Lastly calculate a summary of the rest of mbufs.
-	 */
-	
 	for (;m && len; m = m->m_next) {
 		if (m->m_len == 0)
 			continue;
-		w = mtod(m, u_int16_t *);
+		w = (u_int16_t *)(mtod(m, caddr_t) + off);
 		if (mlen == -1) {
 			/*
 			 * The first byte of this mbuf is the continuation
@@ -249,13 +143,14 @@ in6_cksum(m, nxt, off, len)
 			 * s_util.c[0] is already saved when scanning previous 
 			 * mbuf.
 			 */
-			s_util.c[1] = *(char *)w;
+			s_util.c[1] = *(u_int8_t *)w;
 			sum += s_util.s;
-			w = (u_int16_t *)((char *)w + 1);
-			mlen = m->m_len - 1;
+			w = (u_int16_t *)((u_int8_t *)w + 1);
+			mlen = m->m_len - off - 1;
 			len--;
 		} else
-			mlen = m->m_len;
+			mlen = m->m_len - off;
+		off = 0;
 		if (len < mlen)
 			mlen = len;
 		len -= mlen;
@@ -265,8 +160,8 @@ in6_cksum(m, nxt, off, len)
 		if ((1 & (long) w) && (mlen > 0)) {
 			REDUCE;
 			sum <<= 8;
-			s_util.c[0] = *(u_char *)w;
-			w = (u_int16_t *)((char *)w + 1);
+			s_util.c[0] = *(u_int8_t *)w;
+			w = (u_int16_t *)((int8_t *)w + 1);
 			mlen--;
 			byte_swapped = 1;
 		}
@@ -298,16 +193,16 @@ in6_cksum(m, nxt, off, len)
 			sum <<= 8;
 			byte_swapped = 0;
 			if (mlen == -1) {
-				s_util.c[1] = *(char *)w;
+				s_util.c[1] = *(u_int8_t *)w;
 				sum += s_util.s;
 				mlen = 0;
 			} else
 				mlen = -1;
 		} else if (mlen == -1)
-			s_util.c[0] = *(char *)w;
+			s_util.c[0] = *(u_int8_t *)w;
 	}
 	if (len)
-		panic("in6_cksum: out of data\n");
+		printf("cksum4: out of data\n");
 	if (mlen == -1) {
 		/* The last mbuf has odd # of bytes. Follow the
 		   standard (the odd byte may be shifted left by 8 bits

@@ -1,4 +1,4 @@
-/*	$NetBSD: in6_ifattach.h,v 1.5 1999/12/13 15:17:22 itojun Exp $	*/
+/*	$NetBSD: net_osdep.c,v 1.2 1999/12/13 15:17:19 itojun Exp $	*/
 
 /*
  * Copyright (C) 1995, 1996, 1997, and 1998 WIDE Project.
@@ -29,22 +29,59 @@
  * SUCH DAMAGE.
  */
 
-#ifndef _NETINET6_IN6_IFATTACH_H_
-#define _NETINET6_IN6_IFATTACH_H_
+#include <sys/param.h>
+#include <sys/systm.h>
+#include <sys/kernel.h>
+#include <sys/mbuf.h>
+#include <sys/socket.h>
+#include <sys/sockio.h>
+#include <sys/errno.h>
+#if !defined(__FreeBSD__) || __FreeBSD__ < 3
+#include <sys/ioctl.h>
+#endif
+#include <sys/time.h>
+#include <sys/syslog.h>
+#include <machine/cpu.h>
 
-#ifdef _KERNEL
-extern int found_first_ifid;
+#include <net/if.h>
+#include <net/if_types.h>
+#include <net/netisr.h>
+#include <net/route.h>
+#include <net/bpf.h>
 
-int in6_ifattach_getifid __P((struct ifnet *));
-void in6_ifattach_p2p __P((void));
-void in6_ifattach __P((struct ifnet *, u_int, caddr_t, int));
-void in6_ifdetach __P((struct ifnet *));
-#endif /* _KERNEL */
+#if 0
+#ifdef	INET
+#include <netinet/in.h>
+#include <netinet/in_systm.h>
+#include <netinet/in_var.h>
+#include <netinet/ip.h>
+#include <netinet/in_gif.h>
+#endif	/* INET */
 
-#define IN6_IFT_LOOP	1
-#define IN6_IFT_P2P	2
-#define IN6_IFT_802	3
-#define IN6_IFT_P2P802	4
-#define IN6_IFT_ARCNET	5
+#ifdef INET6
+#ifndef INET
+#include <netinet/in.h>
+#endif
+#include <netinet6/in6_var.h>
+#include <netinet/ip6.h>
+#include <netinet6/ip6_var.h>
+#include <netinet6/in6_gif.h>
+#include <netinet6/in6_ifattach.h>
+#endif /* INET6 */
+#endif
 
-#endif /* _NETINET6_IN6_IFATTACH_H_ */
+#if !(defined(__NetBSD__) || defined(__OpenBSD__))
+const char *
+if_name(ifp)
+	struct ifnet *ifp;
+{
+	static char nam[IFNAMSIZ + 10];	/*enough?*/
+
+#ifdef __bsdi__
+	sprintf(nam, "%s%d", ifp->if_name, ifp->if_unit);
+#else
+	snprintf(nam, sizeof(nam), "%s%d", ifp->if_name, ifp->if_unit);
+#endif 
+	return nam;
+}
+#endif
