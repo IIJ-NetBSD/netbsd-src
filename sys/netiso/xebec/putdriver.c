@@ -1,5 +1,4 @@
-/* $Header: /usr/tmp/cvs2git/cvsroot-netbsd/src/sys/netiso/xebec/Attic/putdriver.c,v 1.1 1993/04/09 12:02:15 cgd Exp $ */
-/* $Source: /usr/tmp/cvs2git/cvsroot-netbsd/src/sys/netiso/xebec/Attic/putdriver.c,v $ */
+/* $Id: putdriver.c,v 1.2 1993/05/20 05:28:31 cgd Exp $ */
 
 /*
  * This code is such a kludge that I don't want to put my name on it.

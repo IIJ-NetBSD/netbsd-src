@@ -1,5 +1,4 @@
-/* $Header: /usr/tmp/cvs2git/cvsroot-netbsd/src/sys/netiso/xebec/Attic/xebec.h,v 1.1 1993/04/09 12:02:23 cgd Exp $ */
-/* $Source: /usr/tmp/cvs2git/cvsroot-netbsd/src/sys/netiso/xebec/Attic/xebec.h,v $ */
+/* $Id: xebec.h,v 1.2 1993/05/20 05:28:40 cgd Exp $ */
 
 union llattrib {
 	struct {
