@@ -42,7 +42,7 @@ char copyright[] =
 
 #ifndef lint
 /*static char sccsid[] = "from: @(#)mount_umap.c	8.3 (Berkeley) 3/27/94";*/
-static char *rcsid = "$Id: mount_umap.c,v 1.1 1994/06/08 19:28:13 mycroft Exp $";
+static char *rcsid = "$Id: mount_umap.c,v 1.2 1994/10/31 04:29:39 cgd Exp $";
 #endif /* not lint */
 
 #include <sys/param.h>
@@ -92,8 +92,10 @@ main(argc, argv)
 	static char not[] = "; not mounted.";
 	struct stat statbuf;
 	struct umap_args args;
-        FILE *fp, *gfp;
-        u_long gmapdata[GMAPFILEENTRIES][2], mapdata[MAPFILEENTRIES][2];
+	FILE *fp, *gfp;
+	long d1, d2;
+	uid_t mapdata[MAPFILEENTRIES][2];
+	gid_t gmapdata[GMAPFILEENTRIES][2];
 	int ch, count, gnentries, mntflags, nentries;
 	char *gmapfile, *mapfile, *source, *target, buf[20];
 
@@ -152,8 +154,7 @@ main(argc, argv)
 	(void)printf("reading %d entries\n", nentries);
 #endif
 	for (count = 0; count < nentries; ++count) {
-		if ((fscanf(fp, "%lu %lu\n",
-		    &(mapdata[count][0]), &(mapdata[count][1]))) != 2) {
+		if ((fscanf(fp, "%lu %lu\n", &d1, &d2)) != 2) {
 			if (ferror(fp))
 				err(1, "%s%s", mapfile, not);
 			if (feof(fp))
@@ -162,6 +163,8 @@ main(argc, argv)
 			errx(1, "%s: illegal format (line %d)%s",
 			    mapfile, count + 2, not);
 		}
+		mapdata[count][0] = d1;
+		mapdata[count][1] = d2;
 #if 0
 		/* Fix a security hole. */
 		if (mapdata[count][1] == 0)
@@ -199,9 +202,8 @@ main(argc, argv)
 	(void)printf("reading %d group entries\n", gnentries);
 #endif
 
-	for (count = 0; count < gnentries; ++count)
-		if ((fscanf(gfp, "%lu %lu\n",
-		    &(gmapdata[count][0]), &(gmapdata[count][1]))) != 2) {
+	for (count = 0; count < gnentries; ++count) {
+		if ((fscanf(gfp, "%lu %lu\n", &d1, &d2)) != 2) {
 			if (ferror(gfp))
 				err(1, "%s%s", gmapfile, not);
 			if (feof(gfp))
@@ -210,6 +212,9 @@ main(argc, argv)
 			errx(1, "%s: illegal format (line %d)%s",
 			    gmapfile, count + 2, not);
 		}
+		gmapdata[count][0] = d1;
+		gmapdata[count][1] = d2;
+	}
 
 
 	/* Setup mount call args. */
