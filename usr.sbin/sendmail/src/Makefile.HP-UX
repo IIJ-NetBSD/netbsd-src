@@ -39,7 +39,7 @@ LIBS=	-ldb -ldbm
 BINDIR=	${DESTDIR}/usr/lib
 
 # location of sendmail.st file (usually /var/log or /usr/lib)
-STDIR=	${DESTDIR}/var/log
+STDIR=	${DESTDIR}/usr/lib
 
 # location of sendmail.hf file (usually /usr/share/misc or /usr/lib)
 HFDIR=	${DESTDIR}/usr/lib
@@ -58,9 +58,9 @@ OBJS=	alias.o arpadate.o clock.o collect.o conf.o convtime.o daemon.o \
 	savemail.o srvrsmtp.o stab.o stats.o sysexits.o \
 	trace.o udb.o usersmtp.o util.o version.o ${OBJADD}
 
-LINKS=	${DESTDIR}/usr/ucb/newaliases ${DESTDIR}/usr/ucb/mailq
+LINKS=	${DESTDIR}/usr/bin/newaliases ${DESTDIR}/usr/bin/mailq
 BINOWN=	root
-BINGRP=	sys
+BINGRP=	mail
 BINMODE=6555
 
 ALL=	sendmail aliases.0 newaliases.0 sendmail.0
@@ -82,11 +82,10 @@ sendmail.0: sendmail.8
 install: install-sendmail install-docs
 
 install-sendmail: sendmail
-	install -o ${BINOWN} -g ${BINGRP} -m ${BINMODE} sendmail ${BINDIR}
+	cpset sendmail ${BINDIR} ${BINMODE} ${BINOWN} ${BINGRP}
 	for i in ${LINKS}; do rm -f $$i; ln -s ${BINDIR}/sendmail $$i; done
-	install -c -o ${BINOWN} -g ${BINGRP} -m 666 /dev/null \
-	    ${STDIR}/sendmail.st
-	install -c -o ${BINOWN} -g ${BINGRP} -m 444 sendmail.hf ${HFDIR}
+	cpset /dev/null ${STDIR}/sendmail.st 644 ${BINOWN} ${BINGRP}
+	cpset sendmail.hf ${HFDIR} 444 ${BINOWN} ${BINGRP}
 
 # doesn't actually install them -- you may want to install pre-nroff versions
 install-docs: aliases.0 newaliases.0 sendmail.0
