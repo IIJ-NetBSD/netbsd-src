@@ -169,8 +169,11 @@
  **********************************************************************
  * HISTORY
  * $Log: supcmain.c,v $
- * Revision 1.1  1993/05/21 14:52:17  cgd
- * Initial revision
+ * Revision 1.2  1993/05/24 17:57:28  brezak
+ * Remove netcrypt.c. Remove unneeded files. Cleanup make.
+ *
+ * Revision 1.1.1.1  1993/05/21  14:52:18  cgd
+ * initial import of CMU's SUP to NetBSD
  *
  * Revision 1.6  92/08/11  12:06:59  mrt
  * 	Merged in Brad's changes. Made resource pausing code conditional
@@ -616,7 +619,7 @@ char **argv;
 		--argc;
 		argv++;
 	}
-	if ((p = getlogin()) ||
+	if ((p = (char *)getlogin()) ||
 	    ((pw = getpwuid ((int)getuid())) && (p = pw->pw_name)))
 		(void) strcpy (username,p);
 	else
