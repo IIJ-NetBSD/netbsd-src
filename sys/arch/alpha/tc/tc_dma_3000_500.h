@@ -1,4 +1,4 @@
-/*	$NetBSD: isadmavar.h,v 1.7 1997/06/06 23:43:56 thorpej Exp $	*/
+/* $NetBSD: tc_dma_3000_500.h,v 1.2 1997/06/07 00:02:19 thorpej Exp $ */
 
 /*-
  * Copyright (c) 1997 The NetBSD Foundation, Inc.
@@ -37,29 +37,18 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#define	DMAMODE_WRITE	0
-#define	DMAMODE_READ	1
-#define	DMAMODE_LOOP	2
+void	tc_dma_init_3000_500 __P((int));
+bus_dma_tag_t tc_dma_get_tag_3000_500 __P((int));
 
-struct proc;
-
-void	   isa_dmacascade __P((struct device *, int));
-
-int	   isa_dmamap_create __P((struct device *, int, bus_size_t, int));
-void	   isa_dmamap_destroy __P((struct device *, int));
-
-int	   isa_dmastart __P((struct device *, int, void *, bus_size_t,
-	       struct proc *, int, int));
-void	   isa_dmaabort __P((struct device *, int));
-bus_size_t isa_dmacount __P((struct device *, int));
-int	   isa_dmafinished __P((struct device *, int));
-void	   isa_dmadone __P((struct device *, int));
-
-int	   isa_dmamem_alloc __P((struct device *, int, bus_size_t,
-	       bus_addr_t *, int));
-void	   isa_dmamem_free __P((struct device *, int, bus_addr_t, bus_size_t));
-int	   isa_dmamem_map __P((struct device *, int, bus_addr_t, bus_size_t,
-	       caddr_t *, int));
-void	   isa_dmamem_unmap __P((struct device *, int, caddr_t, size_t));
-int	   isa_dmamem_mmap __P((struct device *, int, bus_addr_t, bus_size_t,
-	       int, int, int));
+int	tc_bus_dmamap_create_sgmap __P((bus_dma_tag_t, bus_size_t, int,
+	    bus_size_t, bus_size_t, int, bus_dmamap_t *));
+void	tc_bus_dmamap_destroy_sgmap __P((bus_dma_tag_t, bus_dmamap_t));
+int	tc_bus_dmamap_load_sgmap __P((bus_dma_tag_t, bus_dmamap_t, void *,
+	    bus_size_t, struct proc *, int));
+int	tc_bus_dmamap_load_mbuf_sgmap __P((bus_dma_tag_t, bus_dmamap_t,
+	    struct mbuf *, int));
+int	tc_bus_dmamap_load_uio_sgmap __P((bus_dma_tag_t, bus_dmamap_t,
+	    struct uio *, int));
+int	tc_bus_dmamap_load_raw_sgmap __P((bus_dma_tag_t, bus_dmamap_t,
+	    bus_dma_segment_t *, int, bus_size_t, int));
+void	tc_bus_dmamap_unload_sgmap __P((bus_dma_tag_t, bus_dmamap_t));

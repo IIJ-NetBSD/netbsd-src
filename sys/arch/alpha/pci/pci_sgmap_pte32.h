@@ -1,4 +1,4 @@
-/*	$NetBSD: isadmavar.h,v 1.7 1997/06/06 23:43:56 thorpej Exp $	*/
+/* $NetBSD: pci_sgmap_pte32.h,v 1.2 1997/06/06 23:59:27 thorpej Exp $ */
 
 /*-
  * Copyright (c) 1997 The NetBSD Foundation, Inc.
@@ -37,29 +37,21 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#define	DMAMODE_WRITE	0
-#define	DMAMODE_READ	1
-#define	DMAMODE_LOOP	2
+#define	SGMAP_TYPE		pci_sgmap_pte32
+#define	SGMAP_PTE_TYPE		u_int32_t
+#define	SGMAP_PTE_SPACING	1
 
-struct proc;
+/*
+ * A 32-bit PCI SGMAP page table entry looks like this:
+ *
+ * 31                           n+1 n             1   0
+ * |                               | Page address | V |
+ *
+ * The page address is bits <n:13> of the physical address of the
+ * page.  The V bit is set if the PTE holds a valid mapping.
+ */
+#define	SGPTE_PGADDR_SHIFT	12
+#define	SGPTE_VALID		0x00000001
 
-void	   isa_dmacascade __P((struct device *, int));
-
-int	   isa_dmamap_create __P((struct device *, int, bus_size_t, int));
-void	   isa_dmamap_destroy __P((struct device *, int));
-
-int	   isa_dmastart __P((struct device *, int, void *, bus_size_t,
-	       struct proc *, int, int));
-void	   isa_dmaabort __P((struct device *, int));
-bus_size_t isa_dmacount __P((struct device *, int));
-int	   isa_dmafinished __P((struct device *, int));
-void	   isa_dmadone __P((struct device *, int));
-
-int	   isa_dmamem_alloc __P((struct device *, int, bus_size_t,
-	       bus_addr_t *, int));
-void	   isa_dmamem_free __P((struct device *, int, bus_addr_t, bus_size_t));
-int	   isa_dmamem_map __P((struct device *, int, bus_addr_t, bus_size_t,
-	       caddr_t *, int));
-void	   isa_dmamem_unmap __P((struct device *, int, caddr_t, size_t));
-int	   isa_dmamem_mmap __P((struct device *, int, bus_addr_t, bus_size_t,
-	       int, int, int));
+#include <alpha/common/sgmapvar.h>
+#include <alpha/common/sgmap_typedep.h>

@@ -1,4 +1,4 @@
-/*	$NetBSD: isadmavar.h,v 1.7 1997/06/06 23:43:56 thorpej Exp $	*/
+/* $NetBSD: sgmap_typedep.h,v 1.2 1997/06/06 23:58:05 thorpej Exp $ */
 
 /*-
  * Copyright (c) 1997 The NetBSD Foundation, Inc.
@@ -37,29 +37,19 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#define	DMAMODE_WRITE	0
-#define	DMAMODE_READ	1
-#define	DMAMODE_LOOP	2
+#undef __C
+#undef __S
 
-struct proc;
+#define	__C(A,B)	__CONCAT(A,B)
+#define	__S(S)		__STRING(S)
 
-void	   isa_dmacascade __P((struct device *, int));
-
-int	   isa_dmamap_create __P((struct device *, int, bus_size_t, int));
-void	   isa_dmamap_destroy __P((struct device *, int));
-
-int	   isa_dmastart __P((struct device *, int, void *, bus_size_t,
-	       struct proc *, int, int));
-void	   isa_dmaabort __P((struct device *, int));
-bus_size_t isa_dmacount __P((struct device *, int));
-int	   isa_dmafinished __P((struct device *, int));
-void	   isa_dmadone __P((struct device *, int));
-
-int	   isa_dmamem_alloc __P((struct device *, int, bus_size_t,
-	       bus_addr_t *, int));
-void	   isa_dmamem_free __P((struct device *, int, bus_addr_t, bus_size_t));
-int	   isa_dmamem_map __P((struct device *, int, bus_addr_t, bus_size_t,
-	       caddr_t *, int));
-void	   isa_dmamem_unmap __P((struct device *, int, caddr_t, size_t));
-int	   isa_dmamem_mmap __P((struct device *, int, bus_addr_t, bus_size_t,
-	       int, int, int));
+int	__C(SGMAP_TYPE,_load) __P((bus_dma_tag_t, bus_dmamap_t,
+	    void *, bus_size_t, struct proc *, int, struct alpha_sgmap *));
+int	__C(SGMAP_TYPE,_load_mbuf) __P((bus_dma_tag_t, bus_dmamap_t,
+	    struct mbuf *, int, struct alpha_sgmap *));
+int	__C(SGMAP_TYPE,_load_uio) __P((bus_dma_tag_t, bus_dmamap_t,
+	    struct uio *, int, struct alpha_sgmap *));
+int	__C(SGMAP_TYPE,_load_raw) __P((bus_dma_tag_t, bus_dmamap_t,
+	    bus_dma_segment_t *, int, bus_size_t, int, struct alpha_sgmap *));
+void	__C(SGMAP_TYPE,_unload) __P((bus_dma_tag_t, bus_dmamap_t,
+	    struct alpha_sgmap *));
