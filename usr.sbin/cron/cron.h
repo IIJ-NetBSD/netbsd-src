@@ -1,4 +1,6 @@
-/* Copyright 1988,1990,1993 by Paul Vixie
+/*	$NetBSD: cron.h,v 1.2 1997/03/13 06:19:12 mikel Exp $	*/
+
+/* Copyright 1988,1990,1993,1994 by Paul Vixie
  * All rights reserved
  *
  * Distribute freely, except: don't remove my name from the source or
@@ -17,7 +19,7 @@
 
 /* cron.h - header for vixie's cron
  *
- * $Id: cron.h,v 1.1 1994/01/05 20:40:12 jtc Exp $
+ * Id: cron.h,v 2.10 1994/01/15 20:43:43 vixie Exp
  *
  * vix 14nov88 [rest of log is in RCS]
  * vix 14jan87 [0 or 7 can be sunday; thanks, mwm@berkeley]
@@ -33,14 +35,17 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <bitstring.h>
+#include <pwd.h>
 #include <sys/wait.h>
 
 #include "pathnames.h"
 #include "config.h"
+#include "externs.h"
 
 	/* these are really immutable, and are
 	 *   defined for symbolic convenience only
 	 * TRUE, FALSE, and ERR must be distinct
+	 * ERR must be < OK.
 	 */
 #define TRUE		1
 #define FALSE		0
@@ -144,6 +149,9 @@
 
 typedef	struct _entry {
 	struct _entry	*next;
+	uid_t		uid;	
+	gid_t		gid;
+	char		**envp;
 	char		*cmd;
 	bitstr_t	bit_decl(minute, MINUTE_COUNT);
 	bitstr_t	bit_decl(hour,   HOUR_COUNT);
@@ -151,23 +159,21 @@ typedef	struct _entry {
 	bitstr_t	bit_decl(month,  MONTH_COUNT);
 	bitstr_t	bit_decl(dow,    DOW_COUNT);
 	int		flags;
-#define	DOM_STAR	0x1
-#define	DOW_STAR	0x2
-#define	WHEN_REBOOT	0x4
-	uid_t		exec_uid;	/* 0 = default, else uid */
+#define	DOM_STAR	0x01
+#define	DOW_STAR	0x02
+#define	WHEN_REBOOT	0x04
 } entry;
 
 			/* the crontab database will be a list of the
-			 * following structure, one element per user.
+			 * following structure, one element per user
+			 * plus one for the system.
 			 *
 			 * These are the crontabs.
 			 */
 
 typedef	struct _user {
 	struct _user	*next, *prev;	/* links */
-	uid_t		uid;		/* uid from passwd file */
-	gid_t		gid;		/* gid from passwd file */
-	char		**envp;		/* environ for commands */
+	char		*name;
 	time_t		mtime;		/* last modtime of crontab */
 	entry		*crontab;	/* this person's crontab */
 } user;
@@ -176,7 +182,6 @@ typedef	struct _cron_db {
 	user		*head, *tail;	/* links */
 	time_t		mtime;		/* last modtime on spooldir */
 } cron_db;
-
 
 
 void		set_cron_uid __P((void)),
@@ -189,11 +194,13 @@ void		set_cron_uid __P((void)),
 		link_user __P((cron_db *, user *)),
 		unlink_user __P((cron_db *, user *)),
 		free_user __P((user *)),
+		env_free __P((char **)),
 		unget_char __P((int, FILE *)),
 		free_entry __P((entry *)),
 		acquire_daemonlock __P((int)),
 		skip_comments __P((FILE *)),
-		log_it __P((char *, int, char *, char *));
+		log_it __P((char *, int, char *, char *)),
+		log_close __P((void));
 
 int		job_runqueue __P((void)),
 		set_debug_flags __P((char *)),
@@ -211,12 +218,14 @@ char		*env_get __P((char *, char **)),
 		*mkprints __P((unsigned char *, unsigned int)),
 		*first_word __P((char *, char *)),
 		**env_init __P((void)),
+		**env_copy __P((char **)),
 		**env_set __P((char **, char *));
 
-user		*load_user __P((int, char *, int, int, char *, int)),
+user		*load_user __P((int, struct passwd *, char *)),
 		*find_user __P((cron_db *, char *));
 
-entry		*load_entry __P((FILE *, void (*)(), int));
+entry		*load_entry __P((FILE *, void (*)(),
+				 struct passwd *, char **));
 
 FILE		*cron_popen __P((char *, char *));
 
@@ -229,7 +238,7 @@ FILE		*cron_popen __P((char *, char *));
 #ifdef MAIN_PROGRAM
 # if !defined(LINT) && !defined(lint)
 char	*copyright[] = {
-		"@(#) Copyright 1988, 1989, 1990, 1993 by Paul Vixie",
+		"@(#) Copyright 1988,1989,1990,1993,1994 by Paul Vixie",
 		"@(#) All rights reserved"
 	};
 # endif

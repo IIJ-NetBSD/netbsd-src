@@ -1,4 +1,6 @@
-/* Copyright 1988,1990,1993 by Paul Vixie
+/*	$NetBSD: compat.c,v 1.2 1997/03/13 06:19:08 mikel Exp $	*/
+
+/* Copyright 1988,1990,1993,1994 by Paul Vixie
  * All rights reserved
  *
  * Distribute freely, except: don't remove my name from the source or
@@ -16,7 +18,8 @@
  */
 
 #if !defined(lint) && !defined(LINT)
-static char rcsid[] = "$Id: compat.c,v 1.1 1994/01/05 20:40:12 jtc Exp $";
+/*static char rcsid[] = "Id: compat.c,v 1.6 1994/01/15 20:43:43 vixie Exp";*/
+static char rcsid[] = "$NetBSD: compat.c,v 1.2 1997/03/13 06:19:08 mikel Exp $";
 #endif
 
 /* vix 30dec93 [broke this out of misc.c - see RCS log for history]
@@ -25,7 +28,6 @@ static char rcsid[] = "$Id: compat.c,v 1.1 1994/01/05 20:40:12 jtc Exp $";
 
 
 #include "cron.h"
-#include "externs.h"
 #ifdef NEED_GETDTABLESIZE
 # include <limits.h>
 #endif

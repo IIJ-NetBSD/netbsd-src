@@ -1,4 +1,6 @@
-/* Copyright 1993 by Paul Vixie
+/*	$NetBSD: compat.h,v 1.2 1997/03/13 06:19:09 mikel Exp $	*/
+
+/* Copyright 1993,1994 by Paul Vixie
  * All rights reserved
  *
  * Distribute freely, except: don't remove my name from the source or
@@ -16,7 +18,7 @@
  */
 
 /*
- * $Id: compat.h,v 1.1 1994/01/05 20:40:12 jtc Exp $
+ * Id: compat.h,v 1.8 1994/01/15 20:43:43 vixie Exp
  */
 
 #ifndef __P
@@ -33,7 +35,7 @@
 # define ATT 1
 #endif
 
-#if defined(hpux) || defined(_hpux)
+#if defined(hpux) || defined(_hpux) || defined(__hpux)
 # define HPUX 1
 # define seteuid(e) setresuid(-1,e,-1)
 # define setreuid(r,e)	setresuid(r,e,-1)
@@ -81,12 +83,12 @@
 #endif
 
 #if (!defined(BSD) || (BSD < 198902)) && !defined(__linux) && \
-	!defined(IRIX) && !defined(NeXT)
+	!defined(IRIX) && !defined(NeXT) && !defined(HPUX)
 # define NEED_STRCASECMP
 #endif
 
 #if (!defined(BSD) || (BSD < 198911)) && !defined(__linux) &&\
-	!defined(IRIX) && !defined(UNICOS)
+	!defined(IRIX) && !defined(UNICOS) && !defined(HPUX)
 # define NEED_STRDUP
 #endif
 
