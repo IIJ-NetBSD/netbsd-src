@@ -1,3 +1,5 @@
+.\"	$NetBSD: 0.t,v 1.2 1995/03/18 14:56:05 cgd Exp $
+.\"
 .\" Copyright (c) 1986, 1993
 .\"	The Regents of the University of California.  All rights reserved.
 .\"
@@ -29,8 +31,7 @@
 .\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
 .\"
-.\"	from: @(#)0.t	8.1 (Berkeley) 6/8/93
-.\"	$Id: 0.t,v 1.1 1994/06/08 19:00:49 mycroft Exp $
+.\"	@(#)0.t	8.1 (Berkeley) 6/8/93
 .\"
 .if n .ND
 .TL
