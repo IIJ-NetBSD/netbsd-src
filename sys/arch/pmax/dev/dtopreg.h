@@ -63,10 +63,7 @@
  */
 /*
  * HISTORY
- * $Log: dtopreg.h,v $
- * Revision 1.1  1993/10/12 03:22:26  deraadt
- * Initial revision
- *
+ * Log:	dtop.h,v
  * Revision 2.3  92/03/05  17:08:17  rpd
  * 	Define how many buttons and coordinates we can take.
  * 	[92/03/05            af]

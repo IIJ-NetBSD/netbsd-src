@@ -64,10 +64,7 @@
 
 /*
  * HISTORY
- * $Log: asc.c,v $
- * Revision 1.1  1993/10/12 03:22:22  deraadt
- * Initial revision
- *
+ * Log:	scsi_53C94_hdw.c,v
  * Revision 2.5  91/02/05  17:45:07  mrt
  * 	Added author notices
  * 	[91/02/04  11:18:43  mrt]
