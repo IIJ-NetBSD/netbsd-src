@@ -31,10 +31,9 @@
  * SUCH DAMAGE.
  *
  *	from: @(#)extern.h	8.1 (Berkeley) 6/5/93
- *	$Id: extern.h,v 1.1 1994/06/08 18:58:51 mycroft Exp $
+ *	$Id: extern.h,v 1.2 1994/09/23 02:18:40 mycroft Exp $
  */
 
-void	err __P((const char *, ...));
 void	get __P((int, off_t, void *, size_t));
 
 extern char *special;
