@@ -42,7 +42,7 @@ static char copyright[] =
 
 #ifndef lint
 /*static char sccsid[] = "from: @(#)mount_nfs.c	8.3 (Berkeley) 3/27/94";*/
-static char *rcsid = "$Id: mount_nfs.c,v 1.1 1994/06/08 19:23:05 mycroft Exp $";
+static char *rcsid = "$Id: mount_nfs.c,v 1.2 1994/06/24 12:04:53 pk Exp $";
 #endif /* not lint */
 
 #include <sys/param.h>
@@ -426,16 +426,19 @@ getnfsargs(spec, nfsargsp)
 			warnx("bad net address %s", hostp);
 			return (0);
 		}
-		if ((nfsargsp->flags & NFSMNT_KERB) &&
-		    (hp = gethostbyaddr((char *)&saddr.sin_addr.s_addr,
-		    sizeof (u_long), AF_INET)) == (struct hostent *)0) {
+		if ((nfsargsp->flags & NFSMNT_KERB)) {
+		    if ((hp = gethostbyaddr((char *)&saddr.sin_addr.s_addr,
+			 sizeof (u_long), AF_INET)) == (struct hostent *)0) {
 			warnx("can't reverse resolve net address");
 			return (0);
+		    }
+		    bcopy(hp->h_addr, (caddr_t)&saddr.sin_addr, hp->h_length);
 		}
 	} else if ((hp = gethostbyname(hostp)) == NULL) {
 		warnx("can't get net id for host");
 		return (0);
-	}
+	} else
+		bcopy(hp->h_addr, (caddr_t)&saddr.sin_addr, hp->h_length);
 #ifdef KERBEROS
 	if (nfsargsp->flags & NFSMNT_KERB) {
 		strncpy(inst, hp->h_name, INST_SZ);
@@ -445,7 +448,6 @@ getnfsargs(spec, nfsargsp)
 	}
 #endif /* KERBEROS */
 
-	bcopy(hp->h_addr, (caddr_t)&saddr.sin_addr, hp->h_length);
 	nfhret.stat = EACCES;	/* Mark not yet successful */
 	while (retrycnt > 0) {
 		saddr.sin_family = AF_INET;
