@@ -1,4 +1,4 @@
-/* $NetBSD: kgdb.h,v 1.2 1996/03/14 23:11:23 mark Exp $ */
+/*	$NetBSD: ipkdb.h,v 1.1 1996/10/16 19:38:53 ws Exp $	*/
 
 /*
  * Copyright (C) 1993, 1994 Wolfgang Solfrank.
@@ -39,7 +39,7 @@
 #define	SPSR		17
 #define	NREG		18
 
-extern int kgdbregs[NREG];
+extern int ipkdbregs[NREG];
 
-extern int *kgdb_find_stack();
-extern void kgdb_free_stack __P((int *));
+extern int *ipkdb_find_stack();
+extern void ipkdb_free_stack __P((int *));
