@@ -1,13 +1,16 @@
+/*	$NetBSD: exit.h,v 1.2 1997/04/13 10:50:23 mrg Exp $	*/
+
 /*
 ** Various exit codes.
 **
 **	They come from <sysexits.h>
 **	Defined here to avoid including /usr/ucbinclude on solaris 2.x
 **
-**	@(#)exit.h              e07@nikhef.nl (Eric Wassenaar) 930903
+**	@(#)exit.h              e07@nikhef.nl (Eric Wassenaar) 961010
 */
 
-#define EX_OK		0	/* successful termination */
+#undef  EX_OK			/* defined in <unistd.h> on SVR4 */
+#define EX_SUCCESS	0	/* successful termination */
 #define EX_USAGE	64	/* command line usage error */
 #define EX_DATAERR	65	/* data format error */
 #define EX_NOINPUT	66	/* cannot open input */
