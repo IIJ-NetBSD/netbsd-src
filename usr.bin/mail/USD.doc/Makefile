@@ -1,5 +1,5 @@
+#	$NetBSD: Makefile,v 1.2 1997/01/09 20:20:42 tls Exp $
 #	from: @(#)Makefile	8.1 (Berkeley) 6/8/93
-#	$Id: Makefile,v 1.1 1994/06/29 05:09:54 deraadt Exp $
 
 DIR=	usd/07.mail
 SRCS=	mail0.nr mail1.nr mail2.nr mail3.nr mail4.nr mail5.nr mail6.nr \
