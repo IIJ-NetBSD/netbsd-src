@@ -1,3 +1,5 @@
+/*	$NetBSD: print.c,v 1.2 1997/10/07 13:40:00 mrg Exp $	*/
+
 /*-
  * Copyright (c) 1992, 1993
  *	The Regents of the University of California.  All rights reserved.
@@ -31,9 +33,13 @@
  * SUCH DAMAGE.
  */
 
+#include <sys/cdefs.h>
 #ifndef lint
-/*static char sccsid[] = "from: @(#)print.c	8.1 (Berkeley) 6/4/93";*/
-static char *rcsid = "$Id: print.c,v 1.1 1994/06/08 18:42:18 mycroft Exp $";
+#if 0
+static char sccsid[] = "from: @(#)print.c	8.1 (Berkeley) 6/4/93";
+#else
+__RCSID("$NetBSD: print.c,v 1.2 1997/10/07 13:40:00 mrg Exp $");
+#endif
 #endif /* not lint */
 
 #include <sys/param.h>
@@ -47,6 +53,8 @@ static char *rcsid = "$Id: print.c,v 1.1 1994/06/08 18:42:18 mycroft Exp $";
 #include <stdlib.h>
 #include <stdio.h>
 #include "clean.h"
+
+extern u_long cksum __P((void *, size_t));	/* XXX */
 
 /*
  * Print out a summary block; return number of blocks in segment; 0
@@ -89,7 +97,7 @@ dump_summary(lfsp, sp, flags, iaddrp)
 	dp = (daddr_t *)((caddr_t)sp + LFS_SUMMARY_SIZE);
 	for (--dp, i = 0; i < sp->ss_ninos; --dp)
 		if (flags & DUMP_INODE_ADDRS) {
-			(void)printf("\t0x%lx", *dp);
+			(void)printf("\t0x%lx", (u_long)*dp);
 			if (++i % 7 == 0)
 				(void)printf("\n");
 		} else

@@ -31,7 +31,7 @@
  * SUCH DAMAGE.
  *
  *	from: @(#)clean.h	8.1 (Berkeley) 6/4/93
- *	$Id: clean.h,v 1.1 1994/06/08 18:42:12 mycroft Exp $
+ *	$Id: clean.h,v 1.2 1997/10/07 13:39:56 mrg Exp $
  */
 
 /*
@@ -108,7 +108,7 @@ __BEGIN_DECLS
 int	 dump_summary __P((struct lfs *, SEGSUM *, u_long, daddr_t **));
 void	 err __P((const int, const char *, ...));
 int	 fs_getmntinfo __P((struct statfs **, char *, const char *));
-int	 get __P((int, off_t, void *, size_t));
+void	 get __P((int, off_t, void *, size_t));
 FS_INFO	*get_fs_info __P((struct statfs *, int));
 int 	 lfs_segmapv __P((FS_INFO *, int, caddr_t, BLOCK_INFO **, int *));
 int	 mmap_segment __P((FS_INFO *, int, caddr_t *, int));

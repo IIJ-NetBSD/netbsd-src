@@ -1,3 +1,5 @@
+/*	$NetBSD: cleanerd.c,v 1.2 1997/10/07 13:39:58 mrg Exp $	*/
+
 /*-
  * Copyright (c) 1992, 1993
  *	The Regents of the University of California.  All rights reserved.
@@ -31,15 +33,15 @@
  * SUCH DAMAGE.
  */
 
+#include <sys/cdefs.h>
 #ifndef lint
-static char copyright[] =
-"@(#) Copyright (c) 1992, 1993\n\
-	The Regents of the University of California.  All rights reserved.\n";
-#endif /* not lint */
-
-#ifndef lint
-/*static char sccsid[] = "from: @(#)cleanerd.c	8.2 (Berkeley) 1/13/94";*/
-static char *rcsid = "$Id: cleanerd.c,v 1.1 1994/06/08 18:42:13 mycroft Exp $";
+__COPYRIGHT("@(#) Copyright (c) 1992, 1993\n\
+	The Regents of the University of California.  All rights reserved.\n");
+#if 0
+static char sccsid[] = "from: @(#)cleanerd.c	8.2 (Berkeley) 1/13/94";
+#else
+__RCSID("$NetBSD: cleanerd.c,v 1.2 1997/10/07 13:39:58 mrg Exp $");
+#endif
 #endif /* not lint */
 
 #include <sys/param.h>
@@ -93,6 +95,7 @@ int	 clean_segment __P((FS_INFO *, int));
 int	 cost_benefit __P((FS_INFO *, SEGUSE *));
 int	 cost_compare __P((const void *, const void *));
 void	 sig_report __P((int));
+int	 main __P((int, char *[]));
 
 /*
  * Cleaning Cost Functions:
@@ -153,7 +156,7 @@ main(argc, argv)
 	struct statfs *lstatfsp;	/* file system stats */
 	struct timeval timeout;		/* sleep timeout */
 	fsid_t fsid;
-	int i, nodaemon;
+	int nodaemon;
 	int opt, cmd_err;
 	char *fs_name;			/* name of filesystem to clean */
 	extern int optind;
@@ -243,7 +246,7 @@ clean_loop(fsp)
 	if (fsp->fi_cip->clean < max_free_segs &&
 	    (fsp->fi_cip->clean <= MIN_SEGS(&fsp->fi_lfs) ||
 	    fsp->fi_cip->clean < max_free_segs * BUSY_LIM)) {
-		printf("Cleaner Running  at %s (%d of %d segments available)\n",
+		printf("Cleaner Running  at %s (%d of %ld segments available)\n",
 		    ctime(&now), fsp->fi_cip->clean, max_free_segs);
 		clean_fs(fsp, cost_benefit);
 		return (1);
