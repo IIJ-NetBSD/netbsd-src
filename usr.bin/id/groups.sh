@@ -32,7 +32,7 @@
 # SUCH DAMAGE.
 #
 #	from: @(#)groups.sh	8.1 (Berkeley) 6/6/93
-#	$Id: groups.sh,v 1.1 1994/05/05 22:50:17 cgd Exp $
+#	$Id: groups.sh,v 1.2 1994/05/05 23:24:40 cgd Exp $
 #
 
 id -Gn $*

@@ -32,7 +32,7 @@
 # SUCH DAMAGE.
 #
 #	from: @(#)whoami.sh	8.1 (Berkeley) 6/6/93
-#	$Id: whoami.sh,v 1.1 1994/05/05 22:50:17 cgd Exp $
+#	$Id: whoami.sh,v 1.2 1994/05/05 23:24:55 cgd Exp $
 #
 
 id -un
