@@ -1,6 +1,6 @@
 /* libmain - flex run-time support library "main" function */
 
-/* $Header: /usr/tmp/cvs2git/cvsroot-netbsd/src/gnu/usr.bin/lex/lib/Attic/libmain.c,v 1.1.1.1 1993/03/21 09:45:37 cgd Exp $ */
+/* $Header: /usr/tmp/cvs2git/cvsroot-netbsd/src/gnu/usr.bin/lex/lib/Attic/libmain.c,v 1.2 1993/05/04 07:45:30 cgd Exp $ */
 
 extern int yylex();
 
