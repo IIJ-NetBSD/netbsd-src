@@ -1,4 +1,4 @@
-/*	$NetBSD: nsap_addr.c,v 1.1 1996/02/02 15:22:24 mrg Exp $	*/
+/*	$NetBSD: nsap_addr.c,v 1.2 1997/04/13 10:30:46 mrg Exp $	*/
 
 /*
  * Copyright (c) 1989, 1993
@@ -31,13 +31,28 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
+ *
+ * Copyright (c) 1996 by Internet Software Consortium.
+ *
+ * Permission to use, copy, modify, and distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND INTERNET SOFTWARE CONSORTIUM DISCLAIMS
+ * ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL INTERNET SOFTWARE
+ * CONSORTIUM BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL
+ * DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR
+ * PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS
+ * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
+ * SOFTWARE.
  */
 
 #if defined(LIBC_SCCS) && !defined(lint)
 #if 0
-static char rcsid[] = "$Id: lib-libc-net,v 8.1 1995/12/22 21:59:52 vixie Exp ";
+static char rcsid[] = "Id: nsap_addr.c,v 8.3 1996/08/05 08:31:35 vixie Exp";
 #else
-static char rcsid[] = "$NetBSD: nsap_addr.c,v 1.1 1996/02/02 15:22:24 mrg Exp $";
+static char rcsid[] = "$NetBSD: nsap_addr.c,v 1.2 1997/04/13 10:30:46 mrg Exp $";
 #endif
 #endif /* LIBC_SCCS and not lint */
 
@@ -68,7 +83,6 @@ inet_nsap_addr(ascii, binary, maxlen)
 	int maxlen;
 {
 	register u_char c, nib;
-	u_char *start = binary;
 	u_int len = 0;
 
 	while ((c = *ascii++) != '\0' && len < maxlen) {
