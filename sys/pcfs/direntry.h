@@ -15,8 +15,7 @@
  *
  *  October 1992
  *
- *	$Header: /usr/tmp/cvs2git/cvsroot-netbsd/src/sys/pcfs/Attic/direntry.h,v 1.1 1993/04/09 19:37:57 cgd Exp $
- *
+ *	$Id: direntry.h,v 1.2 1993/05/20 03:34:06 cgd Exp $
  */
 
 /*

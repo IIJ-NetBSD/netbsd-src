@@ -15,8 +15,7 @@
  *
  *  October 1992
  *
- *	$Header: /usr/tmp/cvs2git/cvsroot-netbsd/src/sys/pcfs/Attic/bootsect.h,v 1.1 1993/04/09 19:37:49 cgd Exp $
- *
+ *	$Id: bootsect.h,v 1.2 1993/05/20 03:34:02 cgd Exp $
  */
 
 /*
