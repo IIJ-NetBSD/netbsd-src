@@ -1,5 +1,5 @@
-#	$NetBSD: Makefile,v 1.1 1996/02/29 11:41:31 leo Exp $
+#	$NetBSD: Makefile,v 1.2 1996/05/16 20:03:53 leo Exp $
 
-SUBDIR=	installboot libsa bootxx xxboot
+SUBDIR=	edahdi installboot libsa bootxx xxboot
 
 .include <bsd.subdir.mk>
