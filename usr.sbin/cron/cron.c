@@ -1,4 +1,4 @@
-/* Copyright 1988,1990,1993 by Paul Vixie
+/* Copyright 1988,1990,1993,1994 by Paul Vixie
  * All rights reserved
  *
  * Distribute freely, except: don't remove my name from the source or
@@ -16,7 +16,7 @@
  */
 
 #if !defined(lint) && !defined(LINT)
-static char rcsid[] = "$Id: cron.c,v 1.1 1994/01/05 20:40:12 jtc Exp $";
+static char rcsid[] = "$Id: cron.c,v 1.2 1996/12/08 13:28:21 mycroft Exp $";
 #endif
 
 
@@ -24,7 +24,6 @@ static char rcsid[] = "$Id: cron.c,v 1.1 1994/01/05 20:40:12 jtc Exp $";
 
 
 #include "cron.h"
-#include "externs.h"
 #include <sys/signal.h>
 #if SYS_TIME_H
 # include <sys/time.h>
@@ -41,6 +40,7 @@ static	void	usage __P((void)),
 #ifdef USE_SIGCHLD
 		sigchld_handler __P((int)),
 #endif
+		sighup_handler __P((int)),
 		parse_args __P((int c, char *v[]));
 
 
@@ -72,6 +72,7 @@ main(argc, argv)
 #else
 	(void) signal(SIGCLD, SIG_IGN);
 #endif
+	(void) signal(SIGHUP, sighup_handler);
 
 	acquire_daemonlock(0);
 	set_cron_uid();
@@ -90,19 +91,9 @@ main(argc, argv)
 # endif
 		(void) fprintf(stderr, "[%d] cron started\n", getpid());
 	} else {
-		switch (fork()) {
-		case -1:
+		if (daemon(0, 0)) {
 			log_it("CRON",getpid(),"DEATH","can't fork");
-			exit(0);
-			break;
-		case 0:
-			/* child process */
-			log_it("CRON",getpid(),"STARTUP","fork ok");
-			(void) setsid();
-			break;
-		default:
-			/* parent process should just die */
-			_exit(0);
+			exit(1);
 		}
 	}
 
@@ -177,10 +168,10 @@ cron_tick(db)
 	 * like many bizarre things, it's the standard.
 	 */
 	for (u = db->head;  u != NULL;  u = u->next) {
-		Debug(DSCH|DEXT, ("user [%s:%d:%d:...]\n",
-			env_get("LOGNAME", u->envp), u->uid, u->gid))
 		for (e = u->crontab;  e != NULL;  e = e->next) {
-			Debug(DSCH|DEXT, ("entry [%s]\n", e->cmd))
+			Debug(DSCH|DEXT, ("user [%s:%d:%d:...] cmd=\"%s\"\n",
+					  env_get("LOGNAME", e->envp),
+					  e->uid, e->gid, e->cmd))
 			if (bit_test(e->minute, minute)
 			 && bit_test(e->hour, hour)
 			 && bit_test(e->month, month)
@@ -247,10 +238,14 @@ cron_sleep() {
 static void
 sigchld_handler(x) {
 	WAIT_T		waiter;
-	int		pid;
+	PID_T		pid;
 
 	for (;;) {
+#ifdef POSIX
+		pid = waitpid(-1, &waiter, WNOHANG);
+#else
 		pid = wait3(&waiter, WNOHANG, (struct rusage *)0);
+#endif
 		switch (pid) {
 		case -1:
 			Debug(DPROC,
@@ -268,6 +263,12 @@ sigchld_handler(x) {
 	}
 }
 #endif /*USE_SIGCHLD*/
+
+
+static void
+sighup_handler(x) {
+	log_close();
+}
 
 
 static void
