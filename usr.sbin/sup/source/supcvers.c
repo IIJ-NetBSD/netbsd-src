@@ -25,10 +25,6 @@
 /*
  **********************************************************************
  * HISTORY
- * $Log: supcvers.c,v $
- * Revision 1.1  1993/05/21 14:52:18  cgd
- * Initial revision
- *
  * Revision 1.8  92/08/11  12:07:51  mrt
  * 	Added use-rel-suffix option. Picked up STUMP changes.
  * 	[V7.26]
