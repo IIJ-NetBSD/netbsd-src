@@ -1,12 +1,17 @@
 /* libmain - flex run-time support library "main" function */
 
-/* $Header: /usr/tmp/cvs2git/cvsroot-netbsd/src/usr.bin/lex/Attic/libmain.c,v 1.2 1995/05/05 05:35:31 jtc Exp $ */
+/* $Header: /usr/tmp/cvs2git/cvsroot-netbsd/src/usr.bin/lex/Attic/libmain.c,v 1.3 1995/06/05 19:44:52 pk Exp $ */
 
-extern int yylex();
+#include <sys/cdefs.h>
 
-int main( argc, argv )
+int yylex __P((void));
+int main __P((int, char **, char **));
+
+int
+main( argc, argv, envp )
 int argc;
 char *argv[];
+char *envp[];
 	{
 	return yylex();
 	}
