@@ -1,11 +1,11 @@
-/*	$NetBSD: linux_trap.c,v 1.2 2003/01/17 23:36:13 thorpej Exp $ */
+/*	$NetBSD: frame.h,v 1.2 2003/01/17 23:36:08 thorpej Exp $	*/
 
-/*-
+/*
  * Copyright (c) 2001 The NetBSD Foundation, Inc.
  * All rights reserved.
  *
  * This code is derived from software contributed to The NetBSD Foundation
- * by Christos Zoulas and Emmanuel Dreyfus.
+ * by Wayne Knowles
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -36,18 +36,38 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <sys/param.h>
-#include <sys/systm.h>
-#include <sys/proc.h>
-#include <sys/user.h>
-#include <sys/acct.h>
-#include <sys/kernel.h>
+#ifndef _MIPS_FRAME_H_
+#define _MIPS_FRAME_H_
+
+#ifndef _LOCORE
+
 #include <sys/signal.h>
-#include <sys/syscall.h>
+#include <sys/sa.h>
 
-#include <compat/linux/common/linux_exec.h>
+/*
+ * Signal frame
+ */
+struct sigframe {
+	struct	sigcontext sf_sc;	/* actual context */
+};
 
-void
-linux_trapsignal(struct lwp *l, int signo, u_long type) {
-	trapsignal(l, signo, type);
-}
+/*
+ * Scheduler activations upcall frame.  Pushed onto user stack before
+ * calling an SA upcall.
+ */
+
+struct saframe {
+	/* first 4 arguments passed in registers on entry to upcallcode */
+	int		sa_type;	/* A0 */
+	struct sa_t **	sa_sas;		/* A1 */
+	int		sa_events;	/* A2 */
+	int		sa_interrupted;	/* A3 */
+	void *		sa_arg;
+	sa_upcall_t	sa_upcall;
+};
+
+#endif /* _LOCORE */
+
+#endif /* _MIPS_FRAME_H_ */
+  
+/* End of frame.h */
