@@ -1,4 +1,4 @@
-/*	$NetBSD: ip_lookup.h,v 1.1 2004/10/05 04:56:41 yamt Exp $	*/
+/*	$NetBSD: ip_lookup.h,v 1.2 2005/12/11 12:24:21 christos Exp $	*/
 
 
 #ifndef __IP_LOOKUP_H__
