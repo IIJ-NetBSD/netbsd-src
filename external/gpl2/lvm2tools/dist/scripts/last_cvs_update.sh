@@ -1,5 +1,5 @@
 #!/bin/sh
-#$Header: /usr/tmp/cvs2git/cvsroot-netbsd/src/external/gpl2/lvm2tools/dist/scripts/Attic/last_cvs_update.sh,v 1.1.1.1 2008/07/15 13:50:08 haad Exp $
+#$Header: /usr/tmp/cvs2git/cvsroot-netbsd/src/external/gpl2/lvm2tools/dist/scripts/Attic/last_cvs_update.sh,v 1.1.1.2 2008/12/12 11:43:00 haad Exp $
 ################################################################################
 ##
 ##    Copyright 2001 Sistina Software, Inc.
