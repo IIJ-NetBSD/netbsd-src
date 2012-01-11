@@ -1,5 +1,5 @@
-/*	Id: cgram.y,v 1.340 2011/08/03 19:25:32 ragge Exp 	*/	
-/*	$NetBSD: cgram.y,v 1.1.1.4 2011/09/01 12:46:58 plunky Exp $	*/
+/*	Id: cgram.y,v 1.341 2011/09/03 07:43:43 ragge Exp 	*/	
+/*	$NetBSD: cgram.y,v 1.1.1.5 2012/01/11 20:33:09 plunky Exp $	*/
 
 /*
  * Copyright (c) 2003 Anders Magnusson (ragge@ludd.luth.se).
@@ -2230,7 +2230,11 @@ eve2:		r = buildtree(p->n_op, p1, eve(p2));
 int
 con_e(NODE *p)
 {
+#ifdef WORD_ADDRESSED
 	return icons(optim(eve(p)));
+#else
+	return icons(optim(rmpconv(eve(p))));
+#endif
 }
 
 void

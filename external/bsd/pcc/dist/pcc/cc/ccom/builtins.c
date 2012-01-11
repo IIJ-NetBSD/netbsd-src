@@ -1,5 +1,5 @@
-/*	Id: builtins.c,v 1.32 2011/08/15 17:33:39 ragge Exp 	*/	
-/*	$NetBSD: builtins.c,v 1.1.1.2 2011/09/01 12:46:56 plunky Exp $	*/
+/*	Id: builtins.c,v 1.34 2011/10/24 08:53:18 plunky Exp 	*/	
+/*	$NetBSD: builtins.c,v 1.1.1.3 2012/01/11 20:33:08 plunky Exp $	*/
 /*
  * Copyright (c) 2003 Anders Magnusson (ragge@ludd.luth.se).
  * All rights reserved.
@@ -632,6 +632,9 @@ builtin_nanl(NODE *f, NODE *a, TWORD rt) NANX(long double,LDOUBLE)
 #ifndef TARGET_MEMCPY
 #define	builtin_memcpy builtin_unimp
 #endif
+#ifndef TARGET_MEMPCPY
+#define	builtin_mempcpy builtin_unimp
+#endif
 #ifndef TARGET_MEMSET
 #define	builtin_memset builtin_unimp
 #endif
@@ -671,6 +674,7 @@ static const struct bitable {
 	TWORD rt;
 } bitable[] = {
 	{ "__builtin___memcpy_chk", builtin_unimp, 4, memcpyt, VOID|PTR },
+	{ "__builtin___mempcpy_chk", builtin_unimp, 4, memcpyt, VOID|PTR },
 	{ "__builtin___memmove_chk", builtin_unimp, 4, memcpyt, VOID|PTR },
 	{ "__builtin___memset_chk", builtin_unimp, 4, memsett, VOID|PTR },
 
@@ -699,11 +703,15 @@ static const struct bitable {
 	{ "__builtin_ffs", builtin_ffs, 1, bitt, INT },
 	{ "__builtin_ffsl", builtin_ffsl, 1, bitlt, INT },
 	{ "__builtin_ffsll", builtin_ffsll, 1, bitllt, INT },
+	{ "__builtin_popcount", builtin_unimp, 1, bitt, UNSIGNED },
+	{ "__builtin_popcountl", builtin_unimp, 1, bitlt, ULONG },
+	{ "__builtin_popcountll", builtin_unimp, 1, bitllt, ULONGLONG },
 
 	{ "__builtin_constant_p", builtin_constant_p, 1 },
 	{ "__builtin_expect", builtin_expect, 2, expectt },
 	{ "__builtin_memcmp", builtin_memcmp, 3, memcpyt, INT },
 	{ "__builtin_memcpy", builtin_memcpy, 3, memcpyt, VOID|PTR },
+	{ "__builtin_mempcpy", builtin_mempcpy, 3, memcpyt, VOID|PTR },
 	{ "__builtin_memset", builtin_memset, 3, memsett, VOID|PTR },
 	{ "__builtin_huge_valf", builtin_huge_valf, 0 },
 	{ "__builtin_huge_val", builtin_huge_val, 0 },
@@ -723,7 +731,8 @@ static const struct bitable {
 	{ "__builtin_object_size", builtin_object_size, 2, memsett, SIZET },
 	{ "__builtin_prefetch", builtin_prefetch, 1, memsett, VOID },
 	{ "__builtin_strcmp", builtin_unimp, 2, strcmpt, INT },
-	{ "__builtin_strcpy", builtin_unimp, 2, strcmpt, CHAR|PTR },
+	{ "__builtin_strcpy", builtin_unimp, 2, strcpyt, CHAR|PTR },
+	{ "__builtin_stpcpy", builtin_unimp, 2, strcpyt, CHAR|PTR },
 	{ "__builtin_strchr", builtin_unimp, 2, strchrt, CHAR|PTR },
 	{ "__builtin_strlen", builtin_unimp, 1, strcmpt, SIZET },
 	{ "__builtin_strrchr", builtin_unimp, 2, strchrt, CHAR|PTR },
