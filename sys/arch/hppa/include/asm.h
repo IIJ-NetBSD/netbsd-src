@@ -1,4 +1,4 @@
-/*	$NetBSD: asm.h,v 1.14 2013/07/13 10:26:30 skrll Exp $	*/
+/*	$NetBSD: asm.h,v 1.13 2011/02/12 16:31:32 matt Exp $	*/
 
 /*	$OpenBSD: asm.h,v 1.12 2001/03/29 02:15:57 mickey Exp $	*/
 
@@ -42,17 +42,15 @@
 
 #define _ASM_LS_CHAR	!
 
-#define	_ENTRY(x) \
-	 ! .text ! .align 4				!\
-	.export x, entry ! .label x ! .proc
-
 #define	LEAF_ENTRY_NOPROFILE(x)				!\
-	_ENTRY(x)					!\
+	 ! .text ! .align 4				!\
+	.export	x, entry ! .label x ! .proc		!\
 	.callinfo frame=0, no_calls, save_rp		!\
 	.entry
 
 #define	ENTRY_NOPROFILE(x,n)				!\
-	_ENTRY(x)					!\
+	 ! .text ! .align 4				!\
+	.export x, entry ! .label x ! .proc		!\
 	.callinfo frame=n, calls, save_rp, save_sp	!\
 	.entry
 

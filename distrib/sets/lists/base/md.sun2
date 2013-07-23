@@ -1,8 +1,0 @@
-# $NetBSD: md.sun2,v 1.10 2013/07/18 21:03:07 matt Exp $
-./usr/mdec/bootxx				base-sysutil-bin
-./usr/mdec/bootyy				base-sysutil-bin
-./usr/mdec/installboot				base-obsolete		obsolete
-./usr/mdec/netboot				base-sysutil-bin
-./usr/mdec/tapeboot				base-sysutil-bin
-./usr/mdec/ufsboot				base-sysutil-bin
-./usr/bin/fdformat				base-util-bin

@@ -1,6 +1,6 @@
-/*	$NetBSD: math.h,v 1.8 2013/07/18 22:17:57 matt Exp $	*/
+/*	$NetBSD: math.h,v 1.7 2005/12/11 12:17:53 christos Exp $	*/
 
-#if !defined(__mc68010__) && !defined(__mcoldfire__)
+#ifndef __mc68010__
 #define	__HAVE_LONG_DOUBLE
 #endif
 #define	__HAVE_NANF

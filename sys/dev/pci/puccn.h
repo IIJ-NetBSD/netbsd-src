@@ -1,4 +1,4 @@
-/*	$NetBSD: puccn.h,v 1.5 2013/07/22 13:40:36 soren Exp $ */
+/*	$NetBSD: puccn.h,v 1.4 2005/12/11 12:22:50 christos Exp $ */
 
 /*
  * Derived from  pci.c
@@ -34,7 +34,6 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <dev/cons.h>
 
 /*
  * Machine independent support for PCI serial console support.

@@ -1,4 +1,4 @@
-#	$NetBSD: Makefile,v 1.48 2013/07/18 12:15:15 joerg Exp $
+#	$NetBSD: Makefile,v 1.47 2011/10/04 04:04:15 chs Exp $
 
 .include <bsd.own.mk>
 .include <bsd.sys.mk>		# for HOST_SH
@@ -83,8 +83,7 @@ INCPATH += -I${.CURDIR}/../elf2bb
 AFLAGS += -m68030 -l
 CAFLAGS += -Wa,-l -Wa,-m68030 ${INCPATH}
 
-COPTIM= -Os -fomit-frame-pointer -fcse-follow-jumps -fcse-skip-blocks
-COPTIM+= -Wa,-l -m68060 -Wa,-m68030 -fno-unwind-tables
+COPTIM= -Os -fomit-frame-pointer -fcse-follow-jumps -fcse-skip-blocks  -Wa,-l -m68060 -Wa,-m68030
 CFLAGS= -ffreestanding ${COPTIM} ${INCPATH} ${DEFS}
 CFLAGS+= -Werror
 CFLAGS+= -Wall -Wmissing-prototypes -Wstrict-prototypes -Wpointer-arith

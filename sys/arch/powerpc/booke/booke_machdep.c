@@ -1,4 +1,4 @@
-/*	$NetBSD: booke_machdep.c,v 1.18 2013/07/17 23:27:02 matt Exp $	*/
+/*	$NetBSD: booke_machdep.c,v 1.17 2012/10/29 05:23:44 matt Exp $	*/
 /*-
  * Copyright (c) 2010, 2011 The NetBSD Foundation, Inc.
  * All rights reserved.
@@ -38,7 +38,7 @@
 #define	_POWERPC_BUS_DMA_PRIVATE
 
 #include <sys/cdefs.h>
-__KERNEL_RCSID(0, "$NetBSD: booke_machdep.c,v 1.18 2013/07/17 23:27:02 matt Exp $");
+__KERNEL_RCSID(0, "$NetBSD: booke_machdep.c,v 1.17 2012/10/29 05:23:44 matt Exp $");
 
 #include "opt_modular.h"
 
@@ -54,6 +54,7 @@ __KERNEL_RCSID(0, "$NetBSD: booke_machdep.c,v 1.18 2013/07/17 23:27:02 matt Exp 
 
 #include <uvm/uvm_extern.h>
 
+#include <powerpc/cpuset.h>
 #include <powerpc/pcb.h>
 #include <powerpc/spr.h>
 #include <powerpc/booke/spr.h>
@@ -221,12 +222,6 @@ booke_cpu_startup(const char *model)
 		ci->ci_idepth = -1;
 		ci->ci_pmap_kern_segtab = curcpu()->ci_pmap_kern_segtab;
 	}
-
-	kcpuset_create(&cpuset_info.cpus_running, true);
-	kcpuset_create(&cpuset_info.cpus_hatched, true);
-	kcpuset_create(&cpuset_info.cpus_paused, true);
-	kcpuset_create(&cpuset_info.cpus_resumed, true);
-	kcpuset_create(&cpuset_info.cpus_halted, true);
 #endif /* MULTIPROCESSOR */
 }
 
@@ -463,18 +458,18 @@ cpu_evcnt_attach(struct cpu_info *ci)
 register_t
 cpu_hatch(void)
 {
-	struct cpuset_info * const csi = &cpuset_info;
+	volatile struct cpuset_info * const csi = &cpuset_info;
 	const size_t id = cpu_number();
 
 	/*
 	 * We've hatched so tell the spinup code.
 	 */
-	kcpuset_set(csi->cpus_hatched, id);
+	CPUSET_ADD(csi->cpus_hatched, id);
 
 	/*
 	 * Loop until running bit for this cpu is set.
 	 */
-	while (!kcpuset_isset(csi->cpus_running, id)) {
+	while (!CPUSET_HAS_P(csi->cpus_running, id)) {
 		continue;
 	}
 
@@ -495,27 +490,24 @@ cpu_boot_secondary_processors(void)
 	volatile struct cpuset_info * const csi = &cpuset_info;
 	CPU_INFO_ITERATOR cii;
 	struct cpu_info *ci;
-	kcpuset_t *running;
-
-	kcpuset_create(&running, true);
+	__cpuset_t running = CPUSET_NULLSET;
 
 	for (CPU_INFO_FOREACH(cii, ci)) {
 		/*
 		 * Skip this CPU if it didn't sucessfully hatch.
 		 */
-		if (!kcpuset_isset(csi->cpus_hatched, cpu_index(ci)))
+		if (! CPUSET_HAS_P(csi->cpus_hatched, cpu_index(ci)))
 			continue;
 
 		KASSERT(!CPU_IS_PRIMARY(ci));
 		KASSERT(ci->ci_data.cpu_idlelwp);
 
-		kcpuset_set(running, cpu_index(ci));
+		CPUSET_ADD(running, cpu_index(ci));
 	}
-	KASSERT(kcpuset_match(csi->cpus_hatched, running));
-	if (!kcpuset_iszero(running)) {
-		kcpuset_merge(csi->cpus_running, running);
+	KASSERT(CPUSET_EQUAL_P(csi->cpus_hatched, running));
+	if (!CPUSET_EMPTY_P(running)) {
+		CPUSET_ADDSET(csi->cpus_running, running);
 	}
-	kcpuset_destroy(running);
 }
 #endif
 

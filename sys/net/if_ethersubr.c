@@ -1,4 +1,4 @@
-/*	$NetBSD: if_ethersubr.c,v 1.195 2013/06/29 21:06:58 rmind Exp $	*/
+/*	$NetBSD: if_ethersubr.c,v 1.194 2013/03/01 18:25:56 joerg Exp $	*/
 
 /*
  * Copyright (C) 1995, 1996, 1997, and 1998 WIDE Project.
@@ -61,7 +61,7 @@
  */
 
 #include <sys/cdefs.h>
-__KERNEL_RCSID(0, "$NetBSD: if_ethersubr.c,v 1.195 2013/06/29 21:06:58 rmind Exp $");
+__KERNEL_RCSID(0, "$NetBSD: if_ethersubr.c,v 1.194 2013/03/01 18:25:56 joerg Exp $");
 
 #include "opt_inet.h"
 #include "opt_atalk.h"
@@ -69,6 +69,7 @@ __KERNEL_RCSID(0, "$NetBSD: if_ethersubr.c,v 1.195 2013/06/29 21:06:58 rmind Exp
 #include "opt_mbuftrace.h"
 #include "opt_mpls.h"
 #include "opt_gateway.h"
+#include "opt_pfil_hooks.h"
 #include "opt_pppoe.h"
 #include "vlan.h"
 #include "pppoe.h"
@@ -435,10 +436,12 @@ ether_output(struct ifnet * const ifp0, struct mbuf * const m0,
 	}
 #endif /* NCARP > 0 */
 
-	if ((error = pfil_run_hooks(ifp->if_pfil, &m, ifp, PFIL_OUT)) != 0)
+#ifdef PFIL_HOOKS
+	if ((error = pfil_run_hooks(&ifp->if_pfil, &m, ifp, PFIL_OUT)) != 0)
 		return (error);
 	if (m == NULL)
 		return (0);
+#endif
 
 #if NBRIDGE > 0
 	/*
@@ -680,8 +683,9 @@ ether_input(struct ifnet *ifp, struct mbuf *m)
 		}
 	}
 
+#ifdef PFIL_HOOKS
 	if ((m->m_flags & M_PROMISC) == 0) {
-		if (pfil_run_hooks(ifp->if_pfil, &m, ifp, PFIL_IN) != 0)
+		if (pfil_run_hooks(&ifp->if_pfil, &m, ifp, PFIL_IN) != 0)
 			return;
 		if (m == NULL)
 			return;
@@ -690,6 +694,7 @@ ether_input(struct ifnet *ifp, struct mbuf *m)
 		etype = ntohs(eh->ether_type);
 		ehlen = sizeof(*eh);
 	}
+#endif
 
 #if NAGR > 0
 	if (ifp->if_agrprivate &&

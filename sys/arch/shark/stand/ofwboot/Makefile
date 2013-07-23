@@ -1,6 +1,4 @@
-#	$NetBSD: Makefile,v 1.13 2013/06/30 21:54:26 matt Exp $
-
-NOMAN=		# defined
+#	$NetBSD: Makefile,v 1.12 2011/01/22 19:19:23 joerg Exp $
 
 .include <bsd.own.mk>
 
@@ -24,6 +22,7 @@ LIBC=
 LIBCRTBEGIN=
 LIBCRTEND=
 
+NOMAN=		# defined
 STRIPFLAG=
 BINMODE=	444
 
@@ -37,8 +36,6 @@ CLEANFILES+=	vers.c
 
 CPPFLAGS+=	-nostdinc -I. -I${.CURDIR}/../../.. -I${S}
 CPPFLAGS+=	-DRELOC=0x${RELOC}
-CFLAGS+=	-fno-unwind-tables
-CPUFLAGS=	-mcpu=strongarm
 
 .if !make(obj) && !make(clean) && !make(cleandir)
 .BEGIN:
@@ -73,7 +70,6 @@ vers.c: version
 	    ${.CURDIR}/version "shark" ${NEWVERSWHAT}
 
 ${PROG}: ${OBJS} ${LIBSA} ${LIBZ} ${LIBKERN}
-	${_MKTARGET_LINK}
 	${LD} -s -N -Ttext ${RELOC} -Bstatic -e ${ENTRY} -o ${.TARGET}.aout \
 	    ${OBJS} ${LIBSA} ${LIBZ} ${LIBKERN}
 	${OBJCOPY} -O binary ${.TARGET}.aout ${.TARGET}

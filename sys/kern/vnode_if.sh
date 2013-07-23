@@ -29,7 +29,7 @@ copyright="\
  * SUCH DAMAGE.
  */
 "
-SCRIPT_ID='$NetBSD: vnode_if.sh,v 1.59 2013/07/17 21:20:53 pooka Exp $'
+SCRIPT_ID='$NetBSD: vnode_if.sh,v 1.58 2011/07/11 08:23:00 hannken Exp $'
 
 # Script to produce VFS front-end sugar.
 #
@@ -150,8 +150,6 @@ awk_parser='
 			at = "off_t";
 		if (at == "kauth_cred_t")
 			at = "struct kauth_cred *"
-		if (at == "daddr_t")
-			at = "int64_t"
 	}
 	argtype[argc] = at;
 	i++;

@@ -28,7 +28,7 @@
  */
 
 #ifndef _POWERPC_RTAS_H_
-#define _POWERPC_RTAS_H_
+#define _POWERPC_RTAS_H
 
 #define RTAS_MAXARGS 16
 

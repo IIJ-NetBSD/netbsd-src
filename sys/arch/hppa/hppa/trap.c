@@ -1,4 +1,4 @@
-/*	$NetBSD: trap.c,v 1.102 2013/07/13 10:29:37 skrll Exp $	*/
+/*	$NetBSD: trap.c,v 1.101 2012/04/23 11:25:03 skrll Exp $	*/
 
 /*-
  * Copyright (c) 2001, 2002 The NetBSD Foundation, Inc.
@@ -58,7 +58,7 @@
  */
 
 #include <sys/cdefs.h>
-__KERNEL_RCSID(0, "$NetBSD: trap.c,v 1.102 2013/07/13 10:29:37 skrll Exp $");
+__KERNEL_RCSID(0, "$NetBSD: trap.c,v 1.101 2012/04/23 11:25:03 skrll Exp $");
 
 /* #define INTRDEBUG */
 /* #define TRAPDEBUG */
@@ -1237,8 +1237,17 @@ syscall(struct trapframe *frame, int *args)
 	}
 #endif
 
-	error = sy_invoke(callp, l, args, rval, code);
+	error = 0;
+	if (__predict_false(p->p_trace_enabled)) {
+		error = trace_enter(code, args, callp->sy_narg);
+		if (error)
+			goto out;
+	}
 
+	rval[0] = 0;
+	rval[1] = 0;
+	error = sy_call(callp, l, args, rval);
+out:
 	switch (error) {
 	case 0:
 		l = curlwp;			/* changes on exec() */
@@ -1276,6 +1285,9 @@ syscall(struct trapframe *frame, int *args)
 		frame->tf_t1 = error;
 		break;
 	}
+
+	if (__predict_false(p->p_trace_enabled))
+		trace_exit(code, rval, error);
 
 	userret(l, frame->tf_iioq_head, 0);
 

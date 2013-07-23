@@ -1,4 +1,4 @@
-/*	$NetBSD: puc.c,v 1.35 2013/07/22 14:52:02 soren Exp $	*/
+/*	$NetBSD: puc.c,v 1.32 2011/05/28 10:48:50 ryo Exp $	*/
 
 /*
  * Copyright (c) 1996, 1998, 1999
@@ -53,7 +53,7 @@
  */
 
 #include <sys/cdefs.h>
-__KERNEL_RCSID(0, "$NetBSD: puc.c,v 1.35 2013/07/22 14:52:02 soren Exp $");
+__KERNEL_RCSID(0, "$NetBSD: puc.c,v 1.32 2011/05/28 10:48:50 ryo Exp $");
 
 #include <sys/param.h>
 #include <sys/systm.h>
@@ -68,7 +68,7 @@ __KERNEL_RCSID(0, "$NetBSD: puc.c,v 1.35 2013/07/22 14:52:02 soren Exp $");
 #include <dev/ic/comvar.h>
 
 #include "locators.h"
-#include "com.h"
+#include "opt_puccn.h"
 
 struct puc_softc {
 	/* static configuration data */
@@ -147,6 +147,11 @@ puc_attach(device_t parent, device_t self, void *aux)
 	pci_intr_handle_t intrhandle;
 	pcireg_t subsys;
 	int i, barindex;
+	bus_addr_t base;
+	bus_space_tag_t tag;
+#ifdef PUCCN
+	bus_space_handle_t ioh;
+#endif
 	int locs[PUCCF_NLOCS];
 
 	subsys = pci_conf_read(pa->pa_pc, pa->pa_tag, PCI_SUBSYS_ID_REG);
@@ -172,19 +177,19 @@ puc_attach(device_t parent, device_t self, void *aux)
 		return;
 	}
 
-	aprint_naive("\n");
-	aprint_normal(": %s (", sc->sc_desc->name);
+	printf(": %s (", sc->sc_desc->name);
 	for (i = 0; PUC_PORT_VALID(sc->sc_desc, i); i++)
-		aprint_normal("%s%s", i ? ", " : "",
+		printf("%s%s", i ? ", " : "",
 		    puc_port_type_name(sc->sc_desc->ports[i].type));
-	aprint_normal(")\n");
+	printf(")\n");
 
 	for (i = 0; i < 6; i++) {
 		pcireg_t bar, type;
 
 		sc->sc_bar_mappings[i].mapped = 0;
 
-		bar = pci_conf_read(pa->pa_pc, pa->pa_tag, PCI_BAR(i));
+		bar = pci_conf_read(pa->pa_pc, pa->pa_tag,
+		    PCI_MAPREG_START + 4 * i);	/* XXX const */
 		if (bar == 0)			/* BAR not implemented(?) */
 			continue;
 
@@ -192,24 +197,31 @@ puc_attach(device_t parent, device_t self, void *aux)
 		    PCI_MAPREG_TYPE_IO : PCI_MAPREG_MEM_TYPE(bar));
 
 		if (type == PCI_MAPREG_TYPE_IO) {
-			sc->sc_bar_mappings[i].t = pa->pa_iot;
-			sc->sc_bar_mappings[i].a = PCI_MAPREG_IO_ADDR(bar);
-			sc->sc_bar_mappings[i].s = PCI_MAPREG_IO_SIZE(bar);
+			tag = pa->pa_iot;
+			base =  PCI_MAPREG_IO_ADDR(bar);
 		} else {
-			sc->sc_bar_mappings[i].t = pa->pa_memt;
-			sc->sc_bar_mappings[i].a = PCI_MAPREG_MEM_ADDR(bar);
-			sc->sc_bar_mappings[i].s = PCI_MAPREG_MEM_SIZE(bar);
+			tag = pa->pa_memt;
+			base =  PCI_MAPREG_MEM_ADDR(bar);
 		}
-
+#ifdef PUCCN
+		if (com_is_console(tag, base, &ioh)) {
+			sc->sc_bar_mappings[i].mapped = 1;
+			sc->sc_bar_mappings[i].a = base;
+			sc->sc_bar_mappings[i].s = COM_NPORTS;
+			sc->sc_bar_mappings[i].t = tag;
+			sc->sc_bar_mappings[i].h = ioh;
+			continue;
+		}
+#endif
 		sc->sc_bar_mappings[i].mapped = (pci_mapreg_map(pa,
-		    PCI_BAR(i), type, 0,
+		    PCI_MAPREG_START + 4 * i, type, 0,
 		    &sc->sc_bar_mappings[i].t, &sc->sc_bar_mappings[i].h,
 		    &sc->sc_bar_mappings[i].a, &sc->sc_bar_mappings[i].s)
 		      == 0);
 		if (sc->sc_bar_mappings[i].mapped)
 			continue;
 
-		aprint_debug_dev(self, "couldn't map BAR at offset 0x%lx\n",
+		aprint_error_dev(self, "couldn't map BAR at offset 0x%lx\n",
 		    (long)(PCI_MAPREG_START + 4 * i));
 	}
 
@@ -247,32 +259,17 @@ puc_attach(device_t parent, device_t self, void *aux)
 		/* enable port 0-7 interrupt */
 		bus_space_write_1(sc->sc_bar_mappings[1].t,
 		    sc->sc_bar_mappings[1].h, SB16C105X_OPT_IMRREG0, 0xff);
-	} else {
-		if (!pmf_device_register(self, NULL, NULL))
-	                aprint_error_dev(self,
-			    "couldn't establish power handler\n");
 	}
 
 	/* Configure each port. */
 	for (i = 0; PUC_PORT_VALID(sc->sc_desc, i); i++) {
-		barindex = PUC_PORT_BAR_INDEX(sc->sc_desc->ports[i].bar);
 		bus_space_handle_t subregion_handle;
-		int is_console = 0;
 
 		/* make sure the base address register is mapped */
-#if NCOM > 0
-		is_console = com_is_console(sc->sc_bar_mappings[barindex].t,
-		    sc->sc_bar_mappings[barindex].a +
-		    sc->sc_desc->ports[i].offset, &subregion_handle);
-		if (is_console) {
-                        sc->sc_bar_mappings[barindex].mapped = 1;
-                       	sc->sc_bar_mappings[barindex].h = subregion_handle -
-			    sc->sc_desc->ports[i].offset;	/* XXX hack */
-		}
-#endif
+		barindex = PUC_PORT_BAR_INDEX(sc->sc_desc->ports[i].bar);
 		if (!sc->sc_bar_mappings[barindex].mapped) {
-			aprint_error_dev(self,
-			    "%s port uses unmapped BAR (0x%x)\n",
+			printf("%s: %s port uses unmapped BAR (0x%x)\n",
+			    device_xname(self),
 			    puc_port_type_name(sc->sc_desc->ports[i].type),
 			    sc->sc_desc->ports[i].bar);
 			continue;
@@ -285,13 +282,17 @@ puc_attach(device_t parent, device_t self, void *aux)
 		paa.pc = pa->pa_pc;
 		paa.tag = pa->pa_tag;
 		paa.intrhandle = intrhandle;
-		paa.a = sc->sc_bar_mappings[barindex].a +
-		    sc->sc_desc->ports[i].offset;
+		paa.a = sc->sc_bar_mappings[barindex].a;
 		paa.t = sc->sc_bar_mappings[barindex].t;
 		paa.dmat = pa->pa_dmat;
 		paa.dmat64 = pa->pa_dmat64;
 
-		if (!is_console &&
+		if (
+#ifdef PUCCN
+		    !com_is_console(sc->sc_bar_mappings[barindex].t,
+		    sc->sc_bar_mappings[barindex].a, &subregion_handle)
+		   &&
+#endif
 		    bus_space_subregion(sc->sc_bar_mappings[barindex].t,
 		    sc->sc_bar_mappings[barindex].h,
 		    sc->sc_desc->ports[i].offset,
