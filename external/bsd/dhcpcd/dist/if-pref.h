@@ -1,4 +1,4 @@
-/* $NetBSD: if-pref.h,v 1.1.1.3 2013/06/21 19:33:08 roy Exp $ */
+/* $NetBSD: if-pref.h,v 1.1.1.4 2014/02/25 13:14:30 roy Exp $ */
 
 /*
  * dhcpcd - DHCP client daemon
@@ -32,5 +32,5 @@
 
 #include "dhcpcd.h"
 
-void sort_interfaces(void);
+void sort_interfaces(struct dhcpcd_ctx *);
 #endif
