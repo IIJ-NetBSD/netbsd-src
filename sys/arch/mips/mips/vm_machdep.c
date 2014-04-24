@@ -1,4 +1,4 @@
-/*	$NetBSD: vm_machdep.c,v 1.143 2014/04/23 20:57:15 skrll Exp $	*/
+/*	$NetBSD: vm_machdep.c,v 1.142 2012/02/19 21:06:20 rmind Exp $	*/
 
 /*
  * Copyright (c) 1988 University of Utah.
@@ -39,7 +39,7 @@
  */
 
 #include <sys/cdefs.h>
-__KERNEL_RCSID(0, "$NetBSD: vm_machdep.c,v 1.143 2014/04/23 20:57:15 skrll Exp $");
+__KERNEL_RCSID(0, "$NetBSD: vm_machdep.c,v 1.142 2012/02/19 21:06:20 rmind Exp $");
 
 #include "opt_ddb.h"
 #include "opt_coredump.h"

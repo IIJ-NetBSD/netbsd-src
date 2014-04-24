@@ -1,4 +1,4 @@
-/*	$NetBSD: if_ether.h,v 1.62 2014/04/23 23:17:22 pooka Exp $	*/
+/*	$NetBSD: if_ether.h,v 1.61 2012/10/31 10:17:34 msaitoh Exp $	*/
 
 /*
  * Copyright (c) 1982, 1986, 1993

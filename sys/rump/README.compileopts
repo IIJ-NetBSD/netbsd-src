@@ -1,4 +1,4 @@
-	$NetBSD: README.compileopts,v 1.4 2014/04/23 23:25:45 pooka Exp $
+	$NetBSD: README.compileopts,v 1.3 2014/03/16 15:31:03 pooka Exp $
 
 This file describes compile-time options for rump kernels.  Additionally,
 NetBSD build options will have an effect.  See src/share/mk/bsd.README
