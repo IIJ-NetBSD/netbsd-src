@@ -1,5 +1,7 @@
-#	$NetBSD: Makefile,v 1.1 2014/04/24 21:46:44 pooka Exp $
+#	$NetBSD: Makefile,v 1.2 2014/04/25 00:17:48 pooka Exp $
 #
+
+.include <bsd.own.mk>
 
 RUMPTOP= ${NETBSDSRCDIR}/sys/rump
 
