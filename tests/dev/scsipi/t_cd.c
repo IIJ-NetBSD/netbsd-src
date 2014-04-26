@@ -1,4 +1,4 @@
-/*	$NetBSD: t_cd.c,v 1.7 2014/04/25 00:24:39 pooka Exp $	*/
+/*	$NetBSD: t_cd.c,v 1.6 2013/03/15 16:18:49 martin Exp $	*/
 
 /*
  * Copyright (c) 2010 Antti Kantee.  All Rights Reserved.

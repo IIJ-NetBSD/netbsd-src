@@ -1,4 +1,4 @@
-/*	$NetBSD: util.c,v 1.3 2014/04/24 13:45:33 pettai Exp $	*/
+/*	$NetBSD: util.c,v 1.1.1.2 2014/04/24 12:45:27 pettai Exp $	*/
 
 /*
  * Copyright (c) 1997 - 2006 Kungliga Tekniska Högskolan

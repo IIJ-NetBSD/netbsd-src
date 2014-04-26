@@ -1,4 +1,4 @@
-/*	$NetBSD: extra.c,v 1.1.1.2 2014/04/24 12:45:28 pettai Exp $	*/
+/*	$NetBSD$	*/
 
 /*
  * Copyright (c) 2003 - 2005 Kungliga Tekniska Högskolan

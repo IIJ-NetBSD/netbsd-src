@@ -1,4 +1,4 @@
-$NetBSD: pcidevs,v 1.1188 2014/04/26 07:32:26 mrg Exp $
+$NetBSD: pcidevs,v 1.1187 2014/04/09 10:21:10 msaitoh Exp $
 
 /*
  * Copyright (c) 1995, 1996 Christopher G. Demetriou

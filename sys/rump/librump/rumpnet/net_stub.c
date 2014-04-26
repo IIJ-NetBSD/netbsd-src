@@ -1,4 +1,4 @@
-/*	$NetBSD: net_stub.c,v 1.17 2014/04/26 11:23:56 pooka Exp $	*/
+/*	$NetBSD: net_stub.c,v 1.16 2014/04/26 11:23:03 pooka Exp $	*/
 
 /*
  * Copyright (c) 2008 Antti Kantee.  All Rights Reserved.
@@ -26,7 +26,7 @@
  */
 
 #include <sys/cdefs.h>
-__KERNEL_RCSID(0, "$NetBSD: net_stub.c,v 1.17 2014/04/26 11:23:56 pooka Exp $");
+__KERNEL_RCSID(0, "$NetBSD: net_stub.c,v 1.16 2014/04/26 11:23:03 pooka Exp $");
 
 #include <sys/param.h>
 #include <sys/protosw.h>

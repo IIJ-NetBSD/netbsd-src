@@ -1,4 +1,4 @@
-/*	$NetBSD: bits.c,v 1.1.1.3 2014/04/24 12:45:27 pettai Exp $	*/
+/*	$NetBSD$	*/
 
 /*
  * Copyright (c) 1997-2002 Kungliga Tekniska Högskolan

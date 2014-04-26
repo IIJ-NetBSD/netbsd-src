@@ -1,4 +1,4 @@
-/*	$NetBSD: netstat.h,v 1.49 2014/04/24 14:54:51 christos Exp $	*/
+/*	$NetBSD: netstat.h,v 1.48 2013/11/23 22:01:12 christos Exp $	*/
 
 /*
  * Copyright (c) 1992, 1993

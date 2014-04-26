@@ -1,4 +1,4 @@
-# $NetBSD: shl.mi,v 1.700 2014/04/24 21:46:44 pooka Exp $
+# $NetBSD: shl.mi,v 1.699 2014/04/10 22:11:57 asau Exp $
 #
 # Note:	Don't delete entries from here - mark them as "obsolete" instead,
 #	unless otherwise stated below.

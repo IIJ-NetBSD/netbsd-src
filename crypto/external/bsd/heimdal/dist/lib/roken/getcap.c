@@ -1,4 +1,4 @@
-/*	$NetBSD: getcap.c,v 1.1.1.2 2014/04/24 12:45:52 pettai Exp $	*/
+/*	$NetBSD$	*/
 
 /*	NetBSD: getcap.c,v 1.29 1999/03/29 09:27:29 abs Exp	*/
 

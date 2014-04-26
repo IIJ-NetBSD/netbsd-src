@@ -1,4 +1,4 @@
-#	$NetBSD: Makefile.rumpdevcomp,v 1.11 2014/04/24 21:46:44 pooka Exp $
+#	$NetBSD: Makefile.rumpdevcomp,v 1.10 2014/04/14 22:56:53 pooka Exp $
 #
 
 RUMPDEVCOMP=	audio bpf cgd disk dm drvctl fss md netsmb pad pud	\

@@ -1,4 +1,4 @@
-/*	$NetBSD: heim_threads.h,v 1.1.1.3 2014/04/24 12:45:27 pettai Exp $	*/
+/*	$NetBSD$	*/
 
 /*
  * Copyright (c) 2003 Kungliga Tekniska Högskolan

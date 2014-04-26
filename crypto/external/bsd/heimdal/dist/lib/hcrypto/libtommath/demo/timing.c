@@ -1,4 +1,4 @@
-/*	$NetBSD: timing.c,v 1.1.1.2 2014/04/24 12:45:39 pettai Exp $	*/
+/*	$NetBSD$	*/
 
 #include <tommath.h>
 #include <time.h>

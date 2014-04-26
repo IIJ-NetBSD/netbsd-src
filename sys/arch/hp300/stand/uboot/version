@@ -1,4 +1,4 @@
-$NetBSD: version,v 1.19 2014/04/26 07:53:41 tsutsui Exp $
+$NetBSD: version,v 1.18 2011/02/12 05:09:15 tsutsui Exp $
 
 1.1:	Initial version
 1.2:	Added support for network booting

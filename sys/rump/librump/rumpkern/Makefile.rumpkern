@@ -1,4 +1,4 @@
-#	$NetBSD: Makefile.rumpkern,v 1.145 2014/04/25 18:25:38 pooka Exp $
+#	$NetBSD: Makefile.rumpkern,v 1.144 2014/04/25 13:10:42 pooka Exp $
 #
 
 .include "${RUMPTOP}/Makefile.rump"

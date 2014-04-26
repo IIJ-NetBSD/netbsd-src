@@ -1,4 +1,4 @@
-/*	$NetBSD: etfs_wrap.c,v 1.1 2014/04/25 13:10:42 pooka Exp $	*/
+/*	$NetBSD$	*/
 
 /*
  * Copyright (c) 2014 Antti Kantee.  All Rights Reserved.
@@ -26,7 +26,7 @@
  */
 
 #include <sys/cdefs.h>
-__KERNEL_RCSID(0, "$NetBSD: etfs_wrap.c,v 1.1 2014/04/25 13:10:42 pooka Exp $");
+__KERNEL_RCSID(0, "$NetBSD$");
 
 #include <sys/param.h>
 

@@ -1,4 +1,4 @@
-/*	$NetBSD: dnkbd.c,v 1.7 2014/04/24 12:10:27 tsutsui Exp $	*/
+/*	$NetBSD: dnkbd.c,v 1.6 2014/04/24 11:58:04 tsutsui Exp $	*/
 /*	$OpenBSD: dnkbd.c,v 1.17 2009/07/23 21:05:56 blambert Exp $	*/
 
 /*

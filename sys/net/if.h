@@ -1,4 +1,4 @@
-/*	$NetBSD: if.h,v 1.163 2014/04/26 11:16:22 pooka Exp $	*/
+/*	$NetBSD: if.h,v 1.162 2014/04/17 15:45:39 christos Exp $	*/
 
 /*-
  * Copyright (c) 1999, 2000, 2001 The NetBSD Foundation, Inc.

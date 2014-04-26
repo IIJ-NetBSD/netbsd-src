@@ -1,4 +1,4 @@
-/*	$NetBSD: gss_authorize_localname.c,v 1.1.1.1 2014/04/24 12:45:29 pettai Exp $	*/
+/*	$NetBSD$	*/
 
 /*
  * Copyright (c) 2011, PADL Software Pty Ltd.

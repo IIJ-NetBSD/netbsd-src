@@ -1,4 +1,4 @@
-/*	$NetBSD: sys_select.c,v 1.39 2014/04/25 15:52:45 pooka Exp $	*/
+/*	$NetBSD: sys_select.c,v 1.38 2014/02/25 18:30:11 pooka Exp $	*/
 
 /*-
  * Copyright (c) 2007, 2008, 2009, 2010 The NetBSD Foundation, Inc.
@@ -84,7 +84,7 @@
  */
 
 #include <sys/cdefs.h>
-__KERNEL_RCSID(0, "$NetBSD: sys_select.c,v 1.39 2014/04/25 15:52:45 pooka Exp $");
+__KERNEL_RCSID(0, "$NetBSD: sys_select.c,v 1.38 2014/02/25 18:30:11 pooka Exp $");
 
 #include <sys/param.h>
 #include <sys/systm.h>

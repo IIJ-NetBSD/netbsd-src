@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $NetBSD: postinstall,v 1.166 2014/04/25 00:23:26 mrg Exp $
+# $NetBSD: postinstall,v 1.165 2014/03/08 16:36:24 martin Exp $
 #
 # Copyright (c) 2002-2008 The NetBSD Foundation, Inc.
 # All rights reserved.

@@ -1,4 +1,4 @@
-# $NetBSD: shl.mi,v 1.60 2014/04/24 21:46:44 pooka Exp $
+# $NetBSD: shl.mi,v 1.59 2014/04/10 00:09:09 pooka Exp $
 ./usr/libdata/debug/lib/libc.so.12.190.debug		comp-sys-debug	debug
 ./usr/libdata/debug/lib/libcrypt.so.1.0.debug		comp-sys-debug	debug
 ./usr/libdata/debug/lib/libcrypto.so.8.2.debug		comp-sys-debug	debug

@@ -1,4 +1,4 @@
-/*	$NetBSD: mtree.c,v 1.49 2014/04/24 17:22:41 christos Exp $	*/
+/*	$NetBSD: mtree.c,v 1.48 2013/04/08 17:39:11 christos Exp $	*/
 
 /*-
  * Copyright (c) 1989, 1990, 1993
@@ -43,7 +43,7 @@ __COPYRIGHT("@(#) Copyright (c) 1989, 1990, 1993\
 #if 0
 static char sccsid[] = "@(#)mtree.c	8.1 (Berkeley) 6/6/93";
 #else
-__RCSID("$NetBSD: mtree.c,v 1.49 2014/04/24 17:22:41 christos Exp $");
+__RCSID("$NetBSD: mtree.c,v 1.48 2013/04/08 17:39:11 christos Exp $");
 #endif
 #endif /* not lint */
 

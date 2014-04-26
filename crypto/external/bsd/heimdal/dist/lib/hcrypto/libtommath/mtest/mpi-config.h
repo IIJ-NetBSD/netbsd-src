@@ -1,4 +1,4 @@
-/*	$NetBSD: mpi-config.h,v 1.1.1.3 2014/04/24 12:45:39 pettai Exp $	*/
+/*	$NetBSD$	*/
 
 /* Default configuration for MPI library */
 /* Id: mpi-config.h,v 1.2 2005/05/05 14:38:47 tom Exp  */

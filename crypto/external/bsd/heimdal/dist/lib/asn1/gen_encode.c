@@ -1,4 +1,4 @@
-/*	$NetBSD: gen_encode.c,v 1.1.1.2 2014/04/24 12:45:28 pettai Exp $	*/
+/*	$NetBSD$	*/
 
 /*
  * Copyright (c) 1997 - 2006 Kungliga Tekniska Högskolan

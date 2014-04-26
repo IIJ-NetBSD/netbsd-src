@@ -1,4 +1,4 @@
-/*	$NetBSD: bn_mp_montgomery_reduce.c,v 1.1.1.2 2014/04/24 12:45:31 pettai Exp $	*/
+/*	$NetBSD$	*/
 
 #include <tommath.h>
 #ifdef BN_MP_MONTGOMERY_REDUCE_C

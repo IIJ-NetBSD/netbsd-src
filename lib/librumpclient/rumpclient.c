@@ -1,4 +1,4 @@
-/*      $NetBSD: rumpclient.c,v 1.62 2014/04/25 12:20:12 pooka Exp $	*/
+/*      $NetBSD: rumpclient.c,v 1.61 2014/04/03 17:11:35 pooka Exp $	*/
 
 /*
  * Copyright (c) 2010, 2011 Antti Kantee.  All Rights Reserved.
@@ -50,7 +50,7 @@
 #define USE_SIGNALFD
 #endif
 
-__RCSID("$NetBSD: rumpclient.c,v 1.62 2014/04/25 12:20:12 pooka Exp $");
+__RCSID("$NetBSD: rumpclient.c,v 1.61 2014/04/03 17:11:35 pooka Exp $");
 
 #include <sys/param.h>
 #include <sys/mman.h>

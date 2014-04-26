@@ -1,4 +1,4 @@
-/*	$NetBSD: context.c,v 1.4 2014/04/24 13:45:34 pettai Exp $	*/
+/*	$NetBSD: context.c,v 1.1.1.2 2014/04/24 12:45:49 pettai Exp $	*/
 
 /*
  * Copyright (c) 1997 - 2010 Kungliga Tekniska Högskolan

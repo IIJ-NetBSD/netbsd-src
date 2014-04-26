@@ -1,4 +1,4 @@
-;       $NetBSD: rumpvfs.ifspec,v 1.9 2014/04/25 13:10:42 pooka Exp $
+;       $NetBSD: rumpvfs.ifspec,v 1.8 2012/11/18 18:39:23 pooka Exp $
 
 NAME|vfs
 PUBHDR|include/rump/rumpvfs_if_pub.h

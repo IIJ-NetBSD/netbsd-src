@@ -1,4 +1,4 @@
-/*	$NetBSD: rumpvfs_if_wrappers.c,v 1.12 2014/04/25 17:50:28 pooka Exp $	*/
+/*	$NetBSD: makerumpif.sh,v 1.8 2014/04/25 17:50:01 pooka Exp $	*/
 
 /*
  * Automatically generated.  DO NOT EDIT.

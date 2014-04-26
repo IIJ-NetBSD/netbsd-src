@@ -1,4 +1,4 @@
-/*	$NetBSD: tommath_class.h,v 1.1.1.2 2014/04/24 12:45:31 pettai Exp $	*/
+/*	$NetBSD$	*/
 
 #if !(defined(LTM1) && defined(LTM2) && defined(LTM3))
 #if defined(LTM2)

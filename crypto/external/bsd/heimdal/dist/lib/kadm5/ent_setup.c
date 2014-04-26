@@ -1,4 +1,4 @@
-/*	$NetBSD: ent_setup.c,v 1.1.1.2 2014/04/24 12:45:48 pettai Exp $	*/
+/*	$NetBSD$	*/
 
 /*
  * Copyright (c) 1997 - 2000 Kungliga Tekniska Högskolan

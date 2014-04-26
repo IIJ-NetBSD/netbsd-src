@@ -1,4 +1,4 @@
-/*	$NetBSD: rump_vfs.c,v 1.78 2014/04/25 18:31:35 pooka Exp $	*/
+/*	$NetBSD: rump_vfs.c,v 1.77 2013/06/10 19:48:22 pooka Exp $	*/
 
 /*
  * Copyright (c) 2008 Antti Kantee.  All Rights Reserved.
@@ -29,7 +29,7 @@
  */
 
 #include <sys/cdefs.h>
-__KERNEL_RCSID(0, "$NetBSD: rump_vfs.c,v 1.78 2014/04/25 18:31:35 pooka Exp $");
+__KERNEL_RCSID(0, "$NetBSD: rump_vfs.c,v 1.77 2013/06/10 19:48:22 pooka Exp $");
 
 #include <sys/param.h>
 #include <sys/buf.h>

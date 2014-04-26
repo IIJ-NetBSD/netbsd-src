@@ -1,4 +1,4 @@
-/*	$NetBSD: k5dfspag.c,v 1.1.1.2 2014/04/24 12:45:49 pettai Exp $	*/
+/*	$NetBSD$	*/
 
 /*
  * lib/krb5/os/k5dfspag.c

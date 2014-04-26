@@ -1,4 +1,4 @@
-/*	$NetBSD: rd_req.c,v 1.1.1.2 2014/04/24 12:45:51 pettai Exp $	*/
+/*	$NetBSD$	*/
 
 
 /*

@@ -1,4 +1,4 @@
-/*	$NetBSD: sockin.c,v 1.37 2014/04/26 11:23:03 pooka Exp $	*/
+/*	$NetBSD: sockin.c,v 1.36 2014/03/13 01:40:30 pooka Exp $	*/
 
 /*
  * Copyright (c) 2008, 2009 Antti Kantee.  All Rights Reserved.
@@ -26,7 +26,7 @@
  */
 
 #include <sys/cdefs.h>
-__KERNEL_RCSID(0, "$NetBSD: sockin.c,v 1.37 2014/04/26 11:23:03 pooka Exp $");
+__KERNEL_RCSID(0, "$NetBSD: sockin.c,v 1.36 2014/03/13 01:40:30 pooka Exp $");
 
 #include <sys/param.h>
 #include <sys/condvar.h>

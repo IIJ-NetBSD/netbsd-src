@@ -1,5 +1,5 @@
 @c Id
-@c $NetBSD: setup.texi,v 1.1.1.3 2014/04/24 12:45:27 pettai Exp $
+@c $NetBSD$
 
 @node Setting up a realm, Applications, Building and Installing, Top
 

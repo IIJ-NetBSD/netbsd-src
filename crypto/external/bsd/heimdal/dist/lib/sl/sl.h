@@ -1,4 +1,4 @@
-/*	$NetBSD: sl.h,v 1.1.1.3 2014/04/24 12:45:53 pettai Exp $	*/
+/*	$NetBSD$	*/
 
 /*
  * Copyright (c) 1995 - 2004 Kungliga Tekniska Högskolan

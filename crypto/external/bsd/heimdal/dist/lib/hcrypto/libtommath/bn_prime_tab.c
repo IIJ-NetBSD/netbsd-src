@@ -1,4 +1,4 @@
-/*	$NetBSD: bn_prime_tab.c,v 1.1.1.2 2014/04/24 12:45:31 pettai Exp $	*/
+/*	$NetBSD$	*/
 
 #include <tommath.h>
 #ifdef BN_PRIME_TAB_C

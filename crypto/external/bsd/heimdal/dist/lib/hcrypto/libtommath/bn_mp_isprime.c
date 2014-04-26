@@ -1,4 +1,4 @@
-/*	$NetBSD: bn_mp_isprime.c,v 1.1.1.2 2014/04/24 12:45:31 pettai Exp $	*/
+/*	$NetBSD$	*/
 
 /* TomsFastMath, a fast ISO C bignum library.
  *
