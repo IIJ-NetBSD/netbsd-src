@@ -1,4 +1,4 @@
-/*	$NetBSD: gic.c,v 1.9 2014/04/27 16:22:13 matt Exp $	*/
+/*	$NetBSD: gic.c,v 1.8 2014/04/13 02:21:47 matt Exp $	*/
 /*-
  * Copyright (c) 2012 The NetBSD Foundation, Inc.
  * All rights reserved.
@@ -33,7 +33,7 @@
 #define _INTR_PRIVATE
 
 #include <sys/cdefs.h>
-__KERNEL_RCSID(0, "$NetBSD: gic.c,v 1.9 2014/04/27 16:22:13 matt Exp $");
+__KERNEL_RCSID(0, "$NetBSD: gic.c,v 1.8 2014/04/13 02:21:47 matt Exp $");
 
 #include <sys/param.h>
 #include <sys/bus.h>

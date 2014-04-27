@@ -1,4 +1,4 @@
-/*	$NetBSD: rumpuser.h,v 1.111 2014/04/27 15:18:59 pooka Exp $	*/
+/*	$NetBSD: rumpuser.h,v 1.110 2014/03/16 15:30:05 pooka Exp $	*/
 
 /*
  * Copyright (c) 2007-2013 Antti Kantee.  All Rights Reserved.
