@@ -1,4 +1,4 @@
-# $NetBSD: mi,v 1.566 2014/04/17 23:15:27 pgoyette Exp $
+# $NetBSD: mi,v 1.565 2014/04/17 18:37:07 christos Exp $
 #
 # Note: don't delete entries from here - mark them as "obsolete" instead.
 #

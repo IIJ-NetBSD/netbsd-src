@@ -1,4 +1,4 @@
-#	$NetBSD: Makefile,v 1.1 2013/09/30 06:19:22 riastradh Exp $
+#	$NetBSD$
 
 PROG=	getaddrinfo
 
