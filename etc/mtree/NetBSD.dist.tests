@@ -1,4 +1,4 @@
-#	$NetBSD$
+#	$NetBSD: NetBSD.dist.tests,v 1.104 2014/04/29 06:29:02 uebayasi Exp $
 
 ./usr/libdata/debug/usr/tests
 ./usr/libdata/debug/usr/tests/atf

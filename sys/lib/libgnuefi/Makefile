@@ -1,4 +1,4 @@
-#	$NetBSD$
+#	$NetBSD: Makefile,v 1.1 2014/04/28 19:09:29 jakllsch Exp $
 
 LIB=	gnuefi
 LIBISPRIVATE?= yes

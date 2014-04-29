@@ -1,4 +1,4 @@
-/*	$NetBSD: show.c,v 1.18 2013/10/19 15:56:06 christos Exp $	*/
+/*	$NetBSD: show.c,v 1.19 2014/04/28 15:41:15 christos Exp $	*/
 /*	$OpenBSD: show.c,v 1.1 2006/05/27 19:16:37 claudio Exp $	*/
 
 /*

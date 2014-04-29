@@ -1,5 +1,5 @@
 #! /usr/bin/env sh
-#	$NetBSD$
+#	$NetBSD: build.sh,v 1.279 2014/04/29 06:51:57 uebayasi Exp $
 #
 # Copyright (c) 2001-2011 The NetBSD Foundation, Inc.
 # All rights reserved.
@@ -1747,7 +1747,7 @@ createmakewrapper()
 	eval cat <<EOF ${makewrapout}
 #! ${HOST_SH}
 # Set proper variables to allow easy "make" building of a NetBSD subtree.
-# Generated from:  \$NetBSD$
+# Generated from:  \$NetBSD: build.sh,v 1.279 2014/04/29 06:51:57 uebayasi Exp $
 # with these arguments: ${_args}
 #
 
