@@ -1,4 +1,4 @@
-/*	$NetBSD: sleepq.h,v 1.22 2012/02/19 21:07:00 rmind Exp $	*/
+/*	$NetBSD: sleepq.h,v 1.23 2014/04/24 12:04:28 pooka Exp $	*/
 
 /*-
  * Copyright (c) 2002, 2006, 2007, 2008, 2009 The NetBSD Foundation, Inc.

@@ -1,4 +1,4 @@
-/*	$NetBSD$	*/
+/*	$NetBSD: bn_mp_radix_size.c,v 1.1.1.2 2014/04/24 12:45:31 pettai Exp $	*/
 
 #include <tommath.h>
 #ifdef BN_MP_RADIX_SIZE_C

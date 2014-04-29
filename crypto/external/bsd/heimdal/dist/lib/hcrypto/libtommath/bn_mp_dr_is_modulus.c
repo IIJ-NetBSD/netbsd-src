@@ -1,4 +1,4 @@
-/*	$NetBSD$	*/
+/*	$NetBSD: bn_mp_dr_is_modulus.c,v 1.1.1.2 2014/04/24 12:45:31 pettai Exp $	*/
 
 #include <tommath.h>
 #ifdef BN_MP_DR_IS_MODULUS_C

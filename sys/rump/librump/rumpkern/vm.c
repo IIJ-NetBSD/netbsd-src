@@ -1,4 +1,4 @@
-/*	$NetBSD: vm.c,v 1.155 2014/04/12 20:24:46 pooka Exp $	*/
+/*	$NetBSD: vm.c,v 1.156 2014/04/25 13:20:45 pooka Exp $	*/
 
 /*
  * Copyright (c) 2007-2011 Antti Kantee.  All Rights Reserved.
@@ -41,7 +41,7 @@
  */
 
 #include <sys/cdefs.h>
-__KERNEL_RCSID(0, "$NetBSD: vm.c,v 1.155 2014/04/12 20:24:46 pooka Exp $");
+__KERNEL_RCSID(0, "$NetBSD: vm.c,v 1.156 2014/04/25 13:20:45 pooka Exp $");
 
 #include <sys/param.h>
 #include <sys/atomic.h>

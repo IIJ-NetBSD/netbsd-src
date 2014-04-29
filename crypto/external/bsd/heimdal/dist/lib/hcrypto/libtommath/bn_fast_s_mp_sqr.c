@@ -1,4 +1,4 @@
-/*	$NetBSD$	*/
+/*	$NetBSD: bn_fast_s_mp_sqr.c,v 1.1.1.2 2014/04/24 12:45:31 pettai Exp $	*/
 
 #include <tommath.h>
 #ifdef BN_FAST_S_MP_SQR_C

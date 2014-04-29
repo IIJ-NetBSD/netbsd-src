@@ -1,4 +1,4 @@
-/*	$NetBSD$	*/
+/*	$NetBSD: accessors.c,v 1.1 2014/04/25 18:25:38 pooka Exp $	*/
 
 /*
  * Copyright (c) 2007-2011 Antti Kantee.  All Rights Reserved.
@@ -32,7 +32,7 @@
  */
 
 #include <sys/cdefs.h>
-__KERNEL_RCSID(0, "$NetBSD$");
+__KERNEL_RCSID(0, "$NetBSD: accessors.c,v 1.1 2014/04/25 18:25:38 pooka Exp $");
 
 #include <sys/param.h>
 #include <sys/kauth.h>

@@ -1,4 +1,4 @@
-/*      $NetBSD: lwproc.c,v 1.30 2014/04/16 22:34:02 pooka Exp $	*/
+/*      $NetBSD: lwproc.c,v 1.31 2014/04/25 13:20:45 pooka Exp $	*/
 
 /*
  * Copyright (c) 2010, 2011 Antti Kantee.  All Rights Reserved.
@@ -28,7 +28,7 @@
 #define RUMP__CURLWP_PRIVATE
 
 #include <sys/cdefs.h>
-__KERNEL_RCSID(0, "$NetBSD: lwproc.c,v 1.30 2014/04/16 22:34:02 pooka Exp $");
+__KERNEL_RCSID(0, "$NetBSD: lwproc.c,v 1.31 2014/04/25 13:20:45 pooka Exp $");
 
 #include <sys/param.h>
 #include <sys/atomic.h>

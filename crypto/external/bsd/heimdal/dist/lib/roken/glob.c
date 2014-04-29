@@ -1,4 +1,4 @@
-/*	$NetBSD$	*/
+/*	$NetBSD: glob.c,v 1.1.1.2 2014/04/24 12:45:52 pettai Exp $	*/
 
 /*
  * Copyright (c) 1989, 1993

@@ -1,4 +1,4 @@
-/*	$NetBSD$	*/
+/*	$NetBSD: lex.l,v 1.1.1.3 2014/04/24 12:45:28 pettai Exp $	*/
 
 %{
 /*

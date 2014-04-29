@@ -1,4 +1,4 @@
-/*	$NetBSD$	*/
+/*	$NetBSD: bn_mp_prime_miller_rabin.c,v 1.1.1.2 2014/04/24 12:45:31 pettai Exp $	*/
 
 #include <tommath.h>
 #ifdef BN_MP_PRIME_MILLER_RABIN_C

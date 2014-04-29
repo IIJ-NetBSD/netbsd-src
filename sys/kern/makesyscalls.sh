@@ -1,4 +1,4 @@
-#	$NetBSD: makesyscalls.sh,v 1.141 2014/04/27 14:29:53 pooka Exp $
+#	$NetBSD: makesyscalls.sh,v 1.142 2014/04/27 14:50:23 pooka Exp $
 #
 # Copyright (c) 1994, 1996, 2000 Christopher G. Demetriou
 # All rights reserved.

@@ -31,7 +31,7 @@
 #ifndef lint
 #if 0
 static const char rcsid[] =
-    "@(#) $Header: /usr/tmp/cvs2git/cvsroot-netbsd/src/external/bsd/tcpdump/dist/print-pfsync.c,v 1.1 2010/12/05 05:11:30 christos Exp $";
+    "@(#) $Header: /home/cvs/cvs2git/cvsroot-netbsd/src/external/bsd/tcpdump/dist/print-pfsync.c,v 1.1 2010/12/05 05:11:30 christos Exp $";
 #else
 __RCSID("$NetBSD: print-pfsync.c,v 1.1 2010/12/05 05:11:30 christos Exp $");
 #endif

@@ -1,4 +1,4 @@
-/*	$NetBSD: makerumpif.sh,v 1.8 2014/04/25 17:50:01 pooka Exp $	*/
+/*	$NetBSD: rumpkern_if_pub.h,v 1.17 2014/04/25 17:50:28 pooka Exp $	*/
 
 /*
  * Automatically generated.  DO NOT EDIT.

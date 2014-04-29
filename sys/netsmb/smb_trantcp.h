@@ -1,4 +1,4 @@
-/*	$NetBSD: smb_trantcp.h,v 1.6 2008/06/24 10:37:19 gmcgarry Exp $	*/
+/*	$NetBSD: smb_trantcp.h,v 1.7 2014/04/25 15:52:45 pooka Exp $	*/
 
 /*
  * Copyright (c) 2000-2001, Boris Popov

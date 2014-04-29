@@ -1,4 +1,4 @@
-/*	$NetBSD: string.h,v 1.11 2014/04/24 20:12:56 pooka Exp $	*/
+/*	$NetBSD: string.h,v 1.12 2014/04/25 18:37:38 pooka Exp $	*/
 
 /*-
  * Copyright (c) 2006 The NetBSD Foundation, Inc.

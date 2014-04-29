@@ -1,4 +1,4 @@
-/*	$NetBSD$	*/
+/*	$NetBSD: test_common.c,v 1.1.1.2 2014/04/24 12:45:29 pettai Exp $	*/
 
 /*
  * Copyright (c) 2006 - 2008 Kungliga Tekniska Högskolan

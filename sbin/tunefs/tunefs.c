@@ -1,4 +1,4 @@
-/*	$NetBSD: tunefs.c,v 1.46 2013/06/23 02:06:05 dholland Exp $	*/
+/*	$NetBSD: tunefs.c,v 1.47 2014/04/26 13:23:49 martin Exp $	*/
 
 /*
  * Copyright (c) 1983, 1993
@@ -39,7 +39,7 @@ __COPYRIGHT("@(#) Copyright (c) 1983, 1993\
 #if 0
 static char sccsid[] = "@(#)tunefs.c	8.3 (Berkeley) 5/3/95";
 #else
-__RCSID("$NetBSD: tunefs.c,v 1.46 2013/06/23 02:06:05 dholland Exp $");
+__RCSID("$NetBSD: tunefs.c,v 1.47 2014/04/26 13:23:49 martin Exp $");
 #endif
 #endif /* not lint */
 

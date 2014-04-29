@@ -1,4 +1,4 @@
-/*	$NetBSD$	*/
+/*	$NetBSD: windc.c,v 1.1.1.2 2014/04/24 12:45:57 pettai Exp $	*/
 
 #include <krb5/krb5.h>
 #include <krb5/hdb.h>

@@ -6,7 +6,7 @@
  *
  * $Date: 2006/03/29 21:09:36 $
  *
- * $Source: /usr/tmp/cvs2git/cvsroot-netbsd/src/gnu/dist/gmake/w32/include/sub_proc.h,v $
+ * $Source: /home/cvs/cvs2git/cvsroot-netbsd/src/gnu/dist/gmake/w32/include/sub_proc.h,v $
  *
  * $Revision: 1.1.1.1 $
  */

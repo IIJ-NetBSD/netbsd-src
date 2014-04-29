@@ -1,4 +1,4 @@
-/*	$NetBSD$	*/
+/*	$NetBSD: bn_s_mp_add.c,v 1.1.1.2 2014/04/24 12:45:31 pettai Exp $	*/
 
 #include <tommath.h>
 #ifdef BN_S_MP_ADD_C

@@ -1,4 +1,4 @@
-/*	$NetBSD$	*/
+/*	$NetBSD: krb5.h,v 1.1.1.3 2014/04/24 12:45:50 pettai Exp $	*/
 
 /*
  * Copyright (c) 1997 - 2007 Kungliga Tekniska Högskolan

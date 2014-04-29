@@ -1,4 +1,4 @@
-/*	$NetBSD$	*/
+/*	$NetBSD: dbinfo.c,v 1.1.1.2 2014/04/24 12:45:28 pettai Exp $	*/
 
 /*
  * Copyright (c) 2005 Kungliga Tekniska Högskolan

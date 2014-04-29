@@ -1,4 +1,4 @@
-/*	$NetBSD$	*/
+/*	$NetBSD: gen_glue.c,v 1.1.1.2 2014/04/24 12:45:28 pettai Exp $	*/
 
 /*
  * Copyright (c) 1997, 1999, 2000, 2003 - 2005 Kungliga Tekniska Högskolan

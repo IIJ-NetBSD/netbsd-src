@@ -1,4 +1,4 @@
-/*	$NetBSD: resolve.c,v 1.3 2014/04/24 13:45:34 pettai Exp $	*/
+/*	$NetBSD: resolve.c,v 1.4 2014/04/24 14:49:43 pettai Exp $	*/
 
 /*
  * Copyright (c) 1995 - 2006 Kungliga Tekniska Högskolan

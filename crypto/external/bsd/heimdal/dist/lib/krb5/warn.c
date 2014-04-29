@@ -1,4 +1,4 @@
-/*	$NetBSD$	*/
+/*	$NetBSD: warn.c,v 1.1.1.2 2014/04/24 12:45:51 pettai Exp $	*/
 
 /*
  * Copyright (c) 1997 - 2001 Kungliga Tekniska Högskolan

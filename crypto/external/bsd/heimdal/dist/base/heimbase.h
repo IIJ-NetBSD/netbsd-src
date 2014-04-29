@@ -1,4 +1,4 @@
-/*	$NetBSD$	*/
+/*	$NetBSD: heimbase.h,v 1.1.1.2 2014/04/24 12:45:26 pettai Exp $	*/
 
 /*
  * Copyright (c) 2010 Kungliga Tekniska Högskolan

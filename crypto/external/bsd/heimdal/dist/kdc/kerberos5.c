@@ -1,4 +1,4 @@
-/*	$NetBSD: kerberos5.c,v 1.1.1.2 2014/04/24 12:45:27 pettai Exp $	*/
+/*	$NetBSD: kerberos5.c,v 1.5 2014/04/24 13:45:34 pettai Exp $	*/
 
 /*
  * Copyright (c) 1997-2007 Kungliga Tekniska Högskolan

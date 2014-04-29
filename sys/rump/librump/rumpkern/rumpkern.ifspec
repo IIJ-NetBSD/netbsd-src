@@ -1,4 +1,4 @@
-;	$NetBSD: rumpkern.ifspec,v 1.12 2014/03/10 22:44:11 pooka Exp $
+;	$NetBSD: rumpkern.ifspec,v 1.13 2014/04/25 13:10:42 pooka Exp $
 
 NAME|kern
 PUBHDR|include/rump/rumpkern_if_pub.h

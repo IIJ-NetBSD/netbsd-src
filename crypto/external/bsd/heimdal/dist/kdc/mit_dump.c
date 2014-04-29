@@ -1,4 +1,4 @@
-/*	$NetBSD$	*/
+/*	$NetBSD: mit_dump.c,v 1.1.1.2 2014/04/24 12:45:27 pettai Exp $	*/
 
 /*
  * Copyright (c) 2000 Kungliga Tekniska Högskolan

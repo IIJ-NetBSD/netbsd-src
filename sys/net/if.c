@@ -1,4 +1,4 @@
-/*	$NetBSD: if.c,v 1.272 2014/02/25 18:30:12 pooka Exp $	*/
+/*	$NetBSD: if.c,v 1.273 2014/04/26 11:16:22 pooka Exp $	*/
 
 /*-
  * Copyright (c) 1999, 2000, 2001, 2008 The NetBSD Foundation, Inc.
@@ -90,7 +90,7 @@
  */
 
 #include <sys/cdefs.h>
-__KERNEL_RCSID(0, "$NetBSD: if.c,v 1.272 2014/02/25 18:30:12 pooka Exp $");
+__KERNEL_RCSID(0, "$NetBSD: if.c,v 1.273 2014/04/26 11:16:22 pooka Exp $");
 
 #include "opt_inet.h"
 

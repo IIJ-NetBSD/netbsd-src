@@ -1,4 +1,4 @@
-/*	$NetBSD$	*/
+/*	$NetBSD: external.c,v 1.1.1.2 2014/04/24 12:45:29 pettai Exp $	*/
 
 /*
  * Copyright (c) 2004, PADL Software Pty Ltd.

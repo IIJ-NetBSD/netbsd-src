@@ -1,4 +1,4 @@
-/*	$NetBSD$	*/
+/*	$NetBSD: gss_delete_name_attribute.c,v 1.1.1.2 2014/04/24 12:45:29 pettai Exp $	*/
 
 /*
  * Copyright (c) 2010, PADL Software Pty Ltd.

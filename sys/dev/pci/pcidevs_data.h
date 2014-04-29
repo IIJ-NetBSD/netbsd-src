@@ -1,4 +1,4 @@
-/*	$NetBSD$	*/
+/*	$NetBSD: pcidevs_data.h,v 1.1180 2014/04/26 07:32:56 mrg Exp $	*/
 
 /*
  * THIS FILE AUTOMATICALLY GENERATED.  DO NOT EDIT.

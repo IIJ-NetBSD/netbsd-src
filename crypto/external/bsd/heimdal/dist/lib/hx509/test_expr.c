@@ -1,4 +1,4 @@
-/*	$NetBSD$	*/
+/*	$NetBSD: test_expr.c,v 1.1.1.2 2014/04/24 12:45:42 pettai Exp $	*/
 
 
 #include "hx_locl.h"

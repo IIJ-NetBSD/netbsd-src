@@ -1,4 +1,4 @@
-/*	$NetBSD: kobj_rename.c,v 1.1 2010/04/26 23:17:13 pooka Exp $	*/
+/*	$NetBSD: kobj_rename.c,v 1.2 2014/04/25 18:31:35 pooka Exp $	*/
 
 /*-
  * Copyright (c) 2010 Antti Kantee.  All Rights Reserved.
@@ -26,7 +26,7 @@
  */
 
 #include <sys/cdefs.h>
-__KERNEL_RCSID(0, "$NetBSD: kobj_rename.c,v 1.1 2010/04/26 23:17:13 pooka Exp $");
+__KERNEL_RCSID(0, "$NetBSD: kobj_rename.c,v 1.2 2014/04/25 18:31:35 pooka Exp $");
 
 #define ELFSIZE ARCH_ELFSIZE
 

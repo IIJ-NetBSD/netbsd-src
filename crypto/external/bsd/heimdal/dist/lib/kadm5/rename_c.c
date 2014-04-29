@@ -1,4 +1,4 @@
-/*	$NetBSD$	*/
+/*	$NetBSD: rename_c.c,v 1.1.1.2 2014/04/24 12:45:49 pettai Exp $	*/
 
 /*
  * Copyright (c) 1997 - 1999 Kungliga Tekniska Högskolan

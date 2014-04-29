@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#	$NetBSD: makerumpif.sh,v 1.7 2014/04/25 13:07:31 pooka Exp $
+#	$NetBSD: makerumpif.sh,v 1.8 2014/04/25 17:50:01 pooka Exp $
 #
 # Copyright (c) 2009 Antti Kantee.  All rights reserved.
 #
@@ -78,9 +78,9 @@ sed -e '
 ' ${1} | awk -F\| -v topdir=${TOPDIR} '
 function fileheaders(file, srcstr)
 {
-	printf("/*\t$NetBSD: makerumpif.sh,v 1.7 2014/04/25 13:07:31 pooka Exp $\t*/\n\n") > file
+	printf("/*\t$NetBSD: makerumpif.sh,v 1.8 2014/04/25 17:50:01 pooka Exp $\t*/\n\n") > file
 	printf("/*\n * Automatically generated.  DO NOT EDIT.\n") > file
-	genstr = "$NetBSD: makerumpif.sh,v 1.7 2014/04/25 13:07:31 pooka Exp $"
+	genstr = "$NetBSD: makerumpif.sh,v 1.8 2014/04/25 17:50:01 pooka Exp $"
 	gsub("\\$", "", genstr)
 	printf(" * from: %s\n", srcstr) > file
 	printf(" * by:   %s\n", genstr) > file

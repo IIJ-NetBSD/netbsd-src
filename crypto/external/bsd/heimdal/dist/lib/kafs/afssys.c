@@ -1,4 +1,4 @@
-/*	$NetBSD$	*/
+/*	$NetBSD: afssys.c,v 1.1.1.2 2014/04/24 12:45:49 pettai Exp $	*/
 
 /*
  * Copyright (c) 1995 - 2000, 2002, 2004, 2005 Kungliga Tekniska Högskolan

@@ -1,4 +1,4 @@
-/*	$NetBSD: route.h,v 1.82 2013/03/01 18:25:57 joerg Exp $	*/
+/*	$NetBSD: route.h,v 1.83 2014/04/26 11:10:10 pooka Exp $	*/
 
 /*
  * Copyright (c) 1980, 1986, 1993

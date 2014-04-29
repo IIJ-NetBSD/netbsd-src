@@ -1,4 +1,4 @@
-/*	$NetBSD$	*/
+/*	$NetBSD: addr_families.c,v 1.1.1.2 2014/04/24 12:45:49 pettai Exp $	*/
 
 /*
  * Copyright (c) 1997-2007 Kungliga Tekniska Högskolan

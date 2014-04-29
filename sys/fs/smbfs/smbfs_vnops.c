@@ -1,4 +1,4 @@
-/*	$NetBSD: smbfs_vnops.c,v 1.89 2014/02/07 15:29:21 hannken Exp $	*/
+/*	$NetBSD: smbfs_vnops.c,v 1.90 2014/04/25 15:18:06 pooka Exp $	*/
 
 /*-
  * Copyright (c) 2003 The NetBSD Foundation, Inc.
@@ -64,7 +64,7 @@
  */
 
 #include <sys/cdefs.h>
-__KERNEL_RCSID(0, "$NetBSD: smbfs_vnops.c,v 1.89 2014/02/07 15:29:21 hannken Exp $");
+__KERNEL_RCSID(0, "$NetBSD: smbfs_vnops.c,v 1.90 2014/04/25 15:18:06 pooka Exp $");
 
 #include <sys/param.h>
 #include <sys/systm.h>

@@ -1,4 +1,4 @@
-/* $NetBSD$ */
+/* $NetBSD: init_sysent.c,v 1.283 2014/04/27 15:11:22 pooka Exp $ */
 
 /*
  * System call switch table.
@@ -8,7 +8,7 @@
  */
 
 #include <sys/cdefs.h>
-__KERNEL_RCSID(0, "$NetBSD$");
+__KERNEL_RCSID(0, "$NetBSD: init_sysent.c,v 1.283 2014/04/27 15:11:22 pooka Exp $");
 
 #include "opt_modular.h"
 #include "opt_ntp.h"

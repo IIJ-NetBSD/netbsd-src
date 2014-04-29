@@ -1,4 +1,4 @@
-/*	$NetBSD$	*/
+/*	$NetBSD: gss_wrap_size_limit.c,v 1.1.1.2 2014/04/24 12:45:29 pettai Exp $	*/
 
 /*-
  * Copyright (c) 2005 Doug Rabson

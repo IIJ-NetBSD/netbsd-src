@@ -1,4 +1,4 @@
-/*	$NetBSD: rumpfs.c,v 1.126 2014/03/16 10:16:15 njoly Exp $	*/
+/*	$NetBSD: rumpfs.c,v 1.127 2014/04/25 13:10:42 pooka Exp $	*/
 
 /*
  * Copyright (c) 2009, 2010, 2011 Antti Kantee.  All Rights Reserved.
@@ -26,7 +26,7 @@
  */
 
 #include <sys/cdefs.h>
-__KERNEL_RCSID(0, "$NetBSD: rumpfs.c,v 1.126 2014/03/16 10:16:15 njoly Exp $");
+__KERNEL_RCSID(0, "$NetBSD: rumpfs.c,v 1.127 2014/04/25 13:10:42 pooka Exp $");
 
 #include <sys/param.h>
 #include <sys/atomic.h>

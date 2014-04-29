@@ -1,4 +1,4 @@
-/*	$NetBSD$	*/
+/*	$NetBSD: sendmsg.c,v 1.1.1.2 2014/04/24 12:45:52 pettai Exp $	*/
 
 /*
  * Copyright (c) 1995, 1996, 1997, 1998, 1999 Kungliga Tekniska Högskolan

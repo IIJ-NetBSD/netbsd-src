@@ -1,4 +1,4 @@
-/*	$NetBSD$	*/
+/*	$NetBSD: evp.h,v 1.1.1.3 2014/04/24 12:45:30 pettai Exp $	*/
 
 /*
  * Copyright (c) 2005 - 2008 Kungliga Tekniska Högskolan

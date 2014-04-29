@@ -1,4 +1,4 @@
-/*	$NetBSD$	*/
+/*	$NetBSD: acquire_cred.c,v 1.1.1.2 2014/04/24 12:45:29 pettai Exp $	*/
 
 /*
  * Copyright (c) 1997 - 2004 Kungliga Tekniska Högskolan

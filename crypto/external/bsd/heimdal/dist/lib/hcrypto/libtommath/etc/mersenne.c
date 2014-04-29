@@ -1,4 +1,4 @@
-/*	$NetBSD$	*/
+/*	$NetBSD: mersenne.c,v 1.1.1.2 2014/04/24 12:45:39 pettai Exp $	*/
 
 /* Finds Mersenne primes using the Lucas-Lehmer test
  *

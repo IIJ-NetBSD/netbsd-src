@@ -1,4 +1,4 @@
-/*	$NetBSD: locks.c,v 1.68 2014/03/11 00:59:38 pooka Exp $	*/
+/*	$NetBSD: locks.c,v 1.69 2014/04/25 18:13:59 pooka Exp $	*/
 
 /*
  * Copyright (c) 2007-2011 Antti Kantee.  All Rights Reserved.
@@ -26,7 +26,7 @@
  */
 
 #include <sys/cdefs.h>
-__KERNEL_RCSID(0, "$NetBSD: locks.c,v 1.68 2014/03/11 00:59:38 pooka Exp $");
+__KERNEL_RCSID(0, "$NetBSD: locks.c,v 1.69 2014/04/25 18:13:59 pooka Exp $");
 
 #include <sys/param.h>
 #include <sys/kmem.h>

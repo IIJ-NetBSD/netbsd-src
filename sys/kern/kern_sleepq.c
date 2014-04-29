@@ -1,4 +1,4 @@
-/*	$NetBSD: kern_sleepq.c,v 1.48 2013/03/08 08:35:09 apb Exp $	*/
+/*	$NetBSD: kern_sleepq.c,v 1.49 2014/04/24 12:04:28 pooka Exp $	*/
 
 /*-
  * Copyright (c) 2006, 2007, 2008, 2009 The NetBSD Foundation, Inc.
@@ -35,7 +35,7 @@
  */
 
 #include <sys/cdefs.h>
-__KERNEL_RCSID(0, "$NetBSD: kern_sleepq.c,v 1.48 2013/03/08 08:35:09 apb Exp $");
+__KERNEL_RCSID(0, "$NetBSD: kern_sleepq.c,v 1.49 2014/04/24 12:04:28 pooka Exp $");
 
 #include <sys/param.h>
 #include <sys/kernel.h>
