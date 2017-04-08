@@ -614,7 +614,7 @@ xhci_detach(struct xhci_softc *sc, int flags)
 
 	kmem_free(sc->sc_slots, sizeof(*sc->sc_slots) * sc->sc_maxslots);
 
-	kmem_free(sc->sc_ctlrportbus, 
+	kmem_free(sc->sc_ctlrportbus,
 	    howmany(sc->sc_maxports * sizeof(uint8_t), NBBY));
 	kmem_free(sc->sc_ctlrportmap, sc->sc_maxports * sizeof(int));
 
@@ -1348,6 +1348,7 @@ xhci_configure_endpoint(struct usbd_pipe *pipe)
 	const u_int dci = xhci_ep_get_dci(pipe->up_endpoint->ue_edesc);
 	struct xhci_trb trb;
 	usbd_status err;
+    uint32_t *cp;
 
 	XHCIHIST_FUNC(); XHCIHIST_CALLED();
 	DPRINTFN(4, "slot %u dci %u epaddr 0x%02x attr 0x%02x",
@@ -1360,6 +1361,10 @@ xhci_configure_endpoint(struct usbd_pipe *pipe)
 
 	/* set up context */
 	xhci_setup_ctx(pipe);
+
+    /* Enable SLOT Context A0 shall be set to '1' */
+    cp = xhci_slot_get_icv(sc, xs, XHCI_ICI_INPUT_CONTROL);
+    cp[1] |= htole32(XHCI_INCTX_1_ADD_MASK(0));
 
 	hexdump("input control context", xhci_slot_get_icv(sc, xs, 0),
 	    sc->sc_ctxsz * 1);
