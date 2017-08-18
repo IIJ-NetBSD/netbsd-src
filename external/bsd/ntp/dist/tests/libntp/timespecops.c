@@ -1,4 +1,4 @@
-/*	$NetBSD: timespecops.c,v 1.1.1.6 2016/05/01 15:55:47 christos Exp $	*/
+/*	$NetBSD: timespecops.c,v 1.1.1.6 2016/05/01 15:57:23 christos Exp $	*/
 
 #include "config.h"
 
