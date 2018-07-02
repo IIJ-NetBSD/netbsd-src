@@ -1,4 +1,4 @@
-/*	$NetBSD: ascvar.h,v 1.7 2002/09/06 13:20:53 gehenna Exp $	*/
+/*	$NetBSD: ascvar.h,v 1.7 2002/09/06 13:18:43 gehenna Exp $	*/
 
 /*
  * Copyright (C) 1997 Scott Reynolds.  All rights reserved.

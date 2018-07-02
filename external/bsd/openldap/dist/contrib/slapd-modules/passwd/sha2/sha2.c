@@ -1,4 +1,4 @@
-/*	$NetBSD: sha2.c,v 1.1.1.1 2010/03/08 02:14:15 lukem Exp $	*/
+/*	$NetBSD: sha2.c,v 1.1.1.1 2010/03/08 02:14:20 lukem Exp $	*/
 
 /* OpenLDAP: pkg/ldap/contrib/slapd-modules/passwd/sha2/sha2.c,v 1.1.2.1 2009/01/26 21:07:06 quanah Exp */
 /*

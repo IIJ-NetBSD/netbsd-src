@@ -42,7 +42,7 @@
 
 #if !(defined(lint) || defined(KERNEL) || defined(_KERNEL))
 static const char rcsid[] =
-    "@(#) $Header: /usr/tmp/cvs2git/cvsroot-netbsd/src/dist/ipf/Attic/bpf_filter.c,v 1.5 2012/02/15 17:55:04 riz Exp $ (LBL)";
+    "@(#) $Header: /home/cvs/cvs2git/cvsroot-netbsd/src/dist/ipf/Attic/bpf_filter.c,v 1.5 2012/02/15 17:55:04 riz Exp $ (LBL)";
 #endif
 
 #include <sys/param.h>

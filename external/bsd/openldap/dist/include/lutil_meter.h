@@ -1,4 +1,4 @@
-/*	$NetBSD: lutil_meter.h,v 1.1.1.1 2010/03/08 02:14:16 lukem Exp $	*/
+/*	$NetBSD: lutil_meter.h,v 1.1.1.1 2010/03/08 02:14:20 lukem Exp $	*/
 
 /* lutil_meter.h - progress meters */
 /* OpenLDAP: pkg/ldap/include/lutil_meter.h,v 1.1.2.1 2009/02/05 20:10:59 quanah Exp */

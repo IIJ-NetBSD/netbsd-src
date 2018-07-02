@@ -1,4 +1,4 @@
-/*$NetBSD: dm_target_mirror.c,v 1.9 2010/05/18 15:10:41 haad Exp $*/
+/*$NetBSD: dm_target_mirror.c,v 1.9 2010/05/18 15:10:38 haad Exp $*/
 
 /*
  * Copyright (c) 2009 The NetBSD Foundation, Inc.

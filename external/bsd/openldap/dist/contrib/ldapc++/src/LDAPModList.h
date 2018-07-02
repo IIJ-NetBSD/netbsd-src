@@ -1,4 +1,4 @@
-/*	$NetBSD: LDAPModList.h,v 1.1.1.2 2010/03/08 02:14:14 lukem Exp $	*/
+/*	$NetBSD: LDAPModList.h,v 1.1.1.2 2010/03/08 02:14:20 lukem Exp $	*/
 
 // OpenLDAP: pkg/ldap/contrib/ldapc++/src/LDAPModList.h,v 1.7.6.2 2008/04/14 23:29:26 quanah Exp
 /*

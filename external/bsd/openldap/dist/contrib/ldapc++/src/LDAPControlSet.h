@@ -1,4 +1,4 @@
-/*	$NetBSD: LDAPControlSet.h,v 1.1.1.2 2010/03/08 02:14:14 lukem Exp $	*/
+/*	$NetBSD: LDAPControlSet.h,v 1.1.1.2 2010/03/08 02:14:20 lukem Exp $	*/
 
 // OpenLDAP: pkg/ldap/contrib/ldapc++/src/LDAPControlSet.h,v 1.6.10.1 2008/04/14 23:09:26 quanah Exp
 /*

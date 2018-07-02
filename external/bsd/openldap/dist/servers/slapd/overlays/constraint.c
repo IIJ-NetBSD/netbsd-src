@@ -1,4 +1,4 @@
-/*	$NetBSD: constraint.c,v 1.1.1.3 2010/03/08 02:14:19 lukem Exp $	*/
+/*	$NetBSD: constraint.c,v 1.1.1.3 2010/03/08 02:14:20 lukem Exp $	*/
 
 /* OpenLDAP: pkg/ldap/servers/slapd/overlays/constraint.c,v 1.2.2.17 2008/11/10 18:24:27 quanah Exp */
 /* constraint.c - Overlay to constrain attributes to certain values */

@@ -1,4 +1,4 @@
-/*	$NetBSD: meter.c,v 1.1.1.1 2010/03/08 02:14:17 lukem Exp $	*/
+/*	$NetBSD: meter.c,v 1.1.1.1 2010/03/08 02:14:20 lukem Exp $	*/
 
 /* meter.c - lutil_meter meters */
 /* OpenLDAP: pkg/ldap/libraries/liblutil/meter.c,v 1.2.2.2 2009/02/17 21:02:52 quanah Exp */

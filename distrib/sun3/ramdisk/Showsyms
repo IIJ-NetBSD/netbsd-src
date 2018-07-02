@@ -1,5 +1,5 @@
 #!/bin/sh
-# $NetBSD: Showsyms,v 1.3 1996/10/09 00:15:15 jtc Exp $
+# $NetBSD: Showsyms,v 1.3 1996/10/09 00:13:36 jtc Exp $
 # Small helper to print out symbols in a useful order.
 
 tf=_tmp$$

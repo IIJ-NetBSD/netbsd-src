@@ -1,4 +1,4 @@
-/*	$NetBSD: tkAppInit.c,v 1.1.1.2 2010/03/08 02:14:14 lukem Exp $	*/
+/*	$NetBSD: tkAppInit.c,v 1.1.1.2 2010/03/08 02:14:20 lukem Exp $	*/
 
 /* 
  * tkXAppInit.c --
