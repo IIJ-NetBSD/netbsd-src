@@ -1,4 +1,4 @@
-# $NetBSD$
+# $NetBSD: Makefile,v 1.3.2.3 2012/08/13 17:49:53 riz Exp $
 #
 # Public Domain
 #

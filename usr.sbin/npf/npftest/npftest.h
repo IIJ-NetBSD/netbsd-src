@@ -1,4 +1,4 @@
-/*	$NetBSD$	*/
+/*	$NetBSD: npftest.h,v 1.3.2.4 2012/11/18 21:45:08 riz Exp $	*/
 
 /*
  * Public Domain.
