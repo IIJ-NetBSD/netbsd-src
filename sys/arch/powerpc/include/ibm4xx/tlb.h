@@ -1,4 +1,4 @@
-/*	$NetBSD: tlb.h,v 1.4 2006/10/16 18:14:35 kiyohara Exp $	*/
+/*	$NetBSD: tlb.h,v 1.4 2006/10/16 18:14:38 kiyohara Exp $	*/
 
 /*
  * Copyright 2001 Wasabi Systems, Inc.

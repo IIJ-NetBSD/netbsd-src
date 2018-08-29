@@ -1,4 +1,4 @@
-/*        $NetBSD: dm_target_error.c,v 1.11 2010/05/18 15:10:41 haad Exp $      */
+/*        $NetBSD: dm_target_error.c,v 1.11 2010/05/18 15:10:38 haad Exp $      */
 
 /*
  * Copyright (c) 2008 The NetBSD Foundation, Inc.
