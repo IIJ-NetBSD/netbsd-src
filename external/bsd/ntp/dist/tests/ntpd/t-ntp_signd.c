@@ -1,4 +1,4 @@
-/*	$NetBSD: t-ntp_signd.c,v 1.1.1.4 2016/05/01 15:54:40 christos Exp $	*/
+/*	$NetBSD: t-ntp_signd.c,v 1.1.1.4 2016/05/01 15:57:23 christos Exp $	*/
 
 #include "config.h"
 
