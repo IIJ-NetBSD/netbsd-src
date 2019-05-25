@@ -1,0 +1,2 @@
+file	arch/arm/nxp/imx8_platform.c 	soc_imx8
+defflag opt_soc.h		SOC_IMX8

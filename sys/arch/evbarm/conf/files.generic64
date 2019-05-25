@@ -17,6 +17,7 @@ include "arch/arm/nvidia/files.tegra"
 include "arch/arm/rockchip/files.rockchip"
 include "arch/arm/sunxi/files.sunxi"
 include "arch/arm/virt/files.virt"
+include "arch/arm/nxp/files.imx"
 
 #
 # Stack-less Just-In-Time compiler
