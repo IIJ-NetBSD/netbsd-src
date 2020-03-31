@@ -1,4 +1,4 @@
-/*	$NetBSD$	*/
+/*	$NetBSD: npf_test.h,v 1.16 2016/12/26 23:05:05 christos Exp $	*/
 
 /*
  * Public Domain.

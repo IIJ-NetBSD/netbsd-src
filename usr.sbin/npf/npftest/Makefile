@@ -1,4 +1,4 @@
-# $NetBSD$
+# $NetBSD: Makefile,v 1.10 2016/08/08 16:31:53 kre Exp $
 #
 # Public Domain
 #
