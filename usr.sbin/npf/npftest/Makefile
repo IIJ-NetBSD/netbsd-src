@@ -1,4 +1,4 @@
-# $NetBSD$
+# $NetBSD: Makefile,v 1.12 2019/05/13 17:55:09 bad Exp $
 #
 # Public Domain
 #
