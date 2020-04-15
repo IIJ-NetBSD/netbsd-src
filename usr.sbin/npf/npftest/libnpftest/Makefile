@@ -1,4 +1,4 @@
-# $NetBSD$
+# $NetBSD: Makefile,v 1.8 2013/11/16 01:41:43 rmind Exp $
 #
 # Public Domain
 #
