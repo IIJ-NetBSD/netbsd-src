@@ -28,6 +28,8 @@ struct hid_netbsd {
 	int	fd;
 	size_t	report_in_len;
 	size_t	report_out_len;
+	sigset_t        sigmask;
+	const sigset_t *sigmaskp;
 };
 
 /* Hack to make this work with newer kernels even if /usr/include is old.  */
@@ -209,8 +211,8 @@ terrible_ping_kludge(struct hid_netbsd *ctx)
 		 * so we might get an error, but we don't care - we're
 		 * synched now.
 		 */
-		fido_log_debug("%s: got reply", __func__);
-		fido_log_xxd(data, ctx->report_out_len);
+		fido_log_xxd(data, ctx->report_out_len, "%s: got reply",
+		    __func__);
 		return 0;
 	}
 	fido_log_debug("%s: no response", __func__);
@@ -315,51 +317,15 @@ timespec_to_ms(const struct timespec *ts, int upper_bound)
 	return (int)(x + y);
 }
 
-static int
-fido_hid_unix_wait(int fd, int ms)
+int
+fido_hid_set_sigmask(void *handle, const fido_sigset_t *sigmask)
 {
-	char		ebuf[128];
-	struct timespec	ts_start;
-	struct timespec	ts_now;
-	struct timespec	ts_delta;
-	struct pollfd	pfd;
-	int		ms_remain;
-	int		r;
+	struct hid_netbsd *ctx = handle;
 
-	if (ms < 0)
-		return (0);
+	ctx->sigmask = *sigmask;
+	ctx->sigmaskp = &ctx->sigmask;
 
-	memset(&pfd, 0, sizeof(pfd));
-	pfd.events = POLLIN;
-	pfd.fd = fd;
-
-	if (clock_gettime(CLOCK_MONOTONIC, &ts_start) != 0) {
-		xstrerror(errno, ebuf, sizeof(ebuf));
-		fido_log_debug("%s: clock_gettime: %s", __func__, ebuf);
-		return (-1);
-	}
-
-	for (ms_remain = ms; ms_remain > 0;) {
-		if ((r = poll(&pfd, 1, ms_remain)) > 0)
-			return (0);
-		else if (r == 0)
-			break;
-		else if (errno != EINTR) {
-			xstrerror(errno, ebuf, sizeof(ebuf));
-			fido_log_debug("%s: poll: %s", __func__, ebuf);
-			return (-1);
-		}
-		/* poll interrupted - subtract time already waited */
-		if (clock_gettime(CLOCK_MONOTONIC, &ts_now) != 0) {
-			xstrerror(errno, ebuf, sizeof(ebuf));
-			fido_log_debug("%s: clock_gettime: %s", __func__, ebuf);
-			return (-1);
-		}
-		timespecsub(&ts_now, &ts_start, &ts_delta);
-		ms_remain = ms - timespec_to_ms(&ts_delta, ms);
-	}
-
-	return (-1);
+	return (FIDO_OK);
 }
 
 int
@@ -373,7 +339,7 @@ fido_hid_read(void *handle, unsigned char *buf, size_t len, int ms)
 		return (-1);
 	}
 
-	if (fido_hid_unix_wait(ctx->fd, ms) < 0) {
+	if (fido_hid_unix_wait(ctx->fd, ms, ctx->sigmaskp) < 0) {
 		fido_log_debug("%s: fd not ready", __func__);
 		return (-1);
 	}
