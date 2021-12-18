@@ -1,4 +1,4 @@
-/*	$NetBSD: radeon_atombios_i2c.c,v 1.1 2018/08/27 14:38:20 riastradh Exp $	*/
+/*	$NetBSD: radeon_atombios_i2c.c,v 1.2 2021/12/18 23:45:43 riastradh Exp $	*/
 
 /*
  * Copyright 2011 Advanced Micro Devices, Inc.
@@ -24,10 +24,10 @@
  * Authors: Alex Deucher
  *
  */
-#include <sys/cdefs.h>
-__KERNEL_RCSID(0, "$NetBSD: radeon_atombios_i2c.c,v 1.1 2018/08/27 14:38:20 riastradh Exp $");
 
-#include <drm/drmP.h>
+#include <sys/cdefs.h>
+__KERNEL_RCSID(0, "$NetBSD: radeon_atombios_i2c.c,v 1.2 2021/12/18 23:45:43 riastradh Exp $");
+
 #include <drm/radeon_drm.h>
 #include "radeon.h"
 #include "atom.h"
@@ -40,7 +40,7 @@ __KERNEL_RCSID(0, "$NetBSD: radeon_atombios_i2c.c,v 1.1 2018/08/27 14:38:20 rias
 
 static int radeon_process_i2c_ch(struct radeon_i2c_chan *chan,
 				 u8 slave_addr, u8 flags,
-				 u8 *buf, u8 num)
+				 u8 *buf, int num)
 {
 	struct drm_device *dev = chan->dev;
 	struct radeon_device *rdev = dev->dev_private;

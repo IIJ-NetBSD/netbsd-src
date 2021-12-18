@@ -1,4 +1,4 @@
-/*	$NetBSD: radeon_trinity_smc.c,v 1.1 2018/08/27 14:38:20 riastradh Exp $	*/
+/*	$NetBSD: radeon_trinity_smc.c,v 1.2 2021/12/18 23:45:43 riastradh Exp $	*/
 
 /*
  * Copyright 2012 Advanced Micro Devices, Inc.
@@ -24,9 +24,8 @@
  */
 
 #include <sys/cdefs.h>
-__KERNEL_RCSID(0, "$NetBSD: radeon_trinity_smc.c,v 1.1 2018/08/27 14:38:20 riastradh Exp $");
+__KERNEL_RCSID(0, "$NetBSD: radeon_trinity_smc.c,v 1.2 2021/12/18 23:45:43 riastradh Exp $");
 
-#include "drmP.h"
 #include "radeon.h"
 #include "trinityd.h"
 #include "trinity_dpm.h"
