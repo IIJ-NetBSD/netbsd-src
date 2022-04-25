@@ -1,4 +1,4 @@
-/*	$NetBSD: main.c,v 1.11 2022/04/24 15:07:08 reinoud Exp $	*/
+/*	$NetBSD: main.c,v 1.13 2022/04/25 15:37:14 reinoud Exp $	*/
 
 /*
  * Copyright (c) 2022 Reinoud Zandijk
@@ -37,7 +37,7 @@
 
 #include <sys/cdefs.h>
 #ifndef lint
-__RCSID("$NetBSD: main.c,v 1.11 2022/04/24 15:07:08 reinoud Exp $");
+__RCSID("$NetBSD: main.c,v 1.13 2022/04/25 15:37:14 reinoud Exp $");
 #endif /* not lint */
 
 #include <stdio.h>
@@ -2862,9 +2862,8 @@ udf_prepare_writing(void)
 	}
 
 	/* if we are not on sequential media, we're done */
-	if ((mmc_discinfo.mmc_cur & MMC_CAP_SEQUENTIAL) == 0)
+	if ((context.format_flags & FORMAT_VAT) == 0)
 		return 0;
-	assert(context.format_flags & FORMAT_VAT);
 
 	/* if the disc is full, we drop back to read only */
 	if (mmc_discinfo.disc_state == MMC_STATE_FULL)
@@ -3661,7 +3660,7 @@ udf_node_pass3_writeout_update(struct udf_fsck_node *node, union dscrptr *dscr)
 {
 	struct file_entry    *fe  = NULL;
 	struct extfile_entry *efe = NULL;
-	int error;
+	int crc_len, error;
 
 	vat_writeout = 1;
 	if (udf_rw16(dscr->tag.id) == TAGID_FENTRY) {
@@ -3682,7 +3681,8 @@ udf_node_pass3_writeout_update(struct udf_fsck_node *node, union dscrptr *dscr)
 	}
 
 	/* fixup CRC length (if needed) */
-	dscr->tag.desc_crc_len = udf_tagsize(dscr, 1) - sizeof(struct desc_tag);
+	crc_len = udf_tagsize(dscr, 1) - sizeof(struct desc_tag);
+	dscr->tag.desc_crc_len = udf_rw16(crc_len);
 
 	pwarn("%s : updating node\n", udf_node_path(node));
 	error = udf_write_dscr_virt(dscr, udf_rw32(node->loc.loc.lb_num),
