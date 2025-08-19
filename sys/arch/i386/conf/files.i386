@@ -214,10 +214,6 @@ device	piixpcib: isabus, bioscall
 attach	piixpcib at pci
 file	arch/i386/pci/piixpcib.c	piixpcib
 
-device	viapcib: isabus, i2cbus
-attach	viapcib at pci
-file	arch/i386/pci/viapcib.c		viapcib
-
 # PCI-MCA bridges
 device	pcmb: mcabus
 attach	pcmb at pci

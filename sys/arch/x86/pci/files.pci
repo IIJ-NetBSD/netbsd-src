@@ -74,6 +74,11 @@ device	tcpcib: isabus, sysmon_wdog, hpetichbus
 attach	tcpcib at pci
 file	arch/x86/pci/tcpcib.c		tcpcib
 
+# VIA PCI-ISA bridges
+device	viapcib: isabus, viadevbus
+attach	viapcib at pci
+file	arch/x86/pci/viapcib.c		viapcib
+
 device	fwhrng
 attach	fwhrng at fwhichbus
 file	arch/x86/pci/fwhrng.c		fwhrng needs-flag

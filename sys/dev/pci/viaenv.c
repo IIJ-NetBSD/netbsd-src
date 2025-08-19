@@ -51,6 +51,7 @@ __KERNEL_RCSID(0, "$NetBSD: viaenv.c,v 1.34 2018/03/04 13:24:17 jdolecek Exp $")
 #include <dev/pci/pcivar.h>
 #include <dev/pci/pcireg.h>
 #include <dev/pci/pcidevs.h>
+#include <dev/pci/viadevbusvar.h>
 
 #include <dev/sysmon/sysmonvar.h>
 
@@ -63,6 +64,10 @@ unsigned int viaenv_debug = 0;
 
 #define VIANUMSENSORS 10	/* three temp, two fan, five voltage */
 
+#define VIAPCIB_NAME    "viapcib"
+#define DEVICE_IS_VIAPCIB(dev) (strncmp(device_xname(dev), VIAPCIB_NAME, sizeof(VIAPCIB_NAME) - 1) == 0)
+
+
 struct viaenv_softc {
 	bus_space_tag_t sc_iot;
 	bus_space_handle_t sc_ioh;
@@ -74,14 +79,16 @@ struct viaenv_softc {
 	envsys_data_t sc_sensor[VIANUMSENSORS];
 
 	struct timeval sc_lastread;
+	struct pci_attach_args sc_pa;
 };
 
 /* autoconf(9) glue */
 static int 	viaenv_match(device_t, cfdata_t, void *);
-static void 	viaenv_attach(device_t, device_t, void *);
+static void	viaenv_attach(device_t, device_t, void *);
+static int	viaenv_rescan(device_t self, const char *ifattr, const int *loc);
 
-CFATTACH_DECL_NEW(viaenv, sizeof(struct viaenv_softc),
-    viaenv_match, viaenv_attach, NULL, NULL);
+CFATTACH_DECL2_NEW(viaenv, sizeof(struct viaenv_softc),
+    viaenv_match, viaenv_attach, NULL, NULL, viaenv_rescan, NULL);
 
 /* envsys(4) glue */
 static void viaenv_refresh(struct sysmon_envsys *, envsys_data_t *);
@@ -93,12 +100,23 @@ static long val_to_uV(unsigned int, int);
 static int
 viaenv_match(device_t parent, cfdata_t match, void *aux)
 {
-	struct pci_attach_args *pa = aux;
+	struct pci_attach_args *pa;
+	struct viadevbus_attach_args *vaa;
+
+	// If parent is viapcib(4), attach without matching.
+	if (DEVICE_IS_VIAPCIB(parent)) {
+		vaa = aux;
+		return strcmp(vaa->vdb_name, "viaenv") == 0;
+	}
+
+	pa = aux;
 
 	if (PCI_VENDOR(pa->pa_id) != PCI_VENDOR_VIATECH)
 		return 0;
 
 	switch (PCI_PRODUCT(pa->pa_id)) {
+	case PCI_PRODUCT_VIATECH_VT82C596B_PWR:
+	case PCI_PRODUCT_VIATECH_VT82C596B_PWR_2:
 	case PCI_PRODUCT_VIATECH_VT82C686A_PWR:
 	case PCI_PRODUCT_VIATECH_VT8231_PWR:
 		return 1;
@@ -202,9 +220,11 @@ val_to_uV(unsigned int val, int index)
 #define VIAENV_TIRQ	0x4b	/* temperature interrupt configuration */
 
 #define VIAENV_GENCFG	0x40	/* general configuration */
+#define VIAENV_GENCFG2	0x80	/* general configuration */
 #define VIAENV_GENCFG_TMR32	(1 << 11)	/* 32-bit PM timer */
 #define VIAENV_GENCFG_PMEN	(1 << 15)	/* enable PM I/O space */
-#define VIAENV_PMBASE	0x48	/* power management I/O space base */
+#define VIAENV_PMBASE	0x48	/* power management I/O space base up to VT8231 */
+#define VIAENV_PMBASE2	0x88	/* power management I/O space base */
 #define VIAENV_PMSIZE	128	/* HWM and power management I/O space size */
 #define VIAENV_PM_TMR	0x08	/* PM timer */
 #define VIAENV_HWMON_CONF	0x70	/* HWMon I/O base */
@@ -277,26 +297,73 @@ static void
 viaenv_attach(device_t parent, device_t self, void *aux)
 {
 	struct viaenv_softc *sc = device_private(self);
-	struct pci_attach_args *pa = aux;
+	struct pci_attach_args *pa;
+	struct viadevbus_attach_args vaa_args;
+	struct viadevbus_attach_args *vaa = &vaa_args;
 	pcireg_t iobase, control;
-	int i;
+	int i, has_hw_mon, pm_io_base; // VT82C686A and VT8231 has HWM
+	
+	if (DEVICE_IS_VIAPCIB(parent)) {
+		vaa = aux;
+		pa = &vaa->pa;
+	}
+	else {
+		pa = aux;
+		memset(vaa, 0, sizeof(*vaa));
+	}
 
 	aprint_naive("\n");
 	aprint_normal(": VIA Technologies ");
 	switch (PCI_PRODUCT(pa->pa_id)) {
+	case PCI_PRODUCT_VIATECH_VT82C596B_PWR:
+		/* FALLTHROUGH */
+	case PCI_PRODUCT_VIATECH_VT82C596B_PWR_2:
+		has_hw_mon = 0;
+		aprint_normal("VT82C596(A/B) Power Management\n");
+		pm_io_base = VIAENV_PMBASE;
+		break;
 	case PCI_PRODUCT_VIATECH_VT82C686A_PWR:
+		has_hw_mon = 1;
+		pm_io_base = VIAENV_PMBASE;
 		aprint_normal("VT82C686A Hardware Monitor\n");
 		break;
 	case PCI_PRODUCT_VIATECH_VT8231_PWR:
+		has_hw_mon = 1;
+		pm_io_base = VIAENV_PMBASE;
 		aprint_normal("VT8231 Hardware Monitor\n");
 		break;
 	default:
-		aprint_normal("Unknown Hardware Monitor\n");
+		pm_io_base = VIAENV_PMBASE2;
+		has_hw_mon = 0;
 		break;
 	}
 
 	sc->sc_iot = pa->pa_iot;
+	sc->sc_pa = *pa;
 
+	/* Check if power management I/O space is enabled */
+	control = pci_conf_read(pa->pa_pc, pa->pa_tag,
+	    VIAENV_PMBASE == pm_io_base ? VIAENV_GENCFG : VIAENV_GENCFG2);
+	if ((control & VIAENV_GENCFG_PMEN) == 0) {
+		aprint_normal_dev(self, "Power Managament controller disabled\n");
+		goto nopm;
+	}
+
+	/* Map power management I/O space */
+	iobase = pci_conf_read(pa->pa_pc, pa->pa_tag, pm_io_base);
+	if (bus_space_map(sc->sc_iot, PCI_MAPREG_IO_ADDR(iobase & 0xff80),
+		VIAENV_PMSIZE, 0, &sc->sc_pm_ioh)) {
+			aprint_error_dev(self, "failed to map PM I/O space\n");
+			goto nopm;
+	}
+
+	/* Attach our PM timer with the generic acpipmtimer function */
+	acpipmtimer_attach(self, sc->sc_iot, sc->sc_pm_ioh,
+	    VIAENV_PM_TMR,
+	    ((control & VIAENV_GENCFG_TMR32) ? ACPIPMT_32BIT : 0));
+nopm:
+	if (!has_hw_mon)
+		goto nohwm;
 	iobase = pci_conf_read(pa->pa_pc, pa->pa_tag, VIAENV_HWMON_CONF);
 	DPRINTF(("%s: iobase 0x%x\n", device_xname(self), iobase));
 	control = pci_conf_read(pa->pa_pc, pa->pa_tag, VIAENV_HWMON_CTL);
@@ -355,7 +422,7 @@ viaenv_attach(device_t parent, device_t self, void *aux)
 		if (sysmon_envsys_sensor_attach(sc->sc_sme,
 						&sc->sc_sensor[i])) {
 			sysmon_envsys_destroy(sc->sc_sme);
-			return;
+			goto nohwm;
 		}
 	}
 
@@ -369,33 +436,15 @@ viaenv_attach(device_t parent, device_t self, void *aux)
 	if (sysmon_envsys_register(sc->sc_sme)) {
 		aprint_error_dev(self, "unable to register with sysmon\n");
 		sysmon_envsys_destroy(sc->sc_sme);
-		return;
+		goto nohwm;
 	}
-
 nohwm:
-	/* Check if power management I/O space is enabled */
-	control = pci_conf_read(pa->pa_pc, pa->pa_tag, VIAENV_GENCFG);
-	if ((control & VIAENV_GENCFG_PMEN) == 0) {
-                aprint_normal_dev(self,
-		    "Power Managament controller disabled\n");
-                goto nopm;
-        }
-
-        /* Map power management I/O space */
-        iobase = pci_conf_read(pa->pa_pc, pa->pa_tag, VIAENV_PMBASE);
-        if (bus_space_map(sc->sc_iot, PCI_MAPREG_IO_ADDR(iobase),
-            VIAENV_PMSIZE, 0, &sc->sc_pm_ioh)) {
-                aprint_error_dev(self, "failed to map PM I/O space\n");
-                goto nopm;
-        }
-
-	/* Attach our PM timer with the generic acpipmtimer function */
-	acpipmtimer_attach(self, sc->sc_iot, sc->sc_pm_ioh,
-	    VIAENV_PM_TMR,
-	    ((control & VIAENV_GENCFG_TMR32) ? ACPIPMT_32BIT : 0));
-
-nopm:
-	return;
+	/*
+	 * When driver is attached via PCI, scan viadevbus to attach SMBus device.
+	 * On early southbridges, the PCI-ISA bridge exists as a separate PCI
+	 * function, so viaenv acts as an independent device.
+	 */
+	viaenv_rescan(self, "viadevbus", NULL);
 }
 
 static void
@@ -404,4 +453,24 @@ viaenv_refresh(struct sysmon_envsys *sme, envsys_data_t *edata)
 	struct viaenv_softc *sc = sme->sme_cookie;
 
 	viaenv_refresh_sensor_data(sc, edata);
+}
+
+int
+viaenv_rescan(device_t self, const char *ifattr, const int *loc)
+{
+	struct viadevbus_attach_args vaa;
+	struct viaenv_softc *sc = device_private(self);
+	device_t parent = device_parent(self);
+	/*
+	 * When driver is attached via PCI, scan viadevbus to attach SMBus device.
+	 * On early southbridges, the PCI-ISA bridge exists as a separate PCI
+	 * function, so viaenv acts as an independent device.
+	 */
+	if (!DEVICE_IS_VIAPCIB(parent)) {
+		memset(&vaa, 0, sizeof(vaa));
+		vaa.pa = sc->sc_pa;
+		vaa.vdb_name = "viasmb";
+		config_found(self, &vaa, NULL, CFARGS(.iattr = ifattr));
+	}
+	return 0;
 }

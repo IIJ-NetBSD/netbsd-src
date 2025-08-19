@@ -766,9 +766,10 @@ device	btvmeii: vmebus, univ_pci
 attach	btvmeii at pci
 file	dev/pci/btvmeii.c btvmeii
 
+define	viadevbus { }
 # VIA VT82C686A/VT8231 PM Timer and Hardware Monitor
-device	viaenv: acpipmtimer, sysmon_envsys
-attach	viaenv at pci
+device	viaenv: acpipmtimer, sysmon_envsys, viadevbus
+attach	viaenv at pci, viadevbus
 file	dev/pci/viaenv.c		viaenv
 
 # Intel PIIX4 power management controller
@@ -1009,6 +1010,11 @@ define	tcoichbus {}
 device	ichsmb: i2cbus, tcoichbus
 attach	ichsmb at pci
 file	dev/pci/ichsmb.c		ichsmb
+
+# VIA SMBus controller
+device	viasmb: i2cbus
+attach	viasmb at viadevbus
+file	dev/pci/viasmb.c		viasmb
 
 # ATI Rage 128 framebuffer console driver
 device	r128fb: wsemuldisplaydev, rasops8, rasops32, vcons, glyphcache

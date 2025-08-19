@@ -444,8 +444,13 @@ gcscpcib* at pci? dev ? function ?	# AMD CS5535/CS5536 PCI-ISA w/
 					# timecounter, watchdog and GPIO
 #piixpcib* at pci? dev ? function ?	# Intel PIIX4 PCI-ISA w/ SpeedStep
 gscpcib* at pci? dev ? function ?	# NS Geode SC1100 PCI-ISA w/ GPIO
+
 viapcib* at pci? dev ? function ?	# VIA VT8235 PCI-ISA w/ SMBus support
-iic*	at viapcib?
+viasmb* at viapcib? # VIA SMBus
+iic*	at viasmb?
+#viaenv* at viapcib?	# VIA PM Timer. Typically attached via ACPI,
+						# thus disabled by default.
+
 rdcpcib* at pci? dev ? function ?	# RDC Vortex86/PMX-1000 PCI-ISA w/
 					# watchdog
 pchb*	at pci? dev ? function ?	# PCI-Host bridges
@@ -696,7 +701,8 @@ nsclpcsio*	at isa?
 #ug0	at isa? port 0xe0
 
 # VIA VT82C686A/VT8231 Hardware Monitor and Power Management Timer
-#viaenv* 	at pci? dev ? function ?
+viaenv* 	at pci? dev ? function ?
+viasmb* at viaenv?	VIA SMBus
 
 # Serial Presence Detect capable memory modules
 #spdmem* at iic? addr 0x50

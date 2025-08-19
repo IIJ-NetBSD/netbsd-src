@@ -407,6 +407,13 @@ pwdog*	at pci? dev ? function ?	# QUANCOM PWDOG1
 
 ichlpcib* at pci? dev ? function ?	# Intel ICH PCI-LPC w/ timecounter,
 					# watchdog, gpio, Speedstep and HPET
+
+viapcib* at pci? dev ? function ?	# VIA PCI-ISA w/ SMBus support
+viasmb* at viapcib? # VIA SMBus
+iic*	at viasmb?
+#viaenv* at viapcib?	# VIA PM Timer. Typically attached via ACPI,
+						# thus disabled by default.
+
 fwhrng* at ichlpcib?		# Intel 82802 FWH Random Number Generator
 #hpet*	at ichlpcib?
 tco*	at tcoichbus?		# TCO watch dog timer
@@ -420,6 +427,7 @@ isa0	at mainbus?
 isa0	at pcib?
 #isa0	at amdpcib?
 isa0	at ichlpcib?
+isa0	at viapcib?
 
 # CardBus bridge support
 cbb*		at pci? dev ? function ?
