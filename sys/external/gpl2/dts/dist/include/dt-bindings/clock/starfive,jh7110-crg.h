@@ -1,3 +1,5 @@
+/*	$NetBSD: starfive,jh7110-crg.h,v 1.2 2026/01/18 15:08:53 skrll Exp $	*/
+
 /* SPDX-License-Identifier: GPL-2.0 OR MIT */
 /*
  * Copyright 2022 Emil Renner Berthing <kernel@esmil.dk>

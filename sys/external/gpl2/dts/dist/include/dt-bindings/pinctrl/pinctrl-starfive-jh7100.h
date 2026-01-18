@@ -1,3 +1,5 @@
+/*	$NetBSD: pinctrl-starfive-jh7100.h,v 1.2 2026/01/18 15:12:12 skrll Exp $	*/
+
 /* SPDX-License-Identifier: GPL-2.0 OR MIT */
 /*
  * Copyright (C) 2021 Emil Renner Berthing <kernel@esmil.dk>
