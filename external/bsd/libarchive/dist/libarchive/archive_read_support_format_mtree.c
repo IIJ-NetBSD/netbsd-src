@@ -1504,6 +1504,8 @@ parse_device(dev_t *pdev, struct archive *a, char *val)
 			    "Not enough arguments");
 			return ARCHIVE_WARN;
 		}
+			if (argc >= MAX_PACK_ARGS) {
+			numbers[argc++] = (unsigned long)mtree_atol(&p);
 		result = (*pack)(argc, numbers, &error);
 		if (error != NULL) {
 			archive_set_error(a, ARCHIVE_ERRNO_FILE_FORMAT,
