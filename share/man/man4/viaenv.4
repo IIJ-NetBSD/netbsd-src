@@ -29,25 +29,24 @@
 .\" CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 .\" ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 .\" POSSIBILITY OF SUCH DAMAGE.
-.Dd January 20, 2007
+.Dd November 26, 2025
 .Dt VIAENV 4
 .Os
 .Sh NAME
 .Nm viaenv
-.Nd VIA VT82C686A/VT8231 Hardware Monitor and Power Management Timer
+.Nd VIA Power Management component, VIA VT82C686(A/B)/VT8231 hardware monitor.
 .Sh SYNOPSIS
 .Cd "viaenv* at pci? dev ? function ?"
+.Cd "viaenv* at viapcib?"
+.Cd "viasmb* at viaenv?"
 .Sh DESCRIPTION
 The
 .Nm
 is an
 .Xr envsys 4
-compatible driver for the Hardware Monitor and the Power Management
-timer in the
-.Tn VIA
-VT82C686A and VT8231 South Bridges.
+compatible driver for the Hardware Monitor on VT82C686A/VT8231 southbridges.
 .Pp
-The device has 10 sensors:
+The Hardaware Monitor device has 10 sensors:
 .Bl -column "Sensor" "Units" "Typical" -offset indent
 .It Sy "Sensor" Ta Sy "Units" Ta Sy "Typical Use"
 .It Li "TSENS1" Ta "uK" Ta "CPU temperature"
@@ -63,9 +62,26 @@ The device has 10 sensors:
 .El
 .Pp
 Sensor data is updated every 1.5 seconds.
+.Pp
+The driver also provides access to the
+.Tn VIA
+Power Management component of the
+.Tn VIA
+VT82C596(A/B), VT82C686(A/B), VT8231, VT8233, VT8233A, VT8233C, VT8235,
+VT8237(R), VT8237A, VT8237S, VT8251, VT8261, CX700, VX800, VX855, VX900 and VX11
+South Bridges and Media System Processors.
+Power Management Unit is currently used only to attach PM Timer.
+.Pp
+The driver provides SMBus host interface for the VT82C596(A/B), VT82C686(A/B),
+and VT8231 southrbridges, which can be used with the iic(4) framework.
+Newer southbridges provides this functionality through the viapcib(4) driver.
+.Pp
 .Sh SEE ALSO
+.Xr iic 4 ,
 .Xr envsys 4 ,
-.Xr envstat 8
+.Xr envstat 8 ,
+.Xr viapcib 4 ,
+.Xr viasmb 4
 .Sh HISTORY
 The
 .Nm
@@ -73,3 +89,8 @@ device appeared in
 .Nx 1.5 .
 .Sh BUGS
 Interrupt support is unimplemented, as is support for setting values.
+.Sh Notes
+PM Timer is also attached through acpi(4), so the driver is disabled by default
+for later southbridges.
+The driver is currently intended mainly to provide Hardware Monitor and SMBus
+support on the VT82C596(A/B), VT82C686(A/B), and VT8231 southbridges.

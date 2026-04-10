@@ -1,0 +1,66 @@
+.\"	$NetBSD$
+.\"
+.\" Copyright (c) 2025 The NetBSD Foundation, Inc.
+.\" All rights reserved.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+R.\"
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\"
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS
+.\" ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+.\" TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+.\" PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
+.\" BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+.\" CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+.\" SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+.\" INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+.\" CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+.\" ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+.\" POSSIBILITY OF SUCH DAMAGE.
+.Dd November 30, 2025
+.Dt VIAPCIB 4
+.Os
+.Sh NAME
+.Nm viapcib
+.Nd VIA PCI-ISA bridge with SMBus, and Power Management Subsystem."
+.Sh SYNOPSIS
+.Cd "viapcib* at pci? dev ? function ?"
+.Cd "viasmb* at viapcib?"
+.Cd "viaenv* at viapcib?"
+.Sh DESCRIPTION
+The
+.Nm
+driver supports
+.Tn VIA
+VT8233, VT8233A, VT8233C, VT8235, VT8237(R), VT8237A, VT8237S, VT8251, VT8261,
+CX700(M/M2), VX700, VX800, VX855, VX900 and VX11 South Bridges and Media System
+Processors.
+This device contains a number of components, including a PCI-ISA bridge.
+.Pp
+The driver attaches viasmb(4) driver for the SMBus host interface, which can be
+used with the iic(4) framework.
+Older southbridges provides this functionality through the viaenv(4) driver.
+.Pp
+The driver attaches the viaenv(4) driver for the PM counter, but it is disabled
+by default, since it attaches through the acpi(4) interface.
+.Pp
+.Sh SEE ALSO
+.Xr iic 4 ,
+.Xr envsys 4 ,
+.Xr envstat 8 ,
+.Xr viaenv 4 ,
+.Xr viapcib 4 ,
+.Xr viasmb 4
+.Sh HISTORY
+The
+.Nm
+device appeared in
+.Nx 4.0 .
