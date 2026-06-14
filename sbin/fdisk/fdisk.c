@@ -1117,6 +1117,8 @@ init_sector0(int zappart)
 
 	if (bootsize != 0) {
 		boot_installed = 1;
+		if (copy_size > sizeof(mboot))
+			copy_size = sizeof(mboot);
 		memcpy(&mboot, bootcode, copy_size);
 		mboot.mbr_bootsel_magic = bootcode[0].mbr_bootsel_magic;
 	}
