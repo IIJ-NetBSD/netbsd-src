@@ -1,4 +1,4 @@
-/*	$NetBSD: acpi_util.h,v 1.16 2025/01/11 11:40:43 jmcneill Exp $ */
+/*	$NetBSD: acpi_util.h,v 1.17 2026/09/12 12:47:58 skrll Exp $ */
 
 /*-
  * Copyright (c) 2003, 2007 The NetBSD Foundation, Inc.
@@ -113,5 +113,7 @@ ACPI_STATUS	 acpi_dsm_query(ACPI_HANDLE, uint8_t *, ACPI_INTEGER,
 
 ACPI_STATUS	 acpi_claim_childdevs(device_t, struct acpi_devnode *,
 			const char *);
+
+bool		 acpi_fadt_hypervisor_id(char *, size_t);
 
 #endif	/* !_SYS_DEV_ACPI_ACPI_UTIL_H */

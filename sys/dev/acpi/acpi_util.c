@@ -1,4 +1,4 @@
-/*	$NetBSD: acpi_util.c,v 1.37 2025/10/04 01:12:15 thorpej Exp $ */
+/*	$NetBSD: acpi_util.c,v 1.38 2026/09/12 12:47:58 skrll Exp $ */
 
 /*-
  * Copyright (c) 2003, 2007, 2021 The NetBSD Foundation, Inc.
@@ -65,7 +65,7 @@
  */
 
 #include <sys/cdefs.h>
-__KERNEL_RCSID(0, "$NetBSD: acpi_util.c,v 1.37 2025/10/04 01:12:15 thorpej Exp $");
+__KERNEL_RCSID(0, "$NetBSD: acpi_util.c,v 1.38 2026/09/12 12:47:58 skrll Exp $");
 
 #include <sys/param.h>
 #include <sys/kmem.h>
@@ -1421,4 +1421,43 @@ acpi_claim_childdevs(device_t dev, struct acpi_devnode *devnode,
 	}
 
 	return AE_OK;
+}
+
+/*
+ * Return the Hypervisor Vendor Identity from the FADT as a NUL-terminated
+ * string, or false if there is none to report.
+ *
+ * ACPI 6.0 added the field (5.2.9, FADT Format, offset 268): eight bytes
+ * that name the hypervisor vendor, "usually following the name of the
+ * hypervisor product", with no version information in it.  QEMU writes
+ * "QEMU" and VMware writes "VMware", zero padded.  Firmware places zero
+ * bytes in it when no hypervisor is present, so zero is reported as
+ * absence.  The specification's own note is that a guest "can consult it
+ * and act on the result, based on whether it recognized the vendor",
+ * which is what a caller does with the string.
+ *
+ * The field only exists from FADT revision 6.  ACPICA zeroes its copy of
+ * the FADT before filling it from the firmware's table, so on an older,
+ * shorter table the field reads as zero rather than as garbage.  That is
+ * a property of the copy and not something to lean on, so both the
+ * revision and the length are checked before the field is read, as
+ * open-vm-tools does.  The bytes are copied in table order rather than
+ * through the UINT64, so that this reads the same on big-endian machines.
+ */
+bool
+acpi_fadt_hypervisor_id(char *buf, size_t buflen)
+{
+	const size_t len = sizeof(AcpiGbl_FADT.HypervisorId);
+
+	KASSERT(buflen > len);
+
+	if (AcpiGbl_FADT.Header.Revision < 6 ||
+	    AcpiGbl_FADT.Header.Length < ACPI_FADT_V6_SIZE)
+		return false;
+	if (AcpiGbl_FADT.HypervisorId == 0)
+		return false;
+
+	memcpy(buf, &AcpiGbl_FADT.HypervisorId, len);
+	buf[len] = '\0';
+	return true;
 }
