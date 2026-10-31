@@ -1,4 +1,4 @@
-/*	$NetBSD: m68k_machdep.c,v 1.24 2026/05/03 19:10:41 thorpej Exp $	*/
+/*	$NetBSD: m68k_machdep.c,v 1.25 2026/10/31 11:50:18 thorpej Exp $	*/
 
 /*-
  * Copyright (c) 1997, 2026 The NetBSD Foundation, Inc.
@@ -65,12 +65,13 @@
  */
 
 #include <sys/cdefs.h>
-__KERNEL_RCSID(0, "$NetBSD: m68k_machdep.c,v 1.24 2026/05/03 19:10:41 thorpej Exp $");
+__KERNEL_RCSID(0, "$NetBSD: m68k_machdep.c,v 1.25 2026/10/31 11:50:18 thorpej Exp $");
 
 #include "opt_compat_netbsd.h"
 #include "opt_compat_sunos.h"
 #include "opt_execfmt.h"
 #include "opt_m68k_arch.h"
+#include "opt_fpu_emulate.h"
 
 #include <sys/param.h>
 #include <sys/cpu.h>
