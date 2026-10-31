@@ -1,4 +1,4 @@
-.\"    $NetBSD: npf.conf.5,v 1.113 2026/10/28 23:32:27 joe Exp $
+.\"    $NetBSD: npf.conf.5,v 1.114 2026/10/31 12:21:01 joe Exp $
 .\"
 .\" Copyright (c) 2009-2025 The NetBSD Foundation, Inc.
 .\" All rights reserved.
@@ -626,7 +626,6 @@ Route traffic via a different path according to specified routing options.
 This requires the
 .Pa npf_ext_route
 kernel module, which would get auto-loaded by NPF.
-.El
 .Pp
 The availabe routing options are:
 .Bl -tag -width Cm -offset indent
@@ -645,7 +644,6 @@ Modify packets according to the specified normalization options.
 This requires the
 .Pa npf_ext_normalize
 kernel module, which would normally get auto-loaded by NPF.
-.El
 .Pp
 The available normalization options are:
 .Bl -tag -width Cm -offset indent
@@ -660,6 +658,23 @@ Remove the Don't Fragment (DF) flag from IPv4 packets.
 .It Cm \*qrandom-id\*q
 Randomize the IPv4 ID parameter.
 .El
+.It Cm rndblock : Ar option1 Ns Op Li \&, Ar option2 ...
+drop packets based on a modulo or percentage.
+This requires the
+.Pa npf_ext_rndblcok
+kernel module which would normally get auto-loaded by NPF.
+This is particularly useful to assess how the network stack
+handles random or unexpected packet drops.
+.Pp
+The available random blocking options are:
+.Bl -tag -width Cm -offset indent
+.It Cm \*qmod\*q Ar value
+drop packets with counters divisible by the modulo parameter.
+mod counters are kept for each packet matching the rule with the procedure.
+.It Cm \*qpercentage\*q Ar value
+drop packets based on randomly generated values from 0 to 10000 that
+falls in the range of the random block defined percentage.
+.El
 .Pp
 For example:
 .Bd -literal -offset indent
@@ -672,6 +687,17 @@ procedure "someproc" {
 .Pp
 In this case, the procedure calls the logging, normalization and routing modules.
 It is good practice to put routing last in a procedure as the packet may be freed.
+.Pp
+A procedure having a random block extension can be configured as
+.Bd -literal -offset indent
+procedure "someproc" {
+	rndblock: "mod" 10, "percentage" 64
+}
+.Ed
+.Pp
+In this case, for every ten packets that matches the rule, the tenth packet will get dropped.
+Packets will also be dropped based on random values generated that lies within 0 to 64 percent
+of 10000.
 .Ss Parameter settings
 NPF supports a set of dynamically tunable configuration-wide parameters.
 For example:
