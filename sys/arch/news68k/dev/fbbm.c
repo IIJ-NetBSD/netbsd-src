@@ -1,4 +1,4 @@
-/*	$NetBSD: fbbm.c,v 1.2 2026/09/20 11:52:56 tsutsui Exp $	*/
+/*	$NetBSD: fbbm.c,v 1.3 2026/11/28 11:19:09 tsutsui Exp $	*/
 
 /*-
  * Copyright (c) 2026 Izumi Tsutsui.  All rights reserved.
@@ -25,11 +25,12 @@
  */
 
 #include <sys/cdefs.h>
-__KERNEL_RCSID(0, "$NetBSD: fbbm.c,v 1.2 2026/09/20 11:52:56 tsutsui Exp $");
+__KERNEL_RCSID(0, "$NetBSD: fbbm.c,v 1.3 2026/11/28 11:19:09 tsutsui Exp $");
 
 #include <sys/param.h>
 #include <sys/device.h>
 #include <sys/errno.h>
+#include <sys/fcntl.h>
 #include <sys/ioctl.h>
 #include <sys/kmem.h>
 #include <sys/systm.h>
@@ -110,12 +111,18 @@ static int nwb225_rop_copy_rect(struct fbbm_devconfig *, int, int, int, int,
 static int nwb225_rop_fill_rect(struct fbbm_devconfig *, int, int, int, int,
     uint32_t);
 static int nwb225_rop_hwrite(struct fbbm_devconfig *, const uint16_t *, int,
-    int, int, int, int, int, int, uint32_t, uint32_t);
+    int, int, int, int, int, int, uint32_t, uint32_t, uint32_t);
 
 /* ROM font functions */
 static bus_size_t nwb225_krom_ascii_offset(u_int);
 static void nwb225_krom_load_cell(struct fbbm_devconfig *, u_int,
     uint16_t *);
+
+/* Palette functions */
+static void nwb225_putcmap(struct fbbm_devconfig *, u_int, u_int,
+    const uint8_t *, const uint8_t *, const uint8_t *);
+static void nwb225_getcmap(struct fbbm_devconfig *, u_int, u_int,
+    uint8_t *, uint8_t *, uint8_t *);
 
 /* Initialization */
 static int nwb225_init_hardware(struct fbbm_devconfig *);
@@ -135,6 +142,9 @@ static int fbbm_allocattr(void *, int, int, int, long *);
 
 /* wsdisplay_accessops functions */
 static int fbbm_ioctl(void *, void *, u_long, void *, int, struct lwp *);
+static int fbbm_getcmap(struct fbbm_softc *, const struct wsdisplay_cmap *);
+static int fbbm_putcmap(struct fbbm_softc *, const struct wsdisplay_cmap *,
+    int);
 static int fbbm_alloc_screen(void *, const struct wsscreen_descr *, void **,
     int *, int *, long *);
 static void fbbm_free_screen(void *, void *);
@@ -630,13 +640,17 @@ nwb225_rop_fill_rect(struct fbbm_devconfig *dc, int x, int y, int width,
 static int
 nwb225_rop_hwrite(struct fbbm_devconfig *dc, const uint16_t *src_words,
     int src_stride_words, int srcx, int srcy, int width, int height,
-    int dx, int dy, uint32_t foreground, uint32_t background)
+    int dx, int dy, uint32_t foreground, uint32_t background,
+    uint32_t planemask)
 {
 	uint8_t funcvec[NWB225_MAX_PLANES];
 	int source_word_offset, source_bit_offset;
 	int row_words, row_skip_words, row, word;
 	const uint16_t *sp;
 	int error;
+
+	if (planemask == 0 || (planemask & ~dc->dc_planemask) != 0)
+		return EINVAL;
 
 	if (src_words == NULL || src_stride_words <= 0 || srcx < 0 || srcy < 0)
 		return EINVAL;
@@ -660,7 +674,7 @@ nwb225_rop_hwrite(struct fbbm_devconfig *dc, const uint16_t *src_words,
 	nwb225_rop_make_funcvec(dc, NWB225_ROP_LF_S, foreground, background,
 	    funcvec);
 	nwb225_rop_set_funcvec(dc, funcvec);
-	nwb225_rop_set_plane_mask(dc, dc->dc_planemask);
+	nwb225_rop_set_plane_mask(dc, planemask);
 
 	/* Wait again as NEWS-OS does */
 	error = nwb225_rop_wait(dc);
@@ -719,6 +733,44 @@ nwb225_krom_load_cell(struct fbbm_devconfig *dc, u_int c, uint16_t *cell)
 		    bus_space_read_2(dc->dc_bst, dc->dc_krom_bsh,
 		    offset + row * NWB225_KROM_ROWBYTES) &
 		    NWB225_KROM_ASCII_MASK;
+}
+
+static void
+nwb225_putcmap(struct fbbm_devconfig *dc, u_int index, u_int count,
+    const uint8_t *red, const uint8_t *green, const uint8_t *blue)
+{
+	u_int i;
+
+	/* Keep the per-entry index and RGB writes used by NEWS-OS. */
+	for (i = 0; i < count; i++) {
+		bus_space_write_2(dc->dc_bst, dc->dc_rcont_bsh,
+		    NWB225_PAL_INDEX, index + i);
+		bus_space_write_2(dc->dc_bst, dc->dc_rcont_bsh,
+		    NWB225_PAL_DATA, red[i]);
+		bus_space_write_2(dc->dc_bst, dc->dc_rcont_bsh,
+		    NWB225_PAL_DATA, green[i]);
+		bus_space_write_2(dc->dc_bst, dc->dc_rcont_bsh,
+		    NWB225_PAL_DATA, blue[i]);
+	}
+}
+
+static void
+nwb225_getcmap(struct fbbm_devconfig *dc, u_int index, u_int count,
+    uint8_t *red, uint8_t *green, uint8_t *blue)
+{
+	u_int i;
+
+	/* NEWS-OS reads the low byte of each 16-bit RGB access. */
+	for (i = 0; i < count; i++) {
+		bus_space_write_2(dc->dc_bst, dc->dc_rcont_bsh,
+		    NWB225_PAL_INDEX, index + i);
+		red[i] = bus_space_read_2(dc->dc_bst, dc->dc_rcont_bsh,
+		    NWB225_PAL_DATA) & 0xff;
+		green[i] = bus_space_read_2(dc->dc_bst, dc->dc_rcont_bsh,
+		    NWB225_PAL_DATA) & 0xff;
+		blue[i] = bus_space_read_2(dc->dc_bst, dc->dc_rcont_bsh,
+		    NWB225_PAL_DATA) & 0xff;
+	}
 }
 
 static int
@@ -891,7 +943,7 @@ fbbm_putchar(void *cookie, int row, int col, u_int uc, long attr)
 	y = dc->dc_yorigin + row * dc->dc_cellheight;
 
 	(void)nwb225_rop_hwrite(dc, cell, 1, 0, 0, dc->dc_cellwidth,
-	    dc->dc_cellheight, x, y, foreground, background);
+	    dc->dc_cellheight, x, y, foreground, background, dc->dc_planemask);
 }
 
 static void
@@ -1005,8 +1057,14 @@ fbbm_ioctl(void *v, void *vs, u_long cmd, void *data, int flag, struct lwp *l)
 		fbinfo->height = dc->dc_height;
 		fbinfo->width = dc->dc_width;
 		fbinfo->depth = dc->dc_nplanes;
-		fbinfo->cmsize = 0;
+		fbinfo->cmsize = 1U << dc->dc_nplanes;
 		return 0;
+
+	case WSDISPLAYIO_GETCMAP:
+		return fbbm_getcmap(sc, data);
+
+	case WSDISPLAYIO_PUTCMAP:
+		return fbbm_putcmap(sc, data, flag);
 
 	case WSDISPLAYIO_SMODE:
 		sc->sc_wsmode = *(int *)data;
@@ -1017,6 +1075,71 @@ fbbm_ioctl(void *v, void *vs, u_long cmd, void *data, int flag, struct lwp *l)
 	}
 
 	return EPASSTHROUGH;
+}
+
+static int
+fbbm_getcmap(struct fbbm_softc *sc, const struct wsdisplay_cmap *cmap)
+{
+	struct fbbm_devconfig *dc = sc->sc_dc;
+	uint8_t red[256], green[256], blue[256];
+	u_int index = cmap->index, count = cmap->count;
+	u_int cmsize = 1U << dc->dc_nplanes;
+	int error;
+
+	if (index >= cmsize || count > cmsize - index)
+		return EINVAL;
+	if (count == 0)
+		return 0;
+
+	nwb225_getcmap(dc, index, count, red, green, blue);
+	error = copyout(red, cmap->red, count);
+	if (error != 0)
+		return EFAULT;
+	error = copyout(green, cmap->green, count);
+	if (error != 0)
+		return EFAULT;
+	error = copyout(blue, cmap->blue, count);
+	if (error != 0)
+		return EFAULT;
+
+	return 0;
+}
+
+static int
+fbbm_putcmap(struct fbbm_softc *sc, const struct wsdisplay_cmap *cmap,
+    int flag)
+{
+	struct fbbm_devconfig *dc = sc->sc_dc;
+	uint8_t red[256], green[256], blue[256];
+	u_int index = cmap->index, count = cmap->count;
+	u_int cmsize = 1U << dc->dc_nplanes;
+	int error;
+
+	if ((flag & FWRITE) == 0)
+		return EPERM;
+	if (index >= cmsize || count > cmsize - index)
+		return EINVAL;
+	if (sc->sc_wsmode == WSDISPLAYIO_MODE_EMUL)
+		return EBUSY;
+	if (count == 0)
+		return 0;
+
+	/* Complete all user copies before changing any palette entry. */
+	error = copyin(cmap->red, red, count);
+	if (error != 0)
+		return EFAULT;
+	error = copyin(cmap->green, green, count);
+	if (error != 0)
+		return EFAULT;
+	error = copyin(cmap->blue, blue, count);
+	if (error != 0)
+		return EFAULT;
+
+	if (sc->sc_wsmode == WSDISPLAYIO_MODE_EMUL)
+		return EBUSY;
+	nwb225_putcmap(dc, index, count, red, green, blue);
+
+	return 0;
 }
 
 static int
